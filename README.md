@@ -11,52 +11,10 @@
 [![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-%23FE5196?logo=conventionalcommits&logoColor=white)](https://conventionalcommits.org)
 [![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
 
-A comprehensive, opinionated template for modern Python projects -- featuring uv packaging, Ruff for linting and formatting, justfile, pytest testing with code coverage upload to codecov, MkDocs documentation with configuration for Read The Docs, pre-commit hooks, .editorconfig, .devcontainer, GitHub Actions CI, GitHub issue and pull request templates, architectural decision record (ADR) templates and automated semantic releases.
+⭐️ This repository contains a package and notebooks for exploring radio astronomy.
 
-The goal is to help you start writing code immediately without having to spend time deciding what tools or conventions to use.
-
-## How to use this template
-
-1. 🌱 Create a New Repository on GitHub
-    1. Click **["Use this template"](https://github.com/gemmadanks/python-project-template/generate)**.
-    1.	Choose “Create a new repository”.
-    1.	Pick a name for your new project (for example, `my-awesome-package`).
-    1.	Clone your new repo locally
-1. 🏡 Customise the repository
-    1. Rename your package directory `mv package_name my_package`
-    1. Update [pyproject.toml](pyproject.toml) with your package name, author, and description.
-    1. Update all references to package_name in:
-        - [package_name/tests/](package_name/tests/)
-        - [docs/](docs/)
-        - [release-please-config.json](release-please-config.json)
-        - [GitHub Actions workflow](.github/workflows/ci.yaml)
-        - This README (including badge links)
-    1. Update the `"package-name"` field in [release-please-config.json](release-please-config.json) with your package name for automatically bumping the version number in [uv.lock](uv.lock) (see [release-please issue #2561](https://github.com/googleapis/release-please/issues/2561)).
-    1. Customise this README with a description of your project and planned features.
-    1. Customise the documentation configuration in [mkdocs.yml](mkdocs.yml) (see the [Material for MkDocs documentation](https://squidfunk.github.io/mkdocs-material/creating-your-site/#advanced-configuration) for details)
 
 ## 🚀 Features
-
-- Python project directory structure
-- README template with badges
-- Packaging and dependency management via [uv](https://docs.astral.sh/uv/): [pyproject.toml](pyproject.toml)
-- Linting and formatting via [Ruff](https://docs.astral.sh/ruff/): [.pre-commit-config.yaml](.pre-commit-config.yaml)
-- Testing framework using [pytest](https://docs.pytest.org/en/stable/)
-- CI using [GitHub Actions](https://docs.github.com/en/actions): [.github/workflows/ci.yaml](.github/workflows/ci.yaml)
-    - [Pre-commit hooks](.pre-commit-config.yaml) (linting and formatting)
-    - Automated tests
-    - Package build with smoke test
-- Templates for GitHub issues: bug report ([01-bug.yml](.github/ISSUE_TEMPLATE/01-bug.yml)) and feature request ([02-feature.yml](.github/ISSUE_TEMPLATE/01-feature.yml))
-- Template for GitHub pull request: [.github/pull_request_template.md](.github/pull_request_template.md)
-- Docs ([MkDocs](https://www.mkdocs.org/) + [mkdocstrings](https://mkdocstrings.github.io/)): [mkdocs.yml](mkdocs.yml)
-    - Automated deployment to `gh-pages` branch via GitHub action: [.github/workflows/docs-pages.yaml](.github/workflows/docs-pages.yaml)
-    - Configuration for Read The Docs integration: [.readthedocs.yaml](.readthedocs.yaml)
-    - Template for [documenting architectural decisions](https://adr.github.io/): [docs/architecture/adr/template.md](docs/architecture/adr/template.md).
-    - ADR to explain the rationale for using ADRs: [docs/architecture/adr/001-use-architectural-decision-records.md](docs/architecture/adr/001-use-architectural-decision-records.md).
-- Release automation via GitHub action from [release-please](https://github.com/googleapis/release-please): [.github/release-please-config.json](.github/release-please-config.json)
-- Citation metadata, automatically updated for each new release: [CITATION.cff](CITATION.cff)
-- BSD-3-Clause: [LICENSE](LICENSE)
-- [EditorConfig](https://editorconfig.org/) configuration for consistent coding style across editors: [.editorconfig](.editorconfig)
 
 ## 📦 Installation
 
@@ -73,8 +31,8 @@ Dev Containers: Reopen in Container
 1. [Install uv](https://docs.astral.sh/uv/getting-started/installation/)
 1. Clone and install the project using uv:
 ```bash
-git clone https://github.com/gemmadanks/python-project-template
-cd python-project-template
+git clone https://github.com/gemmadanks/radio-astronomy-playground
+cd radio-astronomy-playground
 uv sync --all-groups
 ```
 1. [Install just](https://just.systems/man/en/packages.html).
@@ -87,7 +45,7 @@ Hook definitions: [.pre-commit-config.yaml](.pre-commit-config.yaml)
 ## 🏁 Quickstart
 
 ```python
-from package_name.greet import say_hello
+from seren.greet import say_hello
 print(say_hello("World"))
 ```
 
@@ -131,7 +89,7 @@ Managed by release-please: ([conventional commits](https://www.conventionalcommi
 ```
 .
 ├── src/
-│   └── package_name/              # Source package
+│   └── seren/              # Source package
 │       ├── __init__.py
 │       └── greet.py               # Example module (replace with real code)
 ├── tests/                         # Test suite
@@ -195,7 +153,7 @@ Use [conventional commit](https://www.conventionalcommits.org/) messages (feat:,
 - Docs build without warnings
 - ADR drafted for architecturally significant changes
 
-Suggestions and improvements to this template are very welcome — feel free to open an issue or pull request if you spot something that could be refined, added or removed.
+Suggestions and improvements are very welcome — feel free to open an issue or pull request if you spot something that could be refined, added or removed.
 
 ## 📖 Citation
 
@@ -205,4 +163,4 @@ If used in research, cite via [CITATION.cff](CITATION.cff).
 
 BSD-3-Clause – see [LICENSE](LICENSE).
 
-Happy coding! 🚀
+Happy exploring! 🚀

@@ -1,7 +1,7 @@
-site_name: Python Project Template Documentation
-site_url: https://gemmadanks.github.io/python-project-template/
-repo_url: https://github.com/gemmadanks/python-project-template
-repo_name: python-project-template
+site_name: Radio Astronomy Playground Documentation
+site_url: https://gemmadanks.github.io/radio-astronomy-playground/
+repo_url: https://github.com/gemmadanks/radio-astronomy-playground
+repo_name: radio-astronomy-playground
 
 theme:
   name: "material"

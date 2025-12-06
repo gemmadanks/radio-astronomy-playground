@@ -133,4 +133,4 @@ jobs:
           source pkgtest/bin/activate
           python -m pip install --upgrade pip
           python -m pip install dist/*.whl
-          python -c "import package_name as m; print(getattr(m, '__version__', 'OK'))"
+          python -c "import seren as m; print(getattr(m, '__version__', 'OK'))"
