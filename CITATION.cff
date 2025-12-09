@@ -1,10 +1,10 @@
 cff-version: 1.2.0
-message: If you use python-project-template in your research, please cite it as below.
-title: 'Python Project Template: For initialising a Python package.'
-version: 0.8.5
+message: If you use starbox in your research, please cite it as below.
+title: 'Starbox: A tool for exploring radio astronomy.'
+version: 0.0.0
 date-released: '2025-10-26'
 authors:
   - family-names: Danks
     given-names: Gemma
-repository-code: https://github.com/gemmadanks/python-project-template
+repository-code: https://github.com/gemmadanks/radio-astronomy-playground
 license: BSD-3-Clause

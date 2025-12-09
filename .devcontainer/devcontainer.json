@@ -1,7 +1,10 @@
 {
   "build": {
     "context": "..",
-    "dockerfile": "Dockerfile"
+    "dockerfile": "Dockerfile",
+    "options": [
+      "--platform=linux/amd64"
+    ]
   },
   "customizations": {
     "vscode": {
@@ -22,5 +25,8 @@
   },
   "forwardPorts": [],
   "name": "Python 3",
-  "postCreateCommand": "uv sync --all-groups && just pre-commit-install && just pre-commit"
+  "postCreateCommand": "uv sync --all-groups && just pre-commit-install && just pre-commit",
+  "runArgs": [
+    "--platform=linux/amd64"
+  ]
 }

@@ -1,5 +1,5 @@
-# Use official Python 3.14 image
-FROM python:3.14-bookworm
+# Use official Python 3.13 image
+FROM python:3.13-bookworm
 
 # Install uv (Rust-based Python manager)
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /bin/uv

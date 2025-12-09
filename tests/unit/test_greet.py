@@ -1,7 +1,7 @@
 """Test the greet functions."""
 
 import pytest
-from seren.greet import say_hello, say_goodbye
+from starbox.greet import say_hello, say_goodbye
 
 
 @pytest.mark.parametrize(

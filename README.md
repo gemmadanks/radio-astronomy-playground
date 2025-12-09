@@ -1,17 +1,17 @@
 # Python Project Template
-![Python Version from PEP 621 TOML](https://img.shields.io/python/required-version-toml?tomlFilePath=https%3A%2F%2Fraw.githubusercontent.com%2Fgemmadanks%2Fpython-project-template%2Frefs%2Fheads%2Fmain%2Fpyproject.toml)
-[![codecov](https://codecov.io/gh/gemmadanks/python-project-template/graph/badge.svg?token=SJVFI32RHC)](https://codecov.io/gh/gemmadanks/python-project-template)
-[![CI](https://github.com/gemmadanks/python-project-template/actions/workflows/ci.yaml/badge.svg?branch=main)](.github/workflows/ci.yaml)
-[![release-please](https://github.com/gemmadanks/python-project-template/actions/workflows/release-please.yaml/badge.svg)](release-please-config.json)
-[![Docs (GitHub Pages)](https://github.com/gemmadanks/python-project-template/actions/workflows/docs-pages.yaml/badge.svg)](https://github.com/gemmadanks/python-project-template/actions/workflows/docs-pages.yaml)
-[![Docs (RTD)](https://app.readthedocs.org/projects/python-project-template/badge/?version=latest)](https://gemmadanks-python-project-template.readthedocs.io/en/latest/)
-[![Dependabot](https://img.shields.io/github/issues-search?query=repo%3Agemmadanks%2Fpython-project-template%20is%3Apr%20author%3Aapp%2Fdependabot%20is%3Aopen&label=Dependabot%20PRs)](https://github.com/gemmadanks/python-project-template/issues?q=is%3Apr%20is%3Aopen%20author%3Aapp%2Fdependabot)
+![Python Version from PEP 621 TOML](https://img.shields.io/python/required-version-toml?tomlFilePath=https%3A%2F%2Fraw.githubusercontent.com%2Fgemmadanks%2Fradio-astronomy-playground%2Frefs%2Fheads%2Fmain%2Fpyproject.toml)
+[![codecov](https://codecov.io/gh/gemmadanks/radio-astronomy-playground/graph/badge.svg?token=SJVFI32RHC)](https://codecov.io/gh/gemmadanks/radio-astronomy-playground)
+[![CI](https://github.com/gemmadanks/radio-astronomy-playground/actions/workflows/ci.yaml/badge.svg?branch=main)](.github/workflows/ci.yaml)
+[![release-please](https://github.com/gemmadanks/radio-astronomy-playground/actions/workflows/release-please.yaml/badge.svg)](release-please-config.json)
+[![Docs (GitHub Pages)](https://github.com/gemmadanks/radio-astronomy-playground/actions/workflows/docs-pages.yaml/badge.svg)](https://github.com/gemmadanks/radio-astronomy-playground/actions/workflows/docs-pages.yaml)
+[![Docs (RTD)](https://app.readthedocs.org/projects/radio-astronomy-playground/badge/?version=latest)](https://gemmadanks-radio-astronomy-playground.readthedocs.io/en/latest/)
+[![Dependabot](https://img.shields.io/github/issues-search?query=repo%3Agemmadanks%2Fradio-astronomy-playground%20is%3Apr%20author%3Aapp%2Fdependabot%20is%3Aopen&label=Dependabot%20PRs)](https://github.com/gemmadanks/radio-astronomy-playground/issues?q=is%3Apr%20is%3Aopen%20author%3Aapp%2Fdependabot)
 [![uv](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json)](https://github.com/astral-sh/uv)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 [![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-%23FE5196?logo=conventionalcommits&logoColor=white)](https://conventionalcommits.org)
 [![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
 
-⭐️ This repository contains a package and notebooks for exploring radio astronomy.
+⭐️ This repository contains a Python package and notebooks for exploring radio astronomy concepts and tools.
 
 
 ## 🚀 Features
@@ -19,7 +19,7 @@
 ## 📦 Installation
 
 ### Working in a development container
-A [Dockerfile](./devcontainer/Dockerfile) and [configuration](./devcontainer/devcontainer.json) in [./devcontainer](./devcontainer) can be used in VSCode or GitHub Codespaces to work in a pre-configured development environment. It uses a Python 3.14 base image and installs uv, just and all Python dependencies.
+A [Dockerfile](./devcontainer/Dockerfile) and [configuration](./devcontainer/devcontainer.json) in [./devcontainer](./devcontainer) can be used in VSCode or GitHub Codespaces to work in a pre-configured development environment. It uses a Python 3.13 base image and installs uv, just and all Python dependencies.
 
 To open the project in the container VSCode, you will need to add the [Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) and download [Docker](https://docs.docker.com/get-started/get-docker/) (or [Podman](https://podman.io/docs/installation) -- and [configure VSCode to use podman instead of Docker](https://code.visualstudio.com/remote/advancedcontainers/docker-options#_podman)) -- see the [VSCode tutorial on devcontainers](https://code.visualstudio.com/docs/devcontainers/tutorial) for more details on using devcontainers. Then run:
 ``` bash
@@ -45,7 +45,7 @@ Hook definitions: [.pre-commit-config.yaml](.pre-commit-config.yaml)
 ## 🏁 Quickstart
 
 ```python
-from seren.greet import say_hello
+from starbox.greet import say_hello
 print(say_hello("World"))
 ```
 
@@ -63,6 +63,7 @@ just docs-serve            # live docs
 just docs-build            # build docs
 just pre-commit            # run all pre-commit hooks
 just clean                 # remove generated files and folders
+just jupyter-container  # start Jupyter lab from inside a container
 ```
 
 ## 📚 Documentation
@@ -89,7 +90,7 @@ Managed by release-please: ([conventional commits](https://www.conventionalcommi
 ```
 .
 ├── src/
-│   └── seren/              # Source package
+│   └── starbox/              # Source package
 │       ├── __init__.py
 │       └── greet.py               # Example module (replace with real code)
 ├── tests/                         # Test suite

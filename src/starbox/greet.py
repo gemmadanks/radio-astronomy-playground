@@ -3,7 +3,7 @@
 This module provides functions to greet users.
 
 Example:
-    >>> from seren.greet import say_hello
+    >>> from starbox.greet import say_hello
     >>> say_hello("Alice")
     'Hello, Alice!'
 """
