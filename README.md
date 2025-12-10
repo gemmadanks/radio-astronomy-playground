@@ -1,4 +1,4 @@
-# Python Project Template
+# Radio Astronomy Playground
 ![Python Version from PEP 621 TOML](https://img.shields.io/python/required-version-toml?tomlFilePath=https%3A%2F%2Fraw.githubusercontent.com%2Fgemmadanks%2Fradio-astronomy-playground%2Frefs%2Fheads%2Fmain%2Fpyproject.toml)
 [![codecov](https://codecov.io/gh/gemmadanks/radio-astronomy-playground/graph/badge.svg?token=SJVFI32RHC)](https://codecov.io/gh/gemmadanks/radio-astronomy-playground)
 [![CI](https://github.com/gemmadanks/radio-astronomy-playground/actions/workflows/ci.yaml/badge.svg?branch=main)](.github/workflows/ci.yaml)
@@ -11,22 +11,18 @@
 [![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-%23FE5196?logo=conventionalcommits&logoColor=white)](https://conventionalcommits.org)
 [![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
 
-⭐️ This repository contains a Python package and notebooks for exploring radio astronomy concepts and tools.
+⭐️ Starbox Python package and notebooks for exploring radio astronomy concepts and tools.
+
+🛠️ Warning: this is a work in progress and subject to frequent changes!
 
 
 ## 🚀 Features
 
-## 📦 Installation
+- 👾 Generate random data for toy simulations:
+    - 📡 Arrays of antennas
+    - ✨ Sky models
 
-### Working in a development container
-A [Dockerfile](./devcontainer/Dockerfile) and [configuration](./devcontainer/devcontainer.json) in [./devcontainer](./devcontainer) can be used in VSCode or GitHub Codespaces to work in a pre-configured development environment. It uses a Python 3.13 base image and installs uv, just and all Python dependencies.
-
-To open the project in the container VSCode, you will need to add the [Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) and download [Docker](https://docs.docker.com/get-started/get-docker/) (or [Podman](https://podman.io/docs/installation) -- and [configure VSCode to use podman instead of Docker](https://code.visualstudio.com/remote/advancedcontainers/docker-options#_podman)) -- see the [VSCode tutorial on devcontainers](https://code.visualstudio.com/docs/devcontainers/tutorial) for more details on using devcontainers. Then run:
-``` bash
-Dev Containers: Reopen in Container
-```
-
-### Manual installation
+### 📦 Installation
 
 1. [Install uv](https://docs.astral.sh/uv/getting-started/installation/)
 1. Clone and install the project using uv:
@@ -35,21 +31,35 @@ git clone https://github.com/gemmadanks/radio-astronomy-playground
 cd radio-astronomy-playground
 uv sync --all-groups
 ```
-1. [Install just](https://just.systems/man/en/packages.html).
-1. Install pre-commit hooks (only needs to be done once)
-```bash
-just pre-commit-install
-```
-Hook definitions: [.pre-commit-config.yaml](.pre-commit-config.yaml)
 
-## 🏁 Quickstart
+### 🏁 Quickstart
+
+See the [`quickstart.ipynb`](notebooks/quickstart.ipynb) notebook or run the following in Python:
 
 ```python
-from starbox.greet import say_hello
-print(say_hello("World"))
+from starbox.simulate import Telescope, SkyModel
+
+telescope = Telescope(name="MyArray", num_antennas=10, diameter=50.0)
+telescope.plot()
+
+skymodel = SkyModel(name="MySkyModel", num_sources=50, max_flux=10.0)
+skymodel.plot()
 ```
 
-## 🧪 Common Tasks
+## User guide
+
+See [full documentation]() for details.
+
+### Developer guide
+
+A [Dockerfile](./devcontainer/Dockerfile) and [configuration](./devcontainer/devcontainer.json) in [./devcontainer](./devcontainer) can be used in VSCode or GitHub Codespaces to work in a pre-configured development environment. It uses a Python 3.13 base image and installs uv, just and all Python dependencies.
+
+To open the project in the container VSCode, you will need to add the [Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) and download [Docker](https://docs.docker.com/get-started/get-docker/) (or [Podman](https://podman.io/docs/installation) -- and [configure VSCode to use podman instead of Docker](https://code.visualstudio.com/remote/advancedcontainers/docker-options#_podman)) -- see the [VSCode tutorial on devcontainers](https://code.visualstudio.com/docs/devcontainers/tutorial) for more details on using devcontainers. Then run:
+``` bash
+Dev Containers: Reopen in Container
+```
+
+#### 🧪 Common Tasks
 
 Several common tasks have been added as recipes to a [justfile](justfile) in the root of the repository:
 
@@ -63,89 +73,16 @@ just docs-serve            # live docs
 just docs-build            # build docs
 just pre-commit            # run all pre-commit hooks
 just clean                 # remove generated files and folders
-just jupyter-container  # start Jupyter lab from inside a container
+just jupyter-container     # start Jupyter lab from inside a container
 ```
 
-## 📚 Documentation
-
-- Configuration: [mkdocs.yml](mkdocs.yml)
-- Content pages (following the [Diátaxis framework](https://diataxis.fr/)):
-    - [docs/index.md](docs/index.md)
-    - [docs/reference.md](docs/reference.md) (autogenerated API documentation from docstrings via mkdocstrings).
-    - [docs/tutorials.md](docs/tutorials.md)
-    - [docs/explanation.md](docs/explanation.md)
-- Architecture pages
-    - Template for [documenting architectural decisions](https://adr.github.io/): [docs/architecture/adr/template.md](docs/architecture/adr/template.md).
-    - ADR to explain the rationale for using ADRs: [docs/architecture/adr/001-use-architectural-decision-records.md](docs/architecture/adr/001-use-architectural-decision-records.md).
-    - Index of ADRs: [docs/architecture/adr/index.md](docs/architecture/adr/index.md).
-
-## 🔄 Releases
+#### 🔄 Releases
 
 Managed by release-please: ([conventional commits](https://www.conventionalcommits.org/en/v1.0.0/) drive [semantic versioning](https://semver.org/) and an autogenerated CHANGELOG).
     - Configuration: [.github/release-please-config.json](.github/release-please-config.json)
     - Version source: pyproject.toml
 
-## 📂 Project Structure
-
-```
-.
-├── src/
-│   └── starbox/              # Source package
-│       ├── __init__.py
-│       └── greet.py               # Example module (replace with real code)
-├── tests/                         # Test suite
-│   ├── conftest.py
-│   └── unit/
-│       └── test_greet.py          # Example unit test (replace with real tests)
-├── docs/                          # Documentation (Diátaxis layout)
-│   ├── index.md                   # Documentation homepage
-│   ├── tags.md                    # Tag index
-│   ├── reference/
-│   │   └── index.md               # API reference (mkdocstrings)
-│   ├── tutorials/
-│   │   └── index.md               # Tutorials overview
-│   ├── how-to/
-│   │   └── index.md               # How-to guides
-│   ├── explanation/
-│   │   └── index.md               # Conceptual guides
-│   └── architecture/
-│       ├── index.md               # Architecture overview
-│       └── adr/                   # Architectural decision records
-│           ├── index.md           # ADRs index
-│           ├── template.md        # Template for new ADR
-│           ├── 001-use-architectural-decision-records.md
-│           └── 002-manage-dependencies-with-uv.md
-├── notebooks/                     # Jupyter notebooks
-│   └── example.ipynb
-├── .github/
-│   ├── workflows/
-│   │   ├── ci.yaml                # Lint / test / build
-│   │   └── release-please.yaml    # Automated releases
-│   ├── ISSUE_TEMPLATE/            # Issue forms
-│   │   ├── 01-bug.yml
-│   │   └── 02-feature.yml
-│   ├── pull_request_template.md   # Pull request template
-│   └── dependabot.yml             # Dependency update automation
-├── .pre-commit-config.yaml        # Pre-commit hook definitions
-├── .devcontainer/                 # Dev container configuration
-│   ├── devcontainer.json
-│   └── Dockerfile
-├── pyproject.toml                 # Project metadata + dependencies (uv)
-├── uv.lock                        # Locked dependency versions (uv)
-├── README.md                      # Project overview (you are here)
-├── mkdocs.yml                     # MkDocs configuration
-├── CITATION.cff                   # Citation metadata
-├── LICENSE                        # License
-├── CHANGELOG.md                   # Generated by release-please (post-release)
-├── .release-please-manifest.json  # Release-please state
-├── release-please-config.json     # Release-please configuration
-├── .python-version                # pyenv version pin
-├── justfile                       # justfile containing recipes for common tasks
-├── .editorconfig                  # Ensures consistent code style across editors
-└── .gitignore
-```
-
-## 🤝 Contributing
+#### 🤝 Coding standards
 
 Use [conventional commit](https://www.conventionalcommits.org/) messages (feat:, fix:, docs:, etc.). Ensure:
 

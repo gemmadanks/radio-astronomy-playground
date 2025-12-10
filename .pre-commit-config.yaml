@@ -69,12 +69,23 @@ repos:
         stages: [pre-push]
         always_run: true
 
-  # --- Tests: exclude slow tests and run on pre-push ---
+  # --- Unit tests: exclude slow tests and run on pre-push ---
   - repo: local
     hooks:
       - id: pytest
         name: pytest (quick)
         entry: uv run pytest -q -m "not slow" --doctest-modules --doctest-glob="*.py" --maxfail=1 --disable-warnings
+        language: system
+        types: [python]
+        pass_filenames: false
+        stages: [pre-push]
+
+# --- Notebook tests: run on pre-push ---
+  - repo: local
+    hooks:
+      - id: pytest-nbmake
+        name: pytest (notebooks)
+        entry: uv run pytest -q --nbmake --maxfail=1 --disable-warnings notebooks/
         language: system
         types: [python]
         pass_filenames: false
