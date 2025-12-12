@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.1](https://github.com/gemmadanks/radio-astronomy-playground/compare/v0.1.0...v0.1.1) (2025-12-12)
+
+
+### 📦 Build
+
+* **deps:** bump ruff from 0.14.8 to 0.14.9 ([#4](https://github.com/gemmadanks/radio-astronomy-playground/issues/4)) ([5b41f92](https://github.com/gemmadanks/radio-astronomy-playground/commit/5b41f92a82ec54a1aa55fe1cdab8c322e892cdea))
+
 ## 0.1.0 (2025-12-10)
 
 
