@@ -1,5 +1,12 @@
-# Welcome to starbox documentation!
+# Welcome to the documentation for Radio Astronomy Playground
 
-This is template for documenting a Python package. It follows the [Diátaxis framework](https://diataxis.fr/) layout and includes a section for Architectural Decision Records (ADRs) and an auto-generated API reference.
+Radio Astronomy Playground is a space for learning, experimenting with, and
+understanding key concepts and algorithms in radio astronomy.
+
+✨ **Starbox**: a Python package with toy models and reference implementations
+📚 **Notebooks**: interactive experiments for exploring and visualising ideas
+💡 **Glossary**: the ubiquitous language that defines the core domain
+concepts used throughout this project
+
 
 ::: starbox
