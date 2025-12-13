@@ -34,7 +34,8 @@ repos:
     rev: v2.3.0
     hooks:
       - id: codespell
-        args: ["--skip", "uv.lock,dist,build,.venv,*.min.js"]
+        args: ["--skip", "uv.lock,dist,build,.venv,*.min.js",
+               "--ignore-words", ".codespellignore" ]
         exclude: |
           (?x)(
             ^docs/_build/|
