@@ -23,6 +23,7 @@
 - Sky model
 - Apparent sky
 - True sky
+- Patches
 
 ### Modes
 - Wideband
@@ -32,7 +33,7 @@
 ### Units & quantities
 - Jansky
 - Radians
-- Flux density
+- Flux density (*flux*, *intensity* or *brightness*)
 
 ### Metrics
 - SNR
