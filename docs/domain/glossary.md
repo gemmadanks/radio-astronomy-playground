@@ -20,7 +20,7 @@
     - Point source
     - Extended source (*extended emission* or *gaussian blob*)
 - Source catalog (*source list*)
-- Sky model
+- [Sky model](concepts/sky-model.md)
 - Apparent sky
 - True sky
 - Patches
