@@ -1,10 +1,7 @@
 {
   "build": {
     "context": "..",
-    "dockerfile": "Dockerfile",
-    "options": [
-      "--platform=linux/amd64"
-    ]
+    "dockerfile": "Dockerfile"
   },
   "customizations": {
     "vscode": {
@@ -20,13 +17,9 @@
     }
   },
   "features": {
-    "ghcr.io/devcontainers/features/git:1": {},
-    "ghcr.io/devcontainers/features/github-cli:1": {}
+    "ghcr.io/devcontainers/features/git:1": {}
   },
   "forwardPorts": [],
   "name": "Python 3",
-  "postCreateCommand": "uv sync --all-groups && just pre-commit-install && just pre-commit",
-  "runArgs": [
-    "--platform=linux/amd64"
-  ]
+  "postCreateCommand": "uv sync --all-groups && just pre-commit-install && just pre-commit"
 }
