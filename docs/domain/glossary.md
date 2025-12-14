@@ -72,23 +72,24 @@
 ### Beam forming
 - Beam model
 - Beam forming
+- [Primary beam](concepts/primary-beam.md)
 - Tied-array beam forming
 - Beam correction (*Applying the beam*)
 
 ### Calibration
-- Calibration
+- [Calibration](concepts/calibration.md)
 - Jones matrix
 - Solver
 - Calibration solution (*solution*)
 - Apply solutions
-- Predict
+- [Predict](concepts/predict.md)
 
 #### Modes
 - Phase-only
 - Amplitude and phase
 - Direction-independent
 - Direction-dependent
-- Self-calibration
+- [Self-calibration](concepts/self-calibration.md)
 - Self-calibration cycle
 
 #### Gains
@@ -108,12 +109,13 @@
 - Reference antenna
 
 ### Imaging
+- [Imaging](concepts/imaging.md)
 
 #### Modes
 - Continuum imaging
 - Spectral imaging
 
-#### Products
+#### Data products
 - Artifacts
 - Dirty image
 - Residual image
@@ -133,7 +135,7 @@
 - W-term
 
 #### Polarization
-- Stokes parameters (I, Q, U, V)
+- [Stokes parameters (I, Q, U, V)](concepts/stokes-parameters.md)
 
 #### Deconvolution
 - Deconvolution
