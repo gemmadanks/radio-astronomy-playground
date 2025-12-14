@@ -31,6 +31,13 @@ theme:
     - navigation.tabs.sticky
     - navigation.footer
 
+markdown_extensions:
+- pymdownx.superfences:
+    custom_fences:
+      - name: mermaid
+        class: mermaid
+        format: !!python/name:pymdownx.superfences.fence_code_format
+
 plugins:
   - mkdocstrings:
       default_handler: python
@@ -65,3 +72,4 @@ nav:
 
 extra_javascript:
     - javascript/readthedocs.js
+    - https://unpkg.com/mermaid@10.4.0/dist/mermaid.esm.min.mjs
