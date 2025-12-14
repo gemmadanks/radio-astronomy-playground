@@ -3,6 +3,7 @@
 A sky model is a representation of the positions, shapes, and brightness of radio-emitting sources on the sky, including their frequency-dependence.
 
 Each source or component may include:
+
 - Position in right ascension (RA) and declination (Dec) in degrees, radians or sexagesimal hours, minutes and seconds.
 - Brightness (flux density) in Jansky for one or more Stokes parameters (I, Q, U, V).
 - Shape (for extended sources) specified as:

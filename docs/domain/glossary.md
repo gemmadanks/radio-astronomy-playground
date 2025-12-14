@@ -35,10 +35,6 @@
 - Radians
 - Flux density (*flux*, *intensity* or *brightness*)
 
-### Metrics
-- SNR
-- Dynamic range
-
 ### Coordinates & axes
 - Direction cosines (l,m,n)
 - Baseline coordinates (u,v,w)
@@ -63,7 +59,7 @@
 - Sub-station
 - Rigid rotation
 
-# Interferometry
+## Interferometry
 - VLBI
 - Aperture synthesis
 - Fringes
@@ -125,6 +121,10 @@
 - Model image
 - Image cube
 - Spectral index map
+
+#### Quality Metrics
+- SNR
+- Dynamic range
 
 #### Wide-field
 - Facet
