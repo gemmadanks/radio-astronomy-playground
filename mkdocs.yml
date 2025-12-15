@@ -68,6 +68,8 @@ nav:
   - Architecture:
       - Overview: architecture/index.md
       - ADRs: architecture/adr/index.md
+  - Domain:
+      - Overview: domain/index.md
   - Tags: tags.md
 
 extra_javascript:
