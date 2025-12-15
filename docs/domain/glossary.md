@@ -16,10 +16,10 @@
 - Polarization
 - Faraday rotation
 - RFI
-- Sources
+- [Sources](concepts/sky-model.md)
     - Point source
     - Extended source (*extended emission* or *gaussian blob*)
-- Source catalog (*source list*)
+- [Source catalog](concepts/sky-model.md) (*source list*)
 - [Sky model](concepts/sky-model.md)
 - Apparent sky
 - True sky
@@ -42,20 +42,21 @@
 - Channel
 
 ## Telescope
-- Interferometer
-- Baseline
-- Antenna
+- [Telescope](concepts/telescope.md)
+- [Interferometer](concepts/telescope.md)
+- [Baseline](concepts/telescope.md)
+- [Antenna](concepts/telescope.md)
 - Receptor
 - Receiver
 - Aperture
 - Diameter
 
 ### Array configuration
-- Array
+- [Array](concepts/telescope.md)
 - Sub-array
-- Layout
-- uv-coverage
-- Station
+- [Layout](concepts/telescope.md)
+- [uv-coverage](concepts/telescope.md)
+- [Station](concepts/telescope.md)
 - Sub-station
 - Rigid rotation
 
@@ -69,8 +70,8 @@
 
 ## Data processing
 
-### Beam forming
-- Beam model
+### Beam
+- [Beam model](concepts/measurement-model.md)
 - Beam forming
 - [Primary beam](concepts/primary-beam.md)
 - Tied-array beam forming
@@ -96,13 +97,14 @@
 - Gains
 - Phase
 - Amplitude
-- Complex gains
+- [Complex gains](concepts/measurement-model.md)
 
 #### Effects
-- Corruptions
-- TEC
-- Bandpass
-- Direction-dependent effect (DDE)
+- [Measurement model](concepts/measurement-model.md)
+- [Corruptions](concepts/measurement-model.md)
+- [Phase screen](concepts/measurement-model.md) (*TEC screen*)
+- [Bandpass](concepts/measurement-model.md)
+- [Direction-dependent effect](concepts/measurement-model.md) (DDE)
 
 #### Control
 - Flagging
@@ -117,11 +119,11 @@
 
 #### Data products
 - Artifacts
-- Dirty image
-- Residual image
-- Clean image (*restored image*)
-- Model image
-- Image cube
+- [Dirty image](concepts/imaging.md)
+- [Residual image](concepts/imaging.md)
+- [Clean image](concepts/imaging.md) (*restored image*)
+- [Model image](concepts/imaging.md)
+- [Image cube](concepts/imaging.md)
 - Spectral index map
 
 #### Quality Metrics
@@ -138,18 +140,18 @@
 - [Stokes parameters (I, Q, U, V)](concepts/stokes-parameters.md)
 
 #### Deconvolution
-- Deconvolution
+- [Deconvolution](concepts/imaging.md)
 - Briggs weighting
-- Model component (*CLEAN component*)
+- [Model component](concepts/imaging.md) (*CLEAN component*)
 - Major cycle
 - Minor cycle
-- Point spread function (PSF)
+- [Point spread function](concepts/imaging.md) (PSF)
 - FWHM
 - First null
 
 #### Concepts
-- Image plane
-- Visibility plane (*Fourier space*)
+- [Image plane](concepts/imaging.md)
+- [Visibility plane](concepts/imaging.md) (*Fourier space*)
 
 ## Data formats
 - Measurement set
@@ -160,9 +162,9 @@
 ## Algorithms
 - W-stacking
 - FFT
-- CLEAN
-- Högbom CLEAN
-- Multi-scale CLEAN
+- [CLEAN](concepts/imaging.md)
+- [Högbom CLEAN](concepts/imaging.md)
+- [Multi-scale CLEAN](concepts/imaging.md)
 - Radio Interferometry Measurement equation (RIME)
-- Gridding
+- [Gridding](concepts/imaging.md)
 - Source finding
