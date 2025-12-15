@@ -165,7 +165,7 @@ Invariants:
 
 ---
 
-### InstrumentModel
+### MeasurementModel
 
 Defines corruptions and beam effects.
 

@@ -6,7 +6,7 @@ This shows the core domain-driven-design (DDD) aggregates (groups of domain conc
 - Telescope
 - Observation
 - SkyModel
-- InstrumentModel
+- MeasurementModel
 
 ## Aggregates
 - Station (inside Telescope)
@@ -38,8 +38,8 @@ classDiagram
     VisibilityPredictor ..> Observation
     VisibilityPredictor ..> SkyModel
 
-    InstrumentModel o-- BeamModel
-    InstrumentModel o-- Corruption
+    MeasurementModel o-- BeamModel
+    MeasurementModel o-- Corruption
 
     Corruption <|-- StationGains
     Corruption <|-- ThermalNoise
@@ -50,8 +50,8 @@ classDiagram
     CalibrationSolver ..> CalibrationSolution
     CalibrationSolver ..> CalibrationConfig
 
-    InstrumentModel ..> Observation
-    InstrumentModel ..> Telescope
+    MeasurementModel ..> Observation
+    MeasurementModel ..> Telescope
 
     class Telescope{
         +string name
@@ -145,7 +145,7 @@ classDiagram
         +apply(vis_obs) VisibilitySet
     }
 
-    class InstrumentModel{
+    class MeasurementModel{
         +BeamModel: beam_model
         +list~Corruption~ corruptions
         +apply(vis_model, telescope, observation) VisibilitySet
