@@ -17,9 +17,7 @@ The geometric properties of a telescope, together with the parameters of an obse
 - Each antenna element belongs to a single station
 
 ## Related concepts
-- [Averaging](averaging.md)
-- [Calibration](calibration.md)
 - [Imaging](imaging.md)
 - [Sky Model](sky-model.md)
-- [Self-calibration](self-calibration.md)
 - [Predict](predict.md)
+- [Observation](observation.md)

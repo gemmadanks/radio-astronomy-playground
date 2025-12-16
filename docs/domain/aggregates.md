@@ -1,4 +1,4 @@
-# Class diagram
+# Domain model
 
 This shows the core domain-driven-design (DDD) aggregates (groups of domain concepts treated as a unit) and domain services (performs domain operations) that are part of starbox.
 
@@ -6,7 +6,6 @@ This shows the core domain-driven-design (DDD) aggregates (groups of domain conc
 - Telescope
 - Observation
 - SkyModel
-- MeasurementModel
 
 ## Aggregates
 - Station (inside Telescope)
@@ -37,9 +36,6 @@ classDiagram
     VisibilityPredictor ..> Telescope
     VisibilityPredictor ..> Observation
     VisibilityPredictor ..> SkyModel
-
-    MeasurementModel o-- BeamModel
-    MeasurementModel o-- Corruption
 
     Corruption <|-- StationGains
     Corruption <|-- ThermalNoise
@@ -143,12 +139,6 @@ classDiagram
         +nd.array qa_metrics
         +evaluate()
         +apply(vis_obs) VisibilitySet
-    }
-
-    class MeasurementModel{
-        +BeamModel: beam_model
-        +list~Corruption~ corruptions
-        +apply(vis_model, telescope, observation) VisibilitySet
     }
 
     class BeamModel{

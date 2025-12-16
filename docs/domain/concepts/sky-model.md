@@ -30,8 +30,6 @@ A sky model represents an estimate of the true sky. It can be an existing model 
 - Each source belongs to at most one patch within a given sky model.
 
 ## Related concepts
-- [Stokes parameters](stokes-parameters.md)
-- [Calibration](calibration.md)
 - [Imaging](imaging.md)
 - [Predict](predict.md)
-- [Self-calibration](self-calibration.md)
+- [Beam Model](beam-model.md)

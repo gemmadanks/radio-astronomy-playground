@@ -7,8 +7,4 @@ understanding key concepts and algorithms in radio astronomy.
 
 📚 **Notebooks**: interactive experiments for exploring and visualising ideas
 
-💡 **Glossary**: the ubiquitous language that defines the core domain
-concepts used throughout this project
-
-
-::: starbox
+💡 [**Domain**](domain/index.md): the ubiquitous language and domain model documenting the key radio astronomy concepts used in this project

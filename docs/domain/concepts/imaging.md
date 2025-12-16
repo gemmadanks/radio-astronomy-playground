@@ -43,11 +43,8 @@ These may be produced as 2D images or image cubes (i.e. an image per frequency c
 - Imaging does not modify input visibilities.
 
 ## Related concepts
-- [Averaging](averaging.md)
-- [Calibration](calibration.md)
 - [Imaging](imaging.md)
 - [Sky Model](sky-model.md)
-- [Self-calibration](self-calibration.md)
 - [Telescope](telescope.md)
 - [Predict](predict.md)
-- [Measurement Model](measurement-model.md)
+- [Corruptions](corruptions.md)

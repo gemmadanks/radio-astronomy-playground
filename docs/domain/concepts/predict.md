@@ -24,9 +24,7 @@ Predict is essential for several workflows that require ideal visibilities to be
 - Predict is defined relative to a specific phase centre and coordinate frame
 
 ## Related concepts
-- [Averaging](averaging.md)
-- [Calibration](calibration.md)
 - [Imaging](imaging.md)
 - [Sky Model](sky-model.md)
-- [Self-calibration](self-calibration.md)
 - [Telescope](telescope.md)
+- [Beam Model](beam-model.md)
