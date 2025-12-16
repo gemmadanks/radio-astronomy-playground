@@ -16,6 +16,7 @@ repos:
       - id: check-added-large-files
       - id: check-merge-conflict
       - id: check-yaml
+        args: [--unsafe]
       - id: check-toml
       - id: check-json
       - id: pretty-format-json
@@ -34,7 +35,8 @@ repos:
     rev: v2.3.0
     hooks:
       - id: codespell
-        args: ["--skip", "uv.lock,dist,build,.venv,*.min.js"]
+        args: ["--skip", "uv.lock,dist,build,.venv,*.min.js",
+               "--ignore-words", ".codespellignore" ]
         exclude: |
           (?x)(
             ^docs/_build/|

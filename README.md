@@ -15,6 +15,7 @@
 
 🛠️ Warning: this is a work in progress and subject to frequent changes!
 
+See [full documentation](https://open-research.gemmadanks.com/radio-astronomy-playground/) for details.
 
 ## 🚀 Features
 
@@ -45,10 +46,6 @@ telescope.plot()
 skymodel = SkyModel(name="MySkyModel", num_sources=50, max_flux=10.0)
 skymodel.plot()
 ```
-
-## User guide
-
-See [full documentation]() for details.
 
 ### Developer guide
 
