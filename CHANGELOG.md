@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.1](https://github.com/gemmadanks/radio-astronomy-playground/compare/v0.2.0...v0.2.1) (2025-12-17)
+
+
+### 🐛 Bug Fixes
+
+* Update aggregates.md ([37aaa9f](https://github.com/gemmadanks/radio-astronomy-playground/commit/37aaa9fbcb91c386a68fc6093cf02814e9020125))
+
 ## [0.2.0](https://github.com/gemmadanks/radio-astronomy-playground/compare/v0.1.0...v0.2.0) (2025-12-16)
 
 
