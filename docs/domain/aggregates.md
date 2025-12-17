@@ -32,6 +32,7 @@ classDiagram
     Telescope *-- Station
     Telescope --> Site
     Station *-- AntennaElement
+    Station --> BeamModel
 
     VisibilityPredictor ..> Telescope
     VisibilityPredictor ..> Observation
@@ -45,9 +46,6 @@ classDiagram
     CalibrationSolver ..> VisibilitySet
     CalibrationSolver ..> CalibrationSolution
     CalibrationSolver ..> CalibrationConfig
-
-    MeasurementModel ..> Observation
-    MeasurementModel ..> Telescope
 
     class Telescope{
         +string name
@@ -70,6 +68,7 @@ classDiagram
       +string name
       +float diameter_m
       +tuple position_enu_m
+      +BeamModel beam_model
       +list~AntennaElement~ antenna_elements
       +plot()
     }
