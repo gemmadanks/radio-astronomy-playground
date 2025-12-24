@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.2.2](https://github.com/gemmadanks/radio-astronomy-playground/compare/v0.2.1...v0.2.2) (2025-12-24)
+
+
+### 📦 Build
+
+* **deps:** bump mkdocs-material from 9.7.0 to 9.7.1 ([#12](https://github.com/gemmadanks/radio-astronomy-playground/issues/12)) ([d15e54d](https://github.com/gemmadanks/radio-astronomy-playground/commit/d15e54df487c5104e6c43850726350edb115870a))
+* **deps:** bump numpy from 2.3.5 to 2.4.0 ([#13](https://github.com/gemmadanks/radio-astronomy-playground/issues/13)) ([202301e](https://github.com/gemmadanks/radio-astronomy-playground/commit/202301ef0b8e58b0688323bac617ed883efa8cc8))
+* **deps:** bump pre-commit from 4.5.0 to 4.5.1 ([#9](https://github.com/gemmadanks/radio-astronomy-playground/issues/9)) ([6da3ba4](https://github.com/gemmadanks/radio-astronomy-playground/commit/6da3ba40aa0ad2b35a7ebc41f66ee29662659c25))
+* **deps:** bump ruff from 0.14.9 to 0.14.10 ([#11](https://github.com/gemmadanks/radio-astronomy-playground/issues/11)) ([d108772](https://github.com/gemmadanks/radio-astronomy-playground/commit/d1087721fa3a55dd5d63f62ac706a96befacdc6f))
+
 ## [0.2.1](https://github.com/gemmadanks/radio-astronomy-playground/compare/v0.2.0...v0.2.1) (2025-12-17)
 
 
