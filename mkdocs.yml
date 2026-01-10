@@ -66,11 +66,8 @@ nav:
   - Reference: reference/index.md
   - Explanation:
       - Overview: explanation/index.md
-  - Domain:
-      - Overview: domain/index.md
-  - Architecture:
-      - Overview: architecture/index.md
-      - ADRs: architecture/adr/index.md
+  - Design:
+      - Overview: design/index.md
   - Tags: tags.md
 
 extra_javascript:
