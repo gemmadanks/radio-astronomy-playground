@@ -32,11 +32,11 @@ theme:
     - navigation.footer
 
 markdown_extensions:
-- pymdownx.superfences:
-    custom_fences:
-      - name: mermaid
-        class: mermaid
-        format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.superfences:
+     custom_fences:
+       - name: mermaid
+         class: mermaid
+         format: !!python/name:pymdownx.superfences.fence_code_format
 
 plugins:
   - mkdocstrings:
@@ -50,6 +50,7 @@ plugins:
             show_root_full_path: true    # gives full module path
   - search
   - tags
+  - panzoom
 
 extra:
   social:
