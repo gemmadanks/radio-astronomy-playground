@@ -64,7 +64,7 @@ This slice establishes the minimal end-to-end loop required to:
 4. Predict visibilities from sky model, no w-term
 5. Add phase-only corruptions and noise to visibilities
 6. Solve for and apply calibration solutions
-8. Image the result before and after calibration
-9. Evaluate outcomes using multiple diagnostics
+7. Image the result before and after calibration
+8. Evaluate outcomes using multiple diagnostics
 
 All subsequent slices depend on this loop. Features not directly supporting this slice are intentionally deferred.
