@@ -7,10 +7,8 @@
     "vscode": {
       "extensions": [
         "ms-python.python",
-        "ms-python.vscode-pylance",
         "charliermarsh.ruff",
         "ms-toolsai.jupyter",
-        "tamasfe.even-better-toml",
         "redhat.vscode-yaml",
         "esbenp.prettier-vscode",
         "mermaidchart.vscode-mermaid-chart"
