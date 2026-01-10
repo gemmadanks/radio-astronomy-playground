@@ -1,6 +1,6 @@
 # Domain
 
-Radio astronomy playground uses selected ideas from domain-driven design (DDD) to guide development and documentation. These include:
+Radio Astronomy Playground uses ideas from domain-driven design (DDD) to guide development and documentation. These include:
 
 ## 📡 [Ubiquitous language](concepts/index.md)
 Building a **ubiquitous language** of radio astronomy terms that is reflected in the code, which makes it easier to communicate with domain experts and to learn radio astronomy through code-based experiments.
