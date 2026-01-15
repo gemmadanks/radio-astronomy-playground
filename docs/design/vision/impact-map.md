@@ -66,5 +66,9 @@ This slice establishes the minimal end-to-end loop required to:
 6. Solve for and apply calibration solutions
 7. Image the result before and after calibration
 8. Evaluate outcomes using multiple diagnostics
+9. Save an experiment so that it is easy to re-load and inspected later
 
 All subsequent slices depend on this loop. Features not directly supporting this slice are intentionally deferred.
+
+- [S1 user stores](../requirements/s1-user-stories.md)
+- [S1 utility tree](../requirements/s1-utility-tree.md)
