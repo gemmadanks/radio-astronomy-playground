@@ -143,7 +143,7 @@ This page documents the functional requirements for a minimal viable product (MV
 
   **When** I generate an image
 
-  **Then** the brightest pixels is in the centre of the image
+  **Then** the brightest pixel is in the centre of the image
 
 - **Given** predicted visibilities from a sky model of 3-5 bright point sources
 
