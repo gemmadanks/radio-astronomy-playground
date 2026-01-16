@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.4.0](https://github.com/gemmadanks/radio-astronomy-playground/compare/v0.3.0...v0.4.0) (2026-01-16)
+
+
+### 🚀 Features
+
+* Elicit requirements for MVP ([#22](https://github.com/gemmadanks/radio-astronomy-playground/issues/22)) ([9b14bc8](https://github.com/gemmadanks/radio-astronomy-playground/commit/9b14bc81e97775f8c22869febcf9573aaf3ea6ff))
+
+
+### 📦 Build
+
+* **deps:** bump numpy from 2.4.0 to 2.4.1 ([#19](https://github.com/gemmadanks/radio-astronomy-playground/issues/19)) ([bb5fb78](https://github.com/gemmadanks/radio-astronomy-playground/commit/bb5fb78d9ff34130bf66c4094495143578764683))
+* **deps:** bump plotly from 6.5.1 to 6.5.2 ([#20](https://github.com/gemmadanks/radio-astronomy-playground/issues/20)) ([2df4149](https://github.com/gemmadanks/radio-astronomy-playground/commit/2df41490d5c43aec56cd366defb509479fcd778f))
+* **deps:** bump ruff from 0.14.11 to 0.14.13 ([#24](https://github.com/gemmadanks/radio-astronomy-playground/issues/24)) ([5d13fbf](https://github.com/gemmadanks/radio-astronomy-playground/commit/5d13fbf93eb203b903d57203d00496fd62811bf5))
+
 ## [0.3.0](https://github.com/gemmadanks/radio-astronomy-playground/compare/v0.2.1...v0.3.0) (2026-01-10)
 
 
