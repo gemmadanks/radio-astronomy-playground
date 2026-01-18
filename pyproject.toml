@@ -15,6 +15,7 @@ dependencies = [
     "numpy (>=2.3.3,<3.0.0)",
     "ipykernel==7.1.0",
     "pandas>=2.3.3",
+    "marimo[recommended]>=0.19.4",
 ]
 
 [dependency-groups]
