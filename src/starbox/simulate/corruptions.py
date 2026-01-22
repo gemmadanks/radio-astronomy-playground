@@ -16,13 +16,13 @@ class Corruptions:
     def add_station_phase_gain(self, station_phase_gain):
         self.station_phase_gain = station_phase_gain
 
-    def apply(self, visibilitites):
+    def apply(self, visibilities):
         """Apply the corruptions to the given visibilities."""
-        corrupted_visibilities = visibilitites.copy()
+        corrupted_visibilities = visibilities.copy()
         if self.rms_noise is not None:
             noise = self.rms_noise * (
-                np.random.randn(*visibilitites.shape)
-                + 1j * np.random.randn(*visibilitites.shape)
+                np.random.randn(*visibilities.shape)
+                + 1j * np.random.randn(*visibilities.shape)
             )
             corrupted_visibilities += noise
         if self.station_phase_gain is not None:
