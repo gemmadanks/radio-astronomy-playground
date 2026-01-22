@@ -6,7 +6,7 @@ import numpy as np
 class Corruptions:
     """A class representing corruptions to apply to a signal."""
 
-    def __int__(self):
+    def __init__(self):
         self.rms_noise = None
         self.station_phase_gain = None
 
