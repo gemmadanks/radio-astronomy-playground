@@ -5,12 +5,11 @@ import numpy as np
 
 class Imager:
     def __init__(self):
-        pass
+        self.grid_size = 256  # Example grid size
 
     def grid(self, visibilities):
         """Grid the visibilities onto a regular grid."""
-        grid_size = 256  # Placeholder grid size
-        gridded_visibilities = np.ones((grid_size, grid_size), dtype=complex)
+        gridded_visibilities = np.ones((self.grid_size, self.grid_size), dtype=complex)
 
         return gridded_visibilities
 
