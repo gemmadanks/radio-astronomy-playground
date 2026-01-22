@@ -1,8 +1,6 @@
 """A class for simulating sky models."""
 
 import numpy as np
-import plotly.express as px
-from plotly.graph_objects import Figure
 
 
 class SkyModel:
@@ -39,22 +37,14 @@ class SkyModel:
     def __repr__(self):
         return f"SkyModel(num_sources={self.num_sources}, max_flux={self.max_flux}, phase_centre={self.phase_centre}, fov={self.fov})"
 
-    def plot(self, show: bool = True) -> Figure:
-        """Plot the sky model sources."""
+    def as_arrays(self) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+        """Return (ra_deg, dec_deg, flux) arrays for downstream use (including viz)."""
+        if not self.sources:
+            return np.array([]), np.array([]), np.array([])
         ras, decs, fluxes = zip(
             *[(pos[0], pos[1], flux) for (pos, flux) in self.sources]
         )
-        fig = px.scatter(
-            x=ras,
-            y=decs,
-            size=fluxes,
-            title="Sky Model",
-            labels={"x": "Right Ascension (deg)", "y": "Declination (deg)"},
-        )
-        fig.update_yaxes(scaleanchor="x", scaleratio=1)
-        if show:
-            fig.show()
-        return fig
+        return np.asarray(ras), np.asarray(decs), np.asarray(fluxes)
 
     def regenerate(self, seed: int | None = None):
         """Generate new random sources within the field of view."""

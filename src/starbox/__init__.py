@@ -9,7 +9,11 @@ Modules:
               simulating sky models.
 """
 
-from .simulate import Telescope, SkyModel
+from .simulate import Telescope, SkyModel, Observation
+from .simulate.corruptions import Corruptions
+from .image.imager import Imager
+from .calibrate.solver import Solver
+
 
 __version__ = "0.4.0"
-__all__ = ["Telescope", "SkyModel"]
+__all__ = ["Telescope", "SkyModel", "Corruptions", "Imager", "Solver", "Observation"]

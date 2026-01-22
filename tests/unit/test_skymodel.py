@@ -73,12 +73,6 @@ def test_skymodel_variability():
     assert skymodel1.sources != skymodel2.sources
 
 
-def test_skymodel_plot():
-    """Test that the plot method of SkyModel works without errors."""
-    skymodel = SkyModel(name="TestModel", num_sources=20, seed=42)
-    skymodel.plot()
-
-
 def test_skymodel_regenerate():
     """Test that regenerate changes the source configuration."""
     skymodel = SkyModel(name="TestModel", num_sources=30, seed=42)

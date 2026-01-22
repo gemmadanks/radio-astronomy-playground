@@ -1,3 +1,3 @@
 # How-To
 
-- [How to get started](installation.md)
+- [How to get started](get-started.md)

@@ -15,4 +15,4 @@ def configure_plotly_for_tests():
 @pytest.fixture
 def small_telescope():
     """A simple telescope model for a small array."""
-    return Telescope(name="SmallArray", num_antennas=10, diameter=20.0)
+    return Telescope(name="SmallArray", num_stations=10, diameter=20.0)
