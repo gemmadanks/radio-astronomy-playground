@@ -4,6 +4,7 @@ from starbox.image.imager import Imager
 import pytest
 import numpy as np
 
+
 @pytest.mark.parametrize(
     "grid_size",
     [
@@ -19,12 +20,14 @@ def test_imager_image_shape(grid_size):
     image = imager.image(visibilities=None)
     assert image.shape == (grid_size, grid_size)
 
+
 def test_imager_fft_output_non_negative():
     """Test that the fft method returns non-negative values."""
     imager = Imager()
     gridded_visibilities = np.ones((imager.grid_size, imager.grid_size), dtype=complex)
     image = imager.fft(gridded_visibilities)
     assert (image >= 0).all()
+
 
 def test_imager_grid_output_shape():
     """Test that the grid method returns an array of expected shape."""
