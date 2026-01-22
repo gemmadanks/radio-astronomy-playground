@@ -277,7 +277,7 @@ def _(Imager):
 
 @app.cell
 def _(mo, save):
-    save_button = mo.ui.button(value=0, on_click=save(None), label="Save Experiment")
+    save_button = mo.ui.button(value=0, on_click=lambda: save(None), label="Save Experiment")
     experiment_name = mo.ui.text(placeholder="your-experiment-name")
     mo.hstack([experiment_name, save_button], justify="start")
     return
