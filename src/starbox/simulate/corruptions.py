@@ -6,16 +6,24 @@ from starbox.visibility import VisibilitySet
 
 
 class Corruptions:
-    """A class representing corruptions to apply to a signal."""
+    """A class representing corruptions to apply to a signal.
+
+    Attributes:
+        rms_noise: The RMS noise level to add to the visibilities.
+        station_phase_gain: Phase gain errors for each station.
+    """
 
     def __init__(self):
+        """Initialize the Corruptions with no corruptions."""
         self.rms_noise = None
         self.station_phase_gain = None
 
     def add_noise(self, rms_noise: float = 1.0):
+        """Add Gaussian noise corruption."""
         self.rms_noise = rms_noise
 
     def add_station_phase_gain(self, station_phase_gain):
+        """Add station phase gain corruption."""
         self.station_phase_gain = station_phase_gain
 
     def apply(self, visibility_set: VisibilitySet) -> VisibilitySet:

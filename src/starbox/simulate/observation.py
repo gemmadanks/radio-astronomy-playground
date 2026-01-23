@@ -28,8 +28,7 @@ class Observation:
         if self._times is None:
             timestep = self.observation_length / self.num_timesteps
             self._times = [
-                self.start_time + i * timestep
-                for i in range(self.num_timesteps)
+                self.start_time + i * timestep for i in range(self.num_timesteps)
             ]
         return self._times
 
