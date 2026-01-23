@@ -277,7 +277,9 @@ def _(Imager):
 
 @app.cell
 def _(mo, save):
-    save_button = mo.ui.button(value=0, on_click=lambda: save(None), label="Save Experiment")
+    save_button = mo.ui.button(
+        value=0, on_click=lambda: save(None), label="Save Experiment"
+    )
     experiment_name = mo.ui.text(placeholder="your-experiment-name")
     mo.hstack([experiment_name, save_button], justify="start")
     return
@@ -311,7 +313,6 @@ def _(
 
     dirty_image = imager.image(observed_visibilities)
     corrected_image = imager.image(corrected_visibilities)
-
     return corrected_image, dirty_image, gains
 
 
@@ -355,6 +356,11 @@ def _(mo):
     4. **Calibrate observed visibilities**: a solver calculates the phase-only gains (solutions) that, when applied to observed visibilities, reproduce the model visibilities. These are then applied to observed visibilities to generate corrected visibilities.
     5. **Image**: an FFT is applied to gridded observed and corrected visibilities to generate images of the sky before and after calibration.
     """)
+    return
+
+
+@app.cell
+def _():
     return
 
 
