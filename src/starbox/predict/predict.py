@@ -1,10 +1,15 @@
 """Functions for handling prediction of visibilities."""
 
 import numpy as np
+from starbox.simulate.observation import Observation
+from starbox.simulate.skymodel import SkyModel
+from starbox.simulate.telescope import Telescope
 from starbox.visibility import VisibilitySet
 
 
-def predict_visibilities(telescope, skymodel, observation):
+def predict_visibilities(
+    telescope: Telescope, skymodel: SkyModel, observation: Observation
+) -> VisibilitySet:
     """Predict visibilities given a telescope, sky model, and observation."""
 
     # Placeholder implementation: return zeros

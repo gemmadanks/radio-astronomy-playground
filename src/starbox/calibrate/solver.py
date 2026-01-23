@@ -6,14 +6,17 @@ from starbox.visibility import VisibilitySet
 
 
 class Solver:
-    def __init__(self, solint=None):
+    """Class to handle calibration solving."""
+
+    def __init__(self, solint: int | None = None):
+        """Initialize the Solver."""
         self.solint = solint
 
     def solve(
         self,
         observed_visibilities: VisibilitySet,
         model_visibilities: VisibilitySet,
-        n_stations,
+        n_stations: int,
     ):
         """Estimate calibration solutions from observed and model visibilities."""
 
