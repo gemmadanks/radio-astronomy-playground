@@ -8,8 +8,8 @@ import numpy as np
 class VisibilitySet:
     vis: np.ndarray  # (time, baseline, chan)
     uvw_m: np.ndarray  # (time, baseline, 3)
-    ant1: np.ndarray  # (baseline,)
-    ant2: np.ndarray  # (baseline,)
+    station1: np.ndarray  # (station,)
+    station2: np.ndarray  # (station,)
     times_mjd: np.ndarray  # (time,)
     freqs_hz: np.ndarray  # (chan,)
-    weights: np.ndarray | None = None
+    weights: np.ndarray  # (time, baseline, chan)

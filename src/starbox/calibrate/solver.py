@@ -2,16 +2,22 @@
 
 import numpy as np
 from starbox.calibrate.solutions import Solutions
+from starbox.visibility import VisibilitySet
 
 
 class Solver:
     def __init__(self, solint=None):
         self.solint = solint
 
-    def solve(self, observed_visibilities, model_visibilities, n_stations):
+    def solve(
+        self,
+        observed_visibilities: VisibilitySet,
+        model_visibilities: VisibilitySet,
+        n_stations,
+    ):
         """Estimate calibration solutions from observed and model visibilities."""
 
-        n_timesteps, _, n_channels = observed_visibilities.shape
+        n_timesteps, _, n_channels = observed_visibilities.vis.shape
 
         # Default: solve per timestep / per channel
         tbin = self.solint or 1
