@@ -17,8 +17,11 @@ class Imager:
         return gridded_visibilities
 
     def fft(self, gridded_visibilities: np.ndarray) -> np.ndarray:
-        """Convert visibilities to an image using a simple Fourier Transform."""
+        """Convert gridded visibilities to an image using an inverse 2D Fourier transform.
 
+        This applies np.fft.ifft2 to transform data from Fourier (uv) space to image space,
+        recenters the zero-frequency component with fftshift, and returns the image magnitude.
+        """
         # Assuming gridded visibilities is a 2D numpy array
         image = np.fft.ifft2(gridded_visibilities)
         image = np.fft.fftshift(image)
