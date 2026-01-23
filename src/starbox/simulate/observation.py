@@ -18,19 +18,27 @@ class Observation:
         self.num_channels = num_channels
         self.total_bandwidth = total_bandwidth
         self.channel_width = total_bandwidth / num_channels
+        # Lazily computed, cached values
+        self._times = None
+        self._frequencies = None
 
     @property
     def times(self):
         """Generate an array of time steps for the observation."""
-        return [
-            self.start_time + i * (self.observation_length / self.num_timesteps)
-            for i in range(self.num_timesteps)
-        ]
+        if self._times is None:
+            timestep = self.observation_length / self.num_timesteps
+            self._times = [
+                self.start_time + i * timestep
+                for i in range(self.num_timesteps)
+            ]
+        return self._times
 
     @property
     def frequencies(self):
         """Generate an array of frequency channels for the observation."""
-        return [
-            self.start_frequency + i * self.channel_width
-            for i in range(self.num_channels)
-        ]
+        if self._frequencies is None:
+            self._frequencies = [
+                self.start_frequency + i * self.channel_width
+                for i in range(self.num_channels)
+            ]
+        return self._frequencies
