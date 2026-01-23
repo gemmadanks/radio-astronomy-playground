@@ -8,7 +8,7 @@ from starbox.simulate.telescope import Telescope
 import numpy as np
 
 
-def uv_coverage(uvw_coordinates, title="UV Coverage"):
+def uv_coverage(uvw_coordinates: np.ndarray, title: str = "UV Coverage") -> Figure:
     """Plot the UV coverage given UVW coordinates."""
 
     u = uvw_coordinates[:, 0]
