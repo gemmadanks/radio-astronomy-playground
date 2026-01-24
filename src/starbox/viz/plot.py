@@ -8,7 +8,7 @@ from starbox.simulate.telescope import Telescope
 import numpy as np
 
 
-def uv_coverage(uvw_coordinates: np.ndarray, title: str = "UV Coverage") -> Figure:
+def plot_uv_coverage(uvw_coordinates: np.ndarray, title: str = "UV Coverage") -> Figure:
     """Plot the UV coverage given UVW coordinates."""
 
     u = uvw_coordinates[:, 0]
@@ -22,7 +22,7 @@ def uv_coverage(uvw_coordinates: np.ndarray, title: str = "UV Coverage") -> Figu
     return fig
 
 
-def sky_model(sky_model: SkyModel) -> Figure:
+def plot_sky_model(sky_model: SkyModel) -> Figure:
     """Plot the sky model sources."""
     ras, decs, fluxes = sky_model.as_arrays()
     fig = px.scatter(
@@ -36,7 +36,7 @@ def sky_model(sky_model: SkyModel) -> Figure:
     return fig
 
 
-def array_configuration(telescope: Telescope) -> Figure:
+def plot_array_configuration(telescope: Telescope) -> Figure:
     """Plot the array configuration given antenna coordinates."""
     fig = px.scatter(
         x=telescope.array[:, 0],
@@ -54,11 +54,11 @@ def array_configuration(telescope: Telescope) -> Figure:
     return fig
 
 
-def gains(gains: Solutions) -> Figure:
+def plot_gains(solutions: Solutions) -> Figure:
     """Plot the calibration solutions."""
 
     fig = px.imshow(
-        np.real(gains.gains[:, :, 0].T),
+        np.real(solutions.gains[:, :, 0].T),
         title="Gains",
         labels={
             "x": "time",
@@ -70,7 +70,7 @@ def gains(gains: Solutions) -> Figure:
     return fig
 
 
-def image(image: np.ndarray, title="Imaged Sky") -> Figure:
+def plot_image(image: np.ndarray, title="Imaged Sky") -> Figure:
     """Plot the image."""
 
     fig = px.imshow(image, title=title, labels={"x": "RA", "y": "Dec"})

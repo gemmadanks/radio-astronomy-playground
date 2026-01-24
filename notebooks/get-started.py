@@ -140,7 +140,7 @@ def _(SkyModel, max_flux_slider, mo, num_sources_slider, plot, seed):
         max_flux=max_flux_slider.value,
         seed=seed,
     )
-    sky_model_fig = mo.ui.plotly(plot.sky_model(sky_model))
+    sky_model_fig = mo.ui.plotly(plot.plot_sky_model(sky_model))
     return sky_model, sky_model_fig
 
 
@@ -159,7 +159,7 @@ def _(
         diameter=telescope_diameter_slider.value,
         seed=seed,
     )
-    telescope_fig = mo.ui.plotly(plot.array_configuration(telescope))
+    telescope_fig = mo.ui.plotly(plot.plot_array_configuration(telescope))
     return telescope, telescope_fig
 
 
@@ -322,11 +322,11 @@ def _(corrected_image, dirty_image, gains, mo, plot):
         [
             mo.hstack(
                 [
-                    plot.image(dirty_image, title="Dirty"),
-                    plot.image(corrected_image, title="Calibrated"),
+                    plot.plot_image(dirty_image, title="Dirty"),
+                    plot.plot_image(corrected_image, title="Calibrated"),
                 ]
             ),
-            plot.gains(gains),
+            plot.plot_gains(gains),
         ]
     )
     return
