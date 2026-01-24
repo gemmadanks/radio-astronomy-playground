@@ -21,8 +21,12 @@ class Observation:
         self.num_timesteps = num_timesteps
         self.start_frequency = start_frequency
         self.num_channels = num_channels
+        if num_channels <= 0:
+            raise ValueError(
+                f"num_channels must be a positive integer, got {num_channels!r}"
+            )
         self.total_bandwidth = total_bandwidth
-        self.channel_width = total_bandwidth / num_channels if num_channels > 0 else 0.0
+        self.channel_width = total_bandwidth / num_channels
         # Lazily computed, cached values
         self._times = None
         self._frequencies = None
