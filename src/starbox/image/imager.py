@@ -2,6 +2,8 @@
 
 import numpy as np
 
+from starbox.visibility import VisibilitySet
+
 
 class Imager:
     """Class for handling image processing."""
@@ -27,8 +29,8 @@ class Imager:
         image = np.fft.fftshift(image)
         return np.abs(image)
 
-    def image(self, visibilities: np.ndarray) -> np.ndarray:
+    def image(self, visibilities: VisibilitySet) -> np.ndarray:
         """Create an image from visibilities."""
-        gridded_visibilities = self.grid(visibilities=visibilities)
+        gridded_visibilities = self.grid(visibilities=visibilities.vis)
         image = self.fft(gridded_visibilities)
         return image

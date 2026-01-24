@@ -17,7 +17,7 @@ def test_imager_image_shape(grid_size, visibility_set):
     """Test that the image method returns an array of expected shape."""
     imager = Imager()
     imager.grid_size = grid_size
-    image = imager.image(visibilities=visibility_set.vis)
+    image = imager.image(visibilities=visibility_set)
     assert image.shape == (grid_size, grid_size)
 
 
