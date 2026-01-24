@@ -11,7 +11,6 @@ def _():
     from starbox.viz import plot
     from starbox.predict.predict import predict_visibilities
     from starbox.io.save import save
-    from math import pi
 
     return (
         Corruptions,
@@ -21,7 +20,6 @@ def _():
         Solver,
         Telescope,
         mo,
-        pi,
         plot,
         predict_visibilities,
         save,
@@ -80,7 +78,7 @@ def _(mo):
 
 
 @app.cell
-def _(mo, pi):
+def _(mo):
     # Sky model
     num_sources_slider = mo.ui.slider(1, 10, label="Number of point sources: ")
     max_flux_slider = mo.ui.slider(1, 10, label="Maximum source brightness (Jy): ")
@@ -96,14 +94,14 @@ def _(mo, pi):
     observation_length_slider = mo.ui.slider(1, 100, label="Observation length: ")
     num_timesteps_slider = mo.ui.slider(1, 600, label="Number of timesteps: ")
     start_freq_slider = mo.ui.slider(
-        100, 10000, label="Mid-point frequency of first channel (MHz): "
+        1, 100, label="Mid-point frequency of first channel (Hz): "
     )
     num_channels_slider = mo.ui.slider(1, 100, label="Number of channels: ")
-    bandwidth_slider = mo.ui.slider(1, 100, label="Total frequency bandwidth (MHz): ")
+    bandwidth_slider = mo.ui.slider(1, 100, label="Total frequency bandwidth (Hz): ")
 
     # Corruptions
-    station_phase_gain_slider = mo.ui.slider(
-        1, 2 * pi, label="Per-station phase gain: "
+    phase_rms_slider = mo.ui.slider(
+        0, 30, label="Per-station phase gain RMS (degrees): "
     )
     noise_rms_slider = mo.ui.slider(1, 100, label="Noise RMS: ")
 
@@ -118,10 +116,10 @@ def _(mo, pi):
         num_stations_slider,
         num_timesteps_slider,
         observation_length_slider,
+        phase_rms_slider,
         solint_slider,
         start_freq_slider,
         start_time_slider,
-        station_phase_gain_slider,
         telescope_diameter_slider,
     )
 
@@ -250,16 +248,16 @@ def _(mo):
 
 
 @app.cell
-def _(mo, noise_rms_slider, station_phase_gain_slider):
-    mo.hstack([noise_rms_slider, station_phase_gain_slider], justify="start")
+def _(mo, noise_rms_slider, phase_rms_slider):
+    mo.hstack([noise_rms_slider, phase_rms_slider], justify="start")
     return
 
 
 @app.cell
-def _(Corruptions, noise_rms_slider, station_phase_gain_slider):
+def _(Corruptions, noise_rms_slider, phase_rms_slider):
     corruptions = Corruptions()
     corruptions.add_noise(noise_rms_slider.value)
-    corruptions.add_station_phase_gain(station_phase_gain_slider.value)
+    corruptions.add_station_phase_gain(phase_rms_slider.value)
     return (corruptions,)
 
 

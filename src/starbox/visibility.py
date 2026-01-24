@@ -25,3 +25,14 @@ class VisibilitySet:
     times_mjd: np.ndarray  # (time,)
     freqs_hz: np.ndarray  # (chan,)
     weights: np.ndarray  # (time, baseline, chan)
+
+    @property
+    def station_ids(self) -> np.ndarray:
+        """Get the unique station IDs from the baseline indices."""
+        unique_stations = np.unique(np.concatenate((self.station1, self.station2)))
+        return unique_stations
+
+    @property
+    def num_stations(self) -> int:
+        """Get the number of unique stations in the visibility set."""
+        return len(self.station_ids)

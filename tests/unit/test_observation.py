@@ -29,7 +29,7 @@ def test_observation_times(observation: Observation):
     """Test that the times property generates correct time steps."""
 
     expected_times = np.array([0.0, 90.0, 180.0])
-    assert (observation.times == expected_times).all()
+    np.testing.assert_array_equal(observation.times, expected_times)
     assert (
         observation.times[-1] - observation.times[0] == observation.observation_length
     )
@@ -39,7 +39,7 @@ def test_observation_frequencies(observation: Observation):
     """Test that the frequencies property generates correct frequency channels."""
 
     expected_frequencies = np.array([1e6, 1.5e6])
-    assert (observation.frequencies == expected_frequencies).all()
+    np.testing.assert_array_equal(observation.frequencies, expected_frequencies)
 
 
 def test_observation_single_timestep():
@@ -55,4 +55,4 @@ def test_observation_single_timestep():
     )
 
     expected_times = np.array([0])
-    assert (observation.times == expected_times).all()
+    np.testing.assert_array_equal(observation.times, expected_times)

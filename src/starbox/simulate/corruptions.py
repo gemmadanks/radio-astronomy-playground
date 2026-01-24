@@ -18,16 +18,16 @@ class Corruptions:
         self.rng: np.random.Generator = np.random.default_rng(seed)
         self.rms_noise: float | None = None
         self.sigma: float | None = None
-        self.station_phase_gain: np.ndarray | None = None
+        self.rms_phase_gain: float | None = None
 
     def add_noise(self, rms_noise: float = 1.0):
         """Add Gaussian noise corruption."""
         self.rms_noise = rms_noise
         self.sigma = rms_noise / np.sqrt(2)
 
-    def add_station_phase_gain(self, station_phase_gain: np.ndarray):
+    def add_station_phase_gain(self, rms_phase_gain: float):
         """Add station phase gain corruption."""
-        self.station_phase_gain = station_phase_gain
+        self.rms_phase_gain = rms_phase_gain
 
     def apply(self, visibility_set: VisibilitySet) -> VisibilitySet:
         """Apply the corruptions to the given visibilities."""
@@ -40,22 +40,52 @@ class Corruptions:
             freqs_hz=visibility_set.freqs_hz,
             weights=visibility_set.weights,
         )
-        if self.station_phase_gain is not None:
-            phase_gains_1 = self.station_phase_gain[corrupted_visibility_set.station1]
-            phase_gains_2 = self.station_phase_gain[corrupted_visibility_set.station2]
-            # Broadcast station gains to all times and channels
-            phase_gains_1 = phase_gains_1[np.newaxis, :, np.newaxis]
-            phase_gains_2 = phase_gains_2[np.newaxis, :, np.newaxis]
-            corrupted_visibility_set.vis *= phase_gains_1 * np.conj(phase_gains_2)
+        if self.rms_phase_gain is not None:
+            station_phase_gains = self._sample_station_phase_gains(
+                num_stations=visibility_set.num_stations
+            )
+            corrupted_visibility_set = self._apply_station_phase_gain(
+                corrupted_visibility_set, station_phase_gains
+            )
 
         if self.sigma is not None:
-            noise_real = self.rng.normal(
-                scale=self.sigma, size=corrupted_visibility_set.vis.shape
-            )
-            noise_imag = self.rng.normal(
-                scale=self.sigma, size=corrupted_visibility_set.vis.shape
-            )
-            noise = noise_real + 1j * noise_imag
-            corrupted_visibility_set.vis += noise
+            corrupted_visibility_set = self._apply_noise(corrupted_visibility_set)
 
         return corrupted_visibility_set
+
+    def _apply_station_phase_gain(
+        self, visibility_set: VisibilitySet, station_phase_gains: np.ndarray
+    ) -> VisibilitySet:
+        """Apply only the station phase gain corruption to the given visibilities."""
+
+        phase_gains_1 = station_phase_gains[visibility_set.station1]
+        phase_gains_2 = station_phase_gains[visibility_set.station2]
+        # Broadcast station gains to all times and channels
+        phase_gains_1 = phase_gains_1[np.newaxis, :, np.newaxis]
+        phase_gains_2 = phase_gains_2[np.newaxis, :, np.newaxis]
+        visibility_set.vis *= phase_gains_1 * np.conj(phase_gains_2)
+
+        return visibility_set
+
+    def _sample_station_phase_gains(self, num_stations: int) -> np.ndarray:
+        """Sample random phase gains for each station."""
+        if self.rms_phase_gain is None:
+            raise ValueError("RMS phase gain is not set.")
+        phi = self.rng.normal(loc=0.0, scale=self.rms_phase_gain, size=num_stations)
+        # Reference station to have zero phase gain
+        ref_station = 0
+        phi[ref_station] = 0.0
+
+        station_phase_gains = np.exp(1j * phi)
+        return station_phase_gains
+
+    def _apply_noise(self, visibility_set: VisibilitySet) -> VisibilitySet:
+        """Apply only the noise corruption to the given visibilities."""
+        if self.sigma is None:
+            raise ValueError("Sigma for noise is not set.")
+        noise_real = self.rng.normal(scale=self.sigma, size=visibility_set.vis.shape)
+        noise_imag = self.rng.normal(scale=self.sigma, size=visibility_set.vis.shape)
+        noise = noise_real + 1j * noise_imag
+        visibility_set.vis += noise
+
+        return visibility_set
