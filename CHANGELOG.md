@@ -1,5 +1,33 @@
 # Changelog
 
+## [0.5.0](https://github.com/gemmadanks/radio-astronomy-playground/compare/v0.4.0...v0.5.0) (2026-01-24)
+
+
+### 🚀 Features
+
+* add classes for main components with methods that mock real computations ([3ff2e3c](https://github.com/gemmadanks/radio-astronomy-playground/commit/3ff2e3c9970b0380bb77c99f3b75cfbf8340ea4c))
+* add interactive marimo notebook prototype ([3ff2e3c](https://github.com/gemmadanks/radio-astronomy-playground/commit/3ff2e3c9970b0380bb77c99f3b75cfbf8340ea4c))
+* **deps:** add marimo to dependencies ([3ff2e3c](https://github.com/gemmadanks/radio-astronomy-playground/commit/3ff2e3c9970b0380bb77c99f3b75cfbf8340ea4c))
+* move plotting functions to viz.plot module ([3ff2e3c](https://github.com/gemmadanks/radio-astronomy-playground/commit/3ff2e3c9970b0380bb77c99f3b75cfbf8340ea4c))
+* prototype MVP using marimo ([#26](https://github.com/gemmadanks/radio-astronomy-playground/issues/26)) ([3ff2e3c](https://github.com/gemmadanks/radio-astronomy-playground/commit/3ff2e3c9970b0380bb77c99f3b75cfbf8340ea4c))
+
+
+### 🐛 Bug Fixes
+
+* add marimo notebook test to justfile test-notebooks recipe ([3ff2e3c](https://github.com/gemmadanks/radio-astronomy-playground/commit/3ff2e3c9970b0380bb77c99f3b75cfbf8340ea4c))
+* rename antennas to stations ([3ff2e3c](https://github.com/gemmadanks/radio-astronomy-playground/commit/3ff2e3c9970b0380bb77c99f3b75cfbf8340ea4c))
+
+
+### 📚 Documentation
+
+* add how-to guide for getting started with marimo prototype ([3ff2e3c](https://github.com/gemmadanks/radio-astronomy-playground/commit/3ff2e3c9970b0380bb77c99f3b75cfbf8340ea4c))
+
+
+### 📦 Build
+
+* **deps:** bump pandas from 2.3.3 to 3.0.0 ([#25](https://github.com/gemmadanks/radio-astronomy-playground/issues/25)) ([cea0c2d](https://github.com/gemmadanks/radio-astronomy-playground/commit/cea0c2de00807c466e230ebfc72082258e2b9642))
+* **deps:** bump ruff from 0.14.13 to 0.14.14 ([#27](https://github.com/gemmadanks/radio-astronomy-playground/issues/27)) ([7ce7635](https://github.com/gemmadanks/radio-astronomy-playground/commit/7ce76356fd255a04ab787d0d5aa18057d5764f87))
+
 ## [0.4.0](https://github.com/gemmadanks/radio-astronomy-playground/compare/v0.3.0...v0.4.0) (2026-01-16)
 
 

@@ -15,5 +15,5 @@ from .image.imager import Imager
 from .calibrate.solver import Solver
 
 
-__version__ = "0.4.0"
+__version__ = "0.5.0"
 __all__ = ["Telescope", "SkyModel", "Corruptions", "Imager", "Solver", "Observation"]
