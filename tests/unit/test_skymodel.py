@@ -98,3 +98,12 @@ def test_skymodel_as_arrays(skymodel):
         assert ras[i] == ra
         assert decs[i] == dec
         assert fluxes[i] == flux
+
+
+def test_skymodel_as_arrays_no_sources():
+    """Test that as_arrays returns empty arrays when there are no sources."""
+    skymodel = SkyModel(name="EmptyModel", num_sources=0)
+    ras, decs, fluxes = skymodel.as_arrays()
+    assert ras.size == 0
+    assert decs.size == 0
+    assert fluxes.size == 0
