@@ -15,17 +15,17 @@ class Corruptions:
 
     def __init__(self, seed: int = 42):
         """Initialize the Corruptions with no corruptions."""
-        self.rng = np.random.default_rng(seed)
-        self.rms_noise = None
-        self.sigma = None
-        self.station_phase_gain = None
+        self.rng: np.random.Generator = np.random.default_rng(seed)
+        self.rms_noise: float | None = None
+        self.sigma: float | None = None
+        self.station_phase_gain: np.ndarray | None = None
 
     def add_noise(self, rms_noise: float = 1.0):
         """Add Gaussian noise corruption."""
         self.rms_noise = rms_noise
         self.sigma = rms_noise / np.sqrt(2)
 
-    def add_station_phase_gain(self, station_phase_gain):
+    def add_station_phase_gain(self, station_phase_gain: np.ndarray):
         """Add station phase gain corruption."""
         self.station_phase_gain = station_phase_gain
 
@@ -44,7 +44,7 @@ class Corruptions:
             # Placeholder for station phase gain corruption
             pass
 
-        if self.rms_noise is not None:
+        if self.sigma is not None:
             noise_real = self.rng.normal(
                 scale=self.sigma, size=corrupted_visibility_set.vis.shape
             )

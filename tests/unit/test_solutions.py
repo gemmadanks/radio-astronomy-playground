@@ -1,8 +1,6 @@
 """Tests for Solutions class."""
 
 from starbox.calibrate.solutions import Solutions
-import numpy as np
-import pytest
 
 
 def test_solutions_initialization(gains):
