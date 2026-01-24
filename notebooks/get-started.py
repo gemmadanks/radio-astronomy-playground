@@ -96,7 +96,7 @@ def _(mo, pi):
     observation_length_slider = mo.ui.slider(1, 100, label="Observation length: ")
     num_timesteps_slider = mo.ui.slider(1, 600, label="Number of timesteps: ")
     start_freq_slider = mo.ui.slider(
-        1, 100, label="Mid-point frequency of first channel (MHz): "
+        100, 10000, label="Mid-point frequency of first channel (MHz): "
     )
     num_channels_slider = mo.ui.slider(1, 100, label="Number of channels: ")
     bandwidth_slider = mo.ui.slider(1, 100, label="Total frequency bandwidth (MHz): ")
