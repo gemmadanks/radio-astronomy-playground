@@ -40,7 +40,7 @@ See the [`quickstart.ipynb`](notebooks/quickstart.ipynb) notebook or run the fol
 ```python
 from starbox.simulate import Telescope, SkyModel
 
-telescope = Telescope(name="MyArray", num_antennas=10, diameter=50.0)
+telescope = Telescope(name="MyArray", num_stations=10, diameter=50.0)
 telescope.plot()
 
 skymodel = SkyModel(name="MySkyModel", num_sources=50, max_flux=10.0)

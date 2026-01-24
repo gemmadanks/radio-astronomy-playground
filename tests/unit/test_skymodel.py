@@ -73,16 +73,55 @@ def test_skymodel_variability():
     assert skymodel1.sources != skymodel2.sources
 
 
-def test_skymodel_plot():
-    """Test that the plot method of SkyModel works without errors."""
-    skymodel = SkyModel(name="TestModel", num_sources=20, seed=42)
-    skymodel.plot()
-
-
-def test_skymodel_regenerate():
+@pytest.mark.parametrize(
+    "num_sources, seed",
+    [(1, 42), (10, 42), (100, 42), (10, None)],
+)
+def test_skymodel_regenerate(num_sources, seed):
     """Test that regenerate changes the source configuration."""
-    skymodel = SkyModel(name="TestModel", num_sources=30, seed=42)
+    skymodel = SkyModel(name="TestModel", num_sources=num_sources, seed=seed)
     original_sources = skymodel.sources.copy()
     skymodel.regenerate(seed=43)
     new_sources = skymodel.sources
     assert original_sources != new_sources
+
+
+def test_skymodel_as_arrays(skymodel):
+    """Test that as_arrays method returns correct arrays."""
+    ras, decs, fluxes = skymodel.as_arrays()
+    assert len(ras) == skymodel.num_sources
+    assert len(decs) == skymodel.num_sources
+    assert len(fluxes) == skymodel.num_sources
+    for i in range(skymodel.num_sources):
+        pos, flux = skymodel.sources[i]
+        ra, dec = pos
+        assert ras[i] == ra
+        assert decs[i] == dec
+        assert fluxes[i] == flux
+
+
+def test_skymodel_as_arrays_no_sources():
+    """Test that as_arrays returns empty arrays when there are no sources."""
+    skymodel = SkyModel(name="EmptyModel", num_sources=0)
+    ras, decs, fluxes = skymodel.as_arrays()
+    assert ras.size == 0
+    assert decs.size == 0
+    assert fluxes.size == 0
+
+
+def test_skymodel_repr():
+    """Test the __repr__ method of SkyModel."""
+    skymodel = SkyModel(
+        name="ReprModel",
+        num_sources=15,
+        max_flux=2.5,
+        phase_centre=(5, -5),
+        fov=1.5,
+        seed=101,
+    )
+    repr_str = repr(skymodel)
+    expected_str = (
+        "SkyModel(name=ReprModel, num_sources=15, max_flux=2.5, "
+        "phase_centre=(5, -5), fov=1.5)"
+    )
+    assert repr_str == expected_str

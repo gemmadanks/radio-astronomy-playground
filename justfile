@@ -47,6 +47,7 @@ test-vv:
 # Test notebooks
 test-notebooks:
     uv run pytest --nbmake notebooks/
+    uv run python notebooks/*.py
 
 # Run full test suite with coverage
 coverage:

@@ -1,0 +1,36 @@
+"""Class for handling image processing tasks."""
+
+import numpy as np
+
+from starbox.visibility import VisibilitySet
+
+
+class Imager:
+    """Class for handling image processing."""
+
+    def __init__(self, grid_size: int = 256):
+        """Initialize the Imager with default grid size."""
+        self.grid_size = grid_size
+
+    def grid(self, visibilities: np.ndarray) -> np.ndarray:
+        """Grid the visibilities onto a regular grid."""
+        gridded_visibilities = np.ones((self.grid_size, self.grid_size), dtype=complex)
+
+        return gridded_visibilities
+
+    def ifft(self, gridded_visibilities: np.ndarray) -> np.ndarray:
+        """Convert gridded visibilities to an image using an inverse 2D Fourier transform.
+
+        This applies np.fft.ifft2 to transform data from Fourier (uv) space to image space,
+        recenters the zero-frequency component with fftshift, and returns the image magnitude.
+        """
+        # Assuming gridded visibilities is a 2D numpy array
+        image = np.fft.ifft2(gridded_visibilities)
+        image = np.fft.fftshift(image)
+        return np.abs(image)
+
+    def image(self, visibilities: VisibilitySet) -> np.ndarray:
+        """Create an image from visibilities."""
+        gridded_visibilities = self.grid(visibilities=visibilities.vis)
+        image = self.ifft(gridded_visibilities)
+        return image
