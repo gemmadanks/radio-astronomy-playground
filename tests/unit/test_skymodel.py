@@ -73,10 +73,28 @@ def test_skymodel_variability():
     assert skymodel1.sources != skymodel2.sources
 
 
-def test_skymodel_regenerate():
+@pytest.mark.parametrize(
+    "num_sources, seed",
+    [(1, 42), (10, 42), (100, 42), (10, None)],
+)
+def test_skymodel_regenerate(num_sources, seed):
     """Test that regenerate changes the source configuration."""
-    skymodel = SkyModel(name="TestModel", num_sources=30, seed=42)
+    skymodel = SkyModel(name="TestModel", num_sources=num_sources, seed=seed)
     original_sources = skymodel.sources.copy()
     skymodel.regenerate(seed=43)
     new_sources = skymodel.sources
     assert original_sources != new_sources
+
+
+def test_skymodel_as_arrays(skymodel):
+    """Test that as_arrays method returns correct arrays."""
+    ras, decs, fluxes = skymodel.as_arrays()
+    assert len(ras) == skymodel.num_sources
+    assert len(decs) == skymodel.num_sources
+    assert len(fluxes) == skymodel.num_sources
+    for i in range(skymodel.num_sources):
+        pos, flux = skymodel.sources[i]
+        ra, dec = pos
+        assert ras[i] == ra
+        assert decs[i] == dec
+        assert fluxes[i] == flux
