@@ -29,7 +29,15 @@ class Observation:
 
     @property
     def times(self) -> np.ndarray:
-        """Generate an array of time steps for the observation."""
+        """Generate an array of time steps for the observation.
+
+        The returned array contains ``num_timesteps`` samples. For
+        ``num_timesteps > 1``, the samples are linearly spaced from
+        ``start_time`` to ``start_time + observation_length`` inclusive,
+        with a fixed timestep of
+        ``observation_length / (num_timesteps - 1)``. For
+        ``num_timesteps == 1``, the array contains only ``start_time``.
+        """
         if self._times is None:
             if self.num_timesteps > 1:
                 timestep = self.observation_length / (self.num_timesteps - 1)
