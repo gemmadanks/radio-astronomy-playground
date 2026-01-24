@@ -22,7 +22,7 @@ class Observation:
         self.start_frequency = start_frequency
         self.num_channels = num_channels
         self.total_bandwidth = total_bandwidth
-        self.channel_width = total_bandwidth / num_channels
+        self.channel_width = total_bandwidth / num_channels if num_channels > 0 else 0.0
         # Lazily computed, cached values
         self._times = None
         self._frequencies = None
