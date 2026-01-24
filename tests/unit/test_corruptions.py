@@ -48,6 +48,28 @@ def test_corruptions_apply_noise(
     assert np.isclose(measured_rms, 0.1, atol=0.05)
 
 
+def test_apply_without_rms_phase_gain(
+    corruptions: Corruptions, visibility_set: VisibilitySet, mocker
+):
+    """Test that applying corruptions without setting rms phase."""
+    spy_sample_station_phase_gains = mocker.spy(
+        corruptions, "_sample_station_phase_gains"
+    )
+    spy_apply_station_phase_gain = mocker.spy(corruptions, "_apply_station_phase_gain")
+    _ = corruptions.apply(visibility_set)
+    spy_sample_station_phase_gains.assert_not_called()
+    spy_apply_station_phase_gain.assert_not_called()
+
+
+def test_apply_without_rms_noise(
+    corruptions: Corruptions, visibility_set: VisibilitySet, mocker
+):
+    """Test that applying corruptions without setting rms noise."""
+    spy_apply_noise = mocker.spy(corruptions, "_apply_noise")
+    _ = corruptions.apply(visibility_set)
+    spy_apply_noise.assert_not_called()
+
+
 def test_apply_noise_without_sigma_raises(
     corruptions: Corruptions, visibility_set: VisibilitySet
 ):

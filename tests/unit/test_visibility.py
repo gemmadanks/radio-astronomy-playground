@@ -30,3 +30,5 @@ def test_visibility_set_creation():
     assert visibility_set.times_mjd.shape == (10,)
     assert visibility_set.freqs_hz.shape == (6,)
     assert visibility_set.weights.shape == (10, 5, 6)
+    assert visibility_set.station_ids.tolist() == [0, 1, 2, 3]
+    assert visibility_set.num_stations == 4
