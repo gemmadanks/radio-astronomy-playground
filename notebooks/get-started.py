@@ -96,10 +96,10 @@ def _(mo, pi):
     observation_length_slider = mo.ui.slider(1, 100, label="Observation length: ")
     num_timesteps_slider = mo.ui.slider(1, 600, label="Number of timesteps: ")
     start_freq_slider = mo.ui.slider(
-        1, 100, label="Mid-point frequency of first channel (Hz): "
+        1, 100, label="Mid-point frequency of first channel (MHz): "
     )
     num_channels_slider = mo.ui.slider(1, 100, label="Number of channels: ")
-    bandwidth_slider = mo.ui.slider(1, 100, label="Total frequency bandwidth (Hz): ")
+    bandwidth_slider = mo.ui.slider(1, 100, label="Total frequency bandwidth (MHz): ")
 
     # Corruptions
     station_phase_gain_slider = mo.ui.slider(
