@@ -31,10 +31,13 @@ class Observation:
     def times(self) -> np.ndarray:
         """Generate an array of time steps for the observation."""
         if self._times is None:
-            timestep = self.observation_length / self.num_timesteps
-            self._times = np.array(
-                [self.start_time + i * timestep for i in range(self.num_timesteps)]
-            )
+            if self.num_timesteps > 1:
+                timestep = self.observation_length / self.num_timesteps
+                self._times = np.array(
+                    [self.start_time + i * timestep for i in range(self.num_timesteps)]
+                )
+            else:
+                self._times = np.array([self.start_time])
         return self._times
 
     @property
