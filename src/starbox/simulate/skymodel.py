@@ -35,7 +35,7 @@ class SkyModel:
         self._generate()
 
     def __repr__(self):
-        return f"SkyModel(num_sources={self.num_sources}, max_flux={self.max_flux}, phase_centre={self.phase_centre}, fov={self.fov})"
+        return f"SkyModel(name={self.name}, num_sources={self.num_sources}, max_flux={self.max_flux}, phase_centre={self.phase_centre}, fov={self.fov})"
 
     def as_arrays(self) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
         """Return (ra_deg, dec_deg, flux) arrays for downstream use (including viz)."""

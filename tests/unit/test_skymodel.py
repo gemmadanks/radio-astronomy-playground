@@ -107,3 +107,21 @@ def test_skymodel_as_arrays_no_sources():
     assert ras.size == 0
     assert decs.size == 0
     assert fluxes.size == 0
+
+
+def test_skymodel_repr():
+    """Test the __repr__ method of SkyModel."""
+    skymodel = SkyModel(
+        name="ReprModel",
+        num_sources=15,
+        max_flux=2.5,
+        phase_centre=(5, -5),
+        fov=1.5,
+        seed=101,
+    )
+    repr_str = repr(skymodel)
+    expected_str = (
+        "SkyModel(name=ReprModel, num_sources=15, max_flux=2.5, "
+        "phase_centre=(5, -5), fov=1.5)"
+    )
+    assert repr_str == expected_str
