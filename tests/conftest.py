@@ -81,3 +81,9 @@ def visibility_set():
         freqs_hz=freqs_hz,
         weights=weights,
     )
+
+
+@pytest.fixture
+def gains():
+    """A simple gains array for testing."""
+    return np.random.rand(3, 2, 4).astype("complex64")
