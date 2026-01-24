@@ -36,7 +36,7 @@ def sky_model(sky_model: SkyModel) -> Figure:
     return fig
 
 
-def array_configuration(telescope: Telescope):
+def array_configuration(telescope: Telescope) -> Figure:
     """Plot the array configuration given antenna coordinates."""
     fig = px.scatter(
         x=telescope.array[:, 0],

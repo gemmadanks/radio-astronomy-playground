@@ -11,7 +11,7 @@ class Solutions:
         """Initialize the Solutions with given gains."""
         self.gains = gains
 
-    def apply(self, visibilities: VisibilitySet):
+    def apply(self, visibilities: VisibilitySet) -> VisibilitySet:
         """Apply calibration solutions to visibilities."""
 
         # Placeholder implementation: return visibilities unchanged

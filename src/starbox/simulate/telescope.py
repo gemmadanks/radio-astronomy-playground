@@ -33,7 +33,7 @@ class Telescope:
             [f"{name}_STN{idx:03d}" for idx in range(num_stations)]
         )
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"Telescope(name={self.name}, num_stations={self.num_stations}, diameter={self.diameter} m)"
 
     def _configure_array(self) -> np.ndarray:

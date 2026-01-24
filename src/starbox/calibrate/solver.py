@@ -17,7 +17,7 @@ class Solver:
         observed_visibilities: VisibilitySet,
         model_visibilities: VisibilitySet,
         n_stations: int,
-    ):
+    ) -> Solutions:
         """Estimate calibration solutions from observed and model visibilities."""
 
         n_timesteps, _, n_channels = observed_visibilities.vis.shape
