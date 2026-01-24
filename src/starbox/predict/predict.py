@@ -25,8 +25,8 @@ def predict_visibilities(
     visibilities_set = VisibilitySet(
         vis=visibilities,
         uvw_m=np.zeros((num_times, num_baselines, 3)),
-        station1=np.array(telescope.station_ids[station1_index]),
-        station2=np.array(telescope.station_ids[station2_index]),
+        station1=telescope.station_ids[station1_index],
+        station2=telescope.station_ids[station2_index],
         times_mjd=observation.times,
         freqs_hz=observation.frequencies,
         weights=np.ones((num_times, num_baselines, num_channels)),
