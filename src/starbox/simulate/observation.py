@@ -32,7 +32,7 @@ class Observation:
         """Generate an array of time steps for the observation."""
         if self._times is None:
             if self.num_timesteps > 1:
-                timestep = self.observation_length / self.num_timesteps
+                timestep = self.observation_length / (self.num_timesteps - 1)
                 self._times = np.array(
                     [self.start_time + i * timestep for i in range(self.num_timesteps)]
                 )

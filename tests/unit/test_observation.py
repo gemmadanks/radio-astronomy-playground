@@ -28,8 +28,9 @@ def test_observation_initialization():
 def test_observation_times(observation: Observation):
     """Test that the times property generates correct time steps."""
 
-    expected_times = np.array([0, 60.0, 120.0])
+    expected_times = np.array([0.0, 90.0, 180.0])
     assert (observation.times == expected_times).all()
+    assert observation.times[-1] - observation.times[0] == observation.observation_length
 
 
 def test_observation_frequencies(observation: Observation):
