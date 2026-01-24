@@ -13,6 +13,9 @@ def test_telescope_initialization():
     assert telescope.num_stations == 100
     assert telescope.diameter == 50.0
     assert telescope.array.shape == (100, 3)
+    assert (
+        telescope.station_ids == np.array([f"ELA_STN{idx:03d}" for idx in range(100)])
+    ).all()
 
 
 @pytest.mark.parametrize(
@@ -32,6 +35,10 @@ def test_telescope_array(name, num_stations, diameter, seed):
     assert telescope.array.shape == (num_stations, 3)
     assert telescope.array.dtype == float
     assert telescope.array.max() <= diameter
+    assert (
+        telescope.station_ids
+        == np.array([f"{name}_STN{idx:03d}" for idx in range(num_stations)])
+    ).all()
 
 
 def test_telescope_array_determinism():

@@ -17,13 +17,16 @@ def predict_visibilities(
     num_times = len(observation.times)
     num_channels = len(observation.frequencies)
     num_baselines = num_stations * (num_stations - 1) // 2
+    station1_index, station2_index = np.triu_indices(
+        num_stations, k=1
+    )  # strictly upper triangle
 
     visibilities = np.zeros((num_times, num_baselines, num_channels), dtype=complex)
     visibilities_set = VisibilitySet(
         vis=visibilities,
         uvw_m=np.zeros((num_times, num_baselines, 3)),
-        station1=np.array([i for i in range(num_baselines)]),
-        station2=np.array([i for i in range(num_baselines)]),
+        station1=np.array(telescope.station_ids[station1_index]),
+        station2=np.array(telescope.station_ids[station2_index]),
         times_mjd=observation.times,
         freqs_hz=observation.frequencies,
         weights=np.ones((num_times, num_baselines, num_channels)),

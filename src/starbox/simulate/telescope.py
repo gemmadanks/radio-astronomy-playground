@@ -29,6 +29,9 @@ class Telescope:
         self.diameter = diameter
         self.rng = np.random.default_rng(seed)
         self.array: np.ndarray = self._configure_array()
+        self.station_ids = np.array(
+            [f"{name}_STN{idx:03d}" for idx in range(num_stations)]
+        )
 
     def __repr__(self):
         return f"Telescope(name={self.name}, num_stations={self.num_stations}, diameter={self.diameter})"
