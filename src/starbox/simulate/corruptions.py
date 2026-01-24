@@ -41,8 +41,12 @@ class Corruptions:
             weights=visibility_set.weights,
         )
         if self.station_phase_gain is not None:
-            # Placeholder for station phase gain corruption
-            pass
+            phase_gains_1 = self.station_phase_gain[corrupted_visibility_set.station1]
+            phase_gains_2 = self.station_phase_gain[corrupted_visibility_set.station2]
+            # Broadcast station gains to all times and channels
+            phase_gains_1 = phase_gains_1[np.newaxis, :, np.newaxis]
+            phase_gains_2 = phase_gains_2[np.newaxis, :, np.newaxis]
+            corrupted_visibility_set.vis *= phase_gains_1 * np.conj(phase_gains_2)
 
         if self.sigma is not None:
             noise_real = self.rng.normal(

@@ -28,7 +28,9 @@ def test_corruptions_add_station_phase_gain(corruptions: Corruptions, phase_gain
     assert corruptions.station_phase_gain == phase_gain
 
 
-def test_corruptions_apply(corruptions: Corruptions, visibility_set: VisibilitySet):
+def test_corruptions_apply_noise(
+    corruptions: Corruptions, visibility_set: VisibilitySet
+):
     """Test applying corruptions to visibilities."""
 
     # Apply without any corruptions
@@ -44,3 +46,29 @@ def test_corruptions_apply(corruptions: Corruptions, visibility_set: VisibilityS
     noise = corrupted_vis.vis - visibility_set.vis
     measured_rms = np.sqrt(np.mean(np.abs(noise) ** 2))
     assert np.isclose(measured_rms, 0.1, atol=0.05)
+
+
+def test_corruptions_apply_station_phase_gain(
+    corruptions: Corruptions, visibility_set: VisibilitySet
+):
+    """Test applying station phase gain corruptions to visibilities."""
+
+    # Add station random phase gain and apply
+    phase_gain_station0 = np.exp(1j * np.pi / 4)  # 45 degree phase shift
+    phase_gain_station1 = np.exp(1j * np.pi / 2)  # 90 degree phase shift
+    phase_gain_station2 = np.exp(1j * np.pi / 2)  # 90 degree phase shift
+    phase_gain = np.array(
+        [phase_gain_station0, phase_gain_station1, phase_gain_station2]
+    )
+
+    corruptions.add_station_phase_gain(phase_gain)
+    corrupted_vis = corruptions.apply(visibility_set)
+
+    assert not np.array_equal(corrupted_vis.vis, visibility_set.vis)
+    # Check that the phase gains have been applied correctly
+    assert np.allclose(
+        corrupted_vis.vis[0, 0, 0], phase_gain_station0 * np.conj(phase_gain_station1)
+    )
+    assert np.allclose(
+        corrupted_vis.vis[0, 1, 0], phase_gain_station1 * np.conj(phase_gain_station2)
+    )
