@@ -30,7 +30,9 @@ def test_observation_times(observation: Observation):
 
     expected_times = np.array([0.0, 90.0, 180.0])
     assert (observation.times == expected_times).all()
-    assert observation.times[-1] - observation.times[0] == observation.observation_length
+    assert (
+        observation.times[-1] - observation.times[0] == observation.observation_length
+    )
 
 
 def test_observation_frequencies(observation: Observation):

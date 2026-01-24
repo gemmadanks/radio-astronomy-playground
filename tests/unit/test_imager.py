@@ -25,7 +25,7 @@ def test_imager_fft_output_non_negative():
     """Test that the fft method returns non-negative values."""
     imager = Imager()
     gridded_visibilities = np.ones((imager.grid_size, imager.grid_size), dtype=complex)
-    image = imager.fft(gridded_visibilities)
+    image = imager.ifft(gridded_visibilities)
     assert (image >= 0).all()
 
 
