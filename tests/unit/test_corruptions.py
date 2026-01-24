@@ -126,3 +126,13 @@ def test_corruptions_sample_station_phase_gains_no_rms(corruptions: Corruptions)
     num_stations = 5
     with pytest.raises(ValueError, match="RMS phase gain is not set."):
         corruptions._sample_station_phase_gains(num_stations)
+
+
+def test_corruptions_apply_with_station_phase_gain(
+    corruptions: Corruptions, visibility_set: VisibilitySet
+):
+    """Test applying corruptions with station phase gain set."""
+    corruptions.add_station_phase_gain(rms_phase_gain=0.5)
+    corrupted_vis = corruptions.apply(visibility_set)
+
+    assert not np.array_equal(corrupted_vis.vis, visibility_set.vis)
