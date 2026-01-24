@@ -6,7 +6,7 @@ Example:
     >>> from starbox.simulate import Telescope
     >>> telescope = Telescope(name="ELA", num_stations=100, diameter=50.0)
     >>> print(telescope)
-    Telescope(name=ELA, num_stations=100, diameter=50.0)
+    Telescope(name=ELA, num_stations=100, diameter=50.0 m)
 """
 
 import numpy as np
@@ -24,17 +24,17 @@ class Telescope:
             diameter: Diameter of the telescope in metres.
             seed: Random seed for reproducibility.
         """
-        self.name = name
-        self.num_stations = num_stations
-        self.diameter = diameter
-        self.rng = np.random.default_rng(seed)
+        self.name: str = name
+        self.num_stations: int = num_stations
+        self.diameter: float = diameter
+        self.rng: np.random.Generator = np.random.default_rng(seed)
         self.array: np.ndarray = self._configure_array()
-        self.station_ids = np.array(
+        self.station_ids: np.ndarray = np.array(
             [f"{name}_STN{idx:03d}" for idx in range(num_stations)]
         )
 
     def __repr__(self):
-        return f"Telescope(name={self.name}, num_stations={self.num_stations}, diameter={self.diameter})"
+        return f"Telescope(name={self.name}, num_stations={self.num_stations}, diameter={self.diameter} m)"
 
     def _configure_array(self) -> np.ndarray:
         """Configure an array of antennas.
@@ -68,7 +68,9 @@ class Telescope:
         return radius * np.sqrt(self.rng.uniform(0, 1, self.num_stations))
 
 
-def _compute_coordinates(angles, radii) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+def _compute_coordinates(
+    angles: np.ndarray, radii: np.ndarray
+) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     """Calculate x, y, z coordinates from angles and radii."""
     x = radii * np.cos(angles)
     y = radii * np.sin(angles)

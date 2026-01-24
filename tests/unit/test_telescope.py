@@ -18,6 +18,13 @@ def test_telescope_initialization():
     ).all()
 
 
+def test_telescope_repr():
+    """Test the string representation of the Telescope object."""
+    telescope = Telescope(name="TestArray", num_stations=20, diameter=10.0)
+    repr_str = repr(telescope)
+    assert "Telescope(name=TestArray, num_stations=20, diameter=10.0 m" in repr_str
+
+
 @pytest.mark.parametrize(
     "name,num_stations,diameter,seed",
     [
@@ -79,8 +86,8 @@ def test_telescope_get_radii(small_telescope):
 
 def test_telescope_compute_coordinates():
     """Test that _compute_coordinates returns arrays of the correct length."""
-    angles = [0.1] * 10
-    radii = [5.0] * 10
+    angles = np.array([0.1] * 10)
+    radii = np.array([5.0] * 10)
     x, y, z = _compute_coordinates(angles, radii)
     assert len(x) == 10
     assert len(y) == 10

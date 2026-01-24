@@ -36,16 +36,12 @@ def sky_model(sky_model: SkyModel) -> Figure:
     return fig
 
 
-def array_configuration(telescope: Telescope, title=None):
+def array_configuration(telescope: Telescope):
     """Plot the array configuration given antenna coordinates."""
-    if title is None:
-        plot_title = f"Telescope Array Configuration: {telescope.name}"
-    else:
-        plot_title = title
     fig = px.scatter(
         x=telescope.array[:, 0],
         y=telescope.array[:, 1],
-        title=plot_title,
+        title=f"{telescope.name}",
     )
     fig.update_layout(
         xaxis_title="X (North) [m]",

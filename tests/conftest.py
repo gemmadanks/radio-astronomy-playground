@@ -1,6 +1,7 @@
 """Fixtures for tests."""
 
 import pytest
+from starbox.calibrate.solutions import Solutions
 from starbox.simulate.corruptions import Corruptions
 from starbox.simulate.telescope import Telescope
 import plotly.io as pio
@@ -87,3 +88,9 @@ def visibility_set():
 def gains():
     """A simple gains array for testing."""
     return np.random.rand(3, 2, 4).astype("complex64")
+
+
+@pytest.fixture
+def solutions(gains):
+    """A simple Solutions instance for testing."""
+    return Solutions(gains=gains)
