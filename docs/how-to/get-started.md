@@ -4,14 +4,14 @@ This guide shows you how to install `starbox`, the core python library of Radio 
 
 ## Pre-requisites
 1. git
-2. uv
+2. [uv](https://docs.astral.sh/uv/getting-started/installation/)
 
 ## Steps
 1. Clone this repository:
    ```bash
-    git clone git@github.com:gemmadanks/radio-astronomy-playground.git
+   git clone git@github.com:gemmadanks/radio-astronomy-playground.git
    ```
-2. Install starbox and its dependencies using uv:
+2. Install starbox and its dependencies:
    ```bash
    uv sync
    ```
