@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.2](https://github.com/gemmadanks/radio-astronomy-playground/compare/v0.6.1...v0.6.2) (2026-01-25)
+
+
+### 📚 Documentation
+
+* remove readthedocs configuration ([#51](https://github.com/gemmadanks/radio-astronomy-playground/issues/51)) ([4432a07](https://github.com/gemmadanks/radio-astronomy-playground/commit/4432a073e7704c813c55a7e5fd5632b523655d87))
+
 ## [0.6.1](https://github.com/gemmadanks/radio-astronomy-playground/compare/v0.6.0...v0.6.1) (2026-01-25)
 
 
