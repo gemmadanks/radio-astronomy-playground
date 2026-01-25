@@ -13,7 +13,18 @@ from .simulate import Telescope, SkyModel, Observation
 from .simulate.corruptions import Corruptions
 from .image.imager import Imager
 from .calibrate.solver import Solver
+from .predict import predict_visibilities
+from .io import save
 
 
 __version__ = "0.5.0"
-__all__ = ["Telescope", "SkyModel", "Corruptions", "Imager", "Solver", "Observation"]
+__all__ = [
+    "Telescope",
+    "SkyModel",
+    "Corruptions",
+    "Imager",
+    "Solver",
+    "predict_visibilities",
+    "save",
+    "Observation",
+]
