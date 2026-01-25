@@ -66,7 +66,7 @@ Container_Boundary(starbox, "starbox") {
     Rel(predict, telescope, "Uses")
     Rel(predict, observation, "Uses")
     Rel(imager, visibility_set, "Uses")
-    Rel(image, imager, "Returns")
+    Rel(imager, image, "Returns")
     Rel(solutions, visibility_set, "Returns")
 
     Rel(viz, solutions, "Plots")
