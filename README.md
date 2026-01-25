@@ -19,14 +19,17 @@ See [full documentation](https://open-research.gemmadanks.com/radio-astronomy-pl
 
 ## 🚀 Features
 
-- 👾 Generate random data for toy simulations:
-    - 📡 Arrays of antennas
-    - ✨ Sky models
+- 👾 Simulate an observation:
+    - 📡 Array of stations
+    - ✨ Sky model
+    - 💨 Corruptions
+- 💡 Interactively tune data processing parameters:
+    - 🧹 Single self-calibration loop
 
 ### 📦 Installation
 
 1. [Install uv](https://docs.astral.sh/uv/getting-started/installation/)
-1. Clone and install the project using uv:
+1. Clone and install the project:
 ```bash
 git clone https://github.com/gemmadanks/radio-astronomy-playground
 cd radio-astronomy-playground
@@ -35,26 +38,20 @@ uv sync --all-groups
 
 ### 🏁 Quickstart
 
-See the [`quickstart.ipynb`](notebooks/quickstart.ipynb) notebook or run the following in Python:
-
-```python
-from starbox.simulate import Telescope, SkyModel
-
-telescope = Telescope(name="MyArray", num_stations=10, diameter=50.0)
-telescope.plot()
-
-skymodel = SkyModel(name="MySkyModel", num_sources=50, max_flux=10.0)
-skymodel.plot()
+Launch the get-started notebook to run your first interactive experiment:
+```bash
+uv run marimo run notebooks/get-started.py
 ```
 
 ### Developer guide
 
 A [Dockerfile](./devcontainer/Dockerfile) and [configuration](./devcontainer/devcontainer.json) in [./devcontainer](./devcontainer) can be used in VSCode or GitHub Codespaces to work in a pre-configured development environment. It uses a Python 3.13 base image and installs uv, just and all Python dependencies.
 
-To open the project in the container VSCode, you will need to add the [Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) and download [Docker](https://docs.docker.com/get-started/get-docker/) (or [Podman](https://podman.io/docs/installation) -- and [configure VSCode to use podman instead of Docker](https://code.visualstudio.com/remote/advancedcontainers/docker-options#_podman)) -- see the [VSCode tutorial on devcontainers](https://code.visualstudio.com/docs/devcontainers/tutorial) for more details on using devcontainers. Then run:
+To open the project in the container VSCode, you will need to add the [Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) and download [Docker](https://docs.docker.com/get-started/get-docker/) (or [Podman](https://podman.io/docs/installation) -- and [configure VSCode to use podman instead of Docker](https://code.visualstudio.com/remote/advancedcontainers/docker-options#_podman)). Open the VSCode command palette (Cmd+Shift+P) and select:
 ``` bash
 Dev Containers: Reopen in Container
 ```
+See the [VSCode tutorial on devcontainers](https://code.visualstudio.com/docs/devcontainers/tutorial) for more details on using devcontainers.
 
 #### 🧪 Common Tasks
 
@@ -63,6 +60,7 @@ Several common tasks have been added as recipes to a [justfile](justfile) in the
 ```bash
 just install               # uv sync
 just test                  # run quick (non-slow) tests
+just test-notebooks        # run notebook tests
 just lint                  # ruff check
 just format                # ruff format
 just type-check            # pyright type-check
@@ -72,6 +70,13 @@ just pre-commit            # run all pre-commit hooks
 just clean                 # remove generated files and folders
 just jupyter-container     # start Jupyter lab from inside a container
 ```
+
+To launch an interactive notebook in a web browser in edit mode run:
+```bash
+uv run marimo edit notebooks/get-started.py
+```
+
+See [marimo documentation](https://docs.marimo.io/) for more details on how to create and run the notebooks.
 
 #### 🔄 Releases
 
