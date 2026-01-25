@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.6.0](https://github.com/gemmadanks/radio-astronomy-playground/compare/v0.5.0...v0.6.0) (2026-01-25)
+
+
+### 🚀 Features
+
+* add C4 digrams for MVP ([#29](https://github.com/gemmadanks/radio-astronomy-playground/issues/29)) ([d78a37d](https://github.com/gemmadanks/radio-astronomy-playground/commit/d78a37d49ed63f88f292aadb425b6ccf3f3d21d1))
+
+
+### 🐛 Bug Fixes
+
+* use correct package name in release please config ([#32](https://github.com/gemmadanks/radio-astronomy-playground/issues/32)) ([dac3617](https://github.com/gemmadanks/radio-astronomy-playground/commit/dac361779374eba6acf10a148087210e4fa4816a))
+
+
+### 📚 Documentation
+
+* document MVP API ([#31](https://github.com/gemmadanks/radio-astronomy-playground/issues/31)) ([0c3283a](https://github.com/gemmadanks/radio-astronomy-playground/commit/0c3283ad5a6e4cd9430042557aa912fbbaec37fb))
+
 ## [0.5.0](https://github.com/gemmadanks/radio-astronomy-playground/compare/v0.4.0...v0.5.0) (2026-01-24)
 
 
