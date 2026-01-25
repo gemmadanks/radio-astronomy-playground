@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.1](https://github.com/gemmadanks/radio-astronomy-playground/compare/v0.6.0...v0.6.1) (2026-01-25)
+
+
+### 📚 Documentation
+
+* update README ([#49](https://github.com/gemmadanks/radio-astronomy-playground/issues/49)) ([4710059](https://github.com/gemmadanks/radio-astronomy-playground/commit/4710059258405c014a5f8df31e2f43c6abb9b471))
+
 ## [0.6.0](https://github.com/gemmadanks/radio-astronomy-playground/compare/v0.5.0...v0.6.0) (2026-01-25)
 
 
