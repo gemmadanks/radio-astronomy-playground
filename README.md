@@ -4,7 +4,6 @@
 [![CI](https://github.com/gemmadanks/radio-astronomy-playground/actions/workflows/ci.yaml/badge.svg?branch=main)](.github/workflows/ci.yaml)
 [![release-please](https://github.com/gemmadanks/radio-astronomy-playground/actions/workflows/release-please.yaml/badge.svg)](release-please-config.json)
 [![Docs (GitHub Pages)](https://github.com/gemmadanks/radio-astronomy-playground/actions/workflows/docs-pages.yaml/badge.svg)](https://github.com/gemmadanks/radio-astronomy-playground/actions/workflows/docs-pages.yaml)
-[![Docs (RTD)](https://app.readthedocs.org/projects/radio-astronomy-playground/badge/?version=latest)](https://gemmadanks-radio-astronomy-playground.readthedocs.io/en/latest/)
 [![Dependabot](https://img.shields.io/github/issues-search?query=repo%3Agemmadanks%2Fradio-astronomy-playground%20is%3Apr%20author%3Aapp%2Fdependabot%20is%3Aopen&label=Dependabot%20PRs)](https://github.com/gemmadanks/radio-astronomy-playground/issues?q=is%3Apr%20is%3Aopen%20author%3Aapp%2Fdependabot)
 [![uv](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json)](https://github.com/astral-sh/uv)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
