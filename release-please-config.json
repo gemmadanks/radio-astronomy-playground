@@ -58,7 +58,7 @@
           "type": "yaml"
         },
         {
-          "jsonpath": "$.package[?(@.name.value=='package-name')].version",
+          "jsonpath": "$.package[?(@.name.value=='starbox')].version",
           "path": "uv.lock",
           "type": "toml"
         }
