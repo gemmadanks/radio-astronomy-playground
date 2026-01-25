@@ -6,6 +6,6 @@ Functions:
     - save: Save experiment configuration data to a file.
 """
 
-from starbox.io import save
+from starbox.io.save import save
 
 __all__ = ["save"]
