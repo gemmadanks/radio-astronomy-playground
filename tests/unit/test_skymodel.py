@@ -1,7 +1,8 @@
 """Tests for skymodel classes."""
 
 import pytest
-from starbox.simulate.skymodel import SkyModel
+from starbox.simulate.skymodel import SkyModel, SkyModelSpec
+import numpy as np
 
 
 @pytest.mark.parametrize(
@@ -12,23 +13,22 @@ from starbox.simulate.skymodel import SkyModel
         ("TestModel3", 500, 10.0, (-5, 5), 0.5, 999),
     ],
 )
-def test_skymodel_parameters(name, num_sources, max_flux, phase_centre, fov, seed):
-    """Test that SkyModel initializes with correct parameters."""
-    skymodel = SkyModel(
-        name=name,
+def test_skymodel_spec_intialisation(
+    name, num_sources, max_flux, phase_centre, fov, seed
+):
+    """Test that SkyModelSpec initializes with correct parameters."""
+    skymodel_spec = SkyModelSpec(
         num_sources=num_sources,
-        max_flux=max_flux,
-        phase_centre=phase_centre,
-        fov=fov,
+        max_flux_jy=max_flux,
+        phase_centre_deg=phase_centre,
+        fov_deg=fov,
         seed=seed,
     )
-    assert skymodel.name == name
-    assert skymodel.num_sources == num_sources
-    assert skymodel.max_flux == max_flux
-    assert skymodel.phase_centre == phase_centre
-    assert skymodel.fov == fov
-    assert skymodel.rng is not None
-    assert len(skymodel.sources) == num_sources
+    assert skymodel_spec.num_sources == num_sources
+    assert skymodel_spec.max_flux_jy == max_flux
+    assert skymodel_spec.phase_centre_deg == phase_centre
+    assert skymodel_spec.fov_deg == fov
+    assert skymodel_spec.seed == seed
 
 
 @pytest.mark.parametrize(
@@ -40,88 +40,84 @@ def test_skymodel_parameters(name, num_sources, max_flux, phase_centre, fov, see
 )
 def test_skymodel_generate_sources(name, num_sources, phase_centre, seed):
     """Test that _generate_sources method works correctly."""
-    skymodel = SkyModel(
-        name="TestModel", num_sources=num_sources, phase_centre=phase_centre, seed=seed
+    skymodel_spec = SkyModelSpec(
+        num_sources=num_sources, phase_centre_deg=phase_centre, seed=seed
     )
-    assert len(skymodel.sources) == num_sources
-    for pos, flux in skymodel.sources:
-        ra, dec = pos
+    skymodel = SkyModel.from_spec(skymodel_spec)
+    spec = skymodel.spec
+    assert spec is not None
+    assert len(skymodel.ra_deg) == num_sources
+    for ra, dec, flux in zip(skymodel.ra_deg, skymodel.dec_deg, skymodel.flux_jy):
         assert (
-            skymodel.phase_centre[0] - skymodel.fov / 2
+            spec.phase_centre_deg[0] - spec.fov_deg / 2
             <= ra
-            <= skymodel.phase_centre[0] + skymodel.fov / 2
+            <= spec.phase_centre_deg[0] + spec.fov_deg / 2
         )
         assert (
-            skymodel.phase_centre[1] - skymodel.fov / 2
+            spec.phase_centre_deg[1] - spec.fov_deg / 2
             <= dec
-            <= skymodel.phase_centre[1] + skymodel.fov / 2
+            <= spec.phase_centre_deg[1] + spec.fov_deg / 2
         )
-        assert 0 <= flux <= skymodel.max_flux
+        assert 0 <= flux <= spec.max_flux_jy
 
 
-def test_skymodel_determinism():
+def test_skymodel_determinism(skymodel_spec):
     """Test that SkyModel generates the same sources with the same seed."""
-    skymodel1 = SkyModel(name="TestModel1", num_sources=20, seed=123)
-    skymodel2 = SkyModel(name="TestModel2", num_sources=20, seed=123)
-    assert skymodel1.sources == skymodel2.sources
+    skymodel1 = SkyModel.from_spec(skymodel_spec)
+    skymodel2 = SkyModel.from_spec(skymodel_spec)
+    assert np.array_equal(skymodel1.ra_deg, skymodel2.ra_deg)
+    assert np.array_equal(skymodel1.dec_deg, skymodel2.dec_deg)
+    assert np.array_equal(skymodel1.flux_jy, skymodel2.flux_jy)
 
 
 def test_skymodel_variability():
     """Test that different seeds produce different source configurations."""
-    skymodel1 = SkyModel(name="TestModel1", num_sources=20, seed=123)
-    skymodel2 = SkyModel(name="TestModel2", num_sources=20, seed=456)
-    assert skymodel1.sources != skymodel2.sources
-
-
-@pytest.mark.parametrize(
-    "num_sources, seed",
-    [(1, 42), (10, 42), (100, 42), (10, None)],
-)
-def test_skymodel_regenerate(num_sources, seed):
-    """Test that regenerate changes the source configuration."""
-    skymodel = SkyModel(name="TestModel", num_sources=num_sources, seed=seed)
-    original_sources = skymodel.sources.copy()
-    skymodel.regenerate(seed=43)
-    new_sources = skymodel.sources
-    assert original_sources != new_sources
+    skymodel1 = SkyModel.from_spec(SkyModelSpec(num_sources=20, seed=123))
+    skymodel2 = SkyModel.from_spec(SkyModelSpec(num_sources=20, seed=456))
+    assert not np.array_equal(skymodel1.ra_deg, skymodel2.ra_deg)
+    assert not np.array_equal(skymodel1.dec_deg, skymodel2.dec_deg)
+    assert not np.array_equal(skymodel1.flux_jy, skymodel2.flux_jy)
 
 
 def test_skymodel_as_arrays(skymodel):
     """Test that as_arrays method returns correct arrays."""
     ras, decs, fluxes = skymodel.as_arrays()
-    assert len(ras) == skymodel.num_sources
-    assert len(decs) == skymodel.num_sources
-    assert len(fluxes) == skymodel.num_sources
-    for i in range(skymodel.num_sources):
-        pos, flux = skymodel.sources[i]
-        ra, dec = pos
-        assert ras[i] == ra
-        assert decs[i] == dec
-        assert fluxes[i] == flux
+    spec = skymodel.spec
+    assert spec is not None
+    assert len(ras) == spec.num_sources
+    assert len(decs) == spec.num_sources
+    assert len(fluxes) == spec.num_sources
+    np.testing.assert_array_equal(ras, skymodel.ra_deg)
+    np.testing.assert_array_equal(decs, skymodel.dec_deg)
+    np.testing.assert_array_equal(fluxes, skymodel.flux_jy)
 
 
-def test_skymodel_as_arrays_no_sources():
-    """Test that as_arrays returns empty arrays when there are no sources."""
-    skymodel = SkyModel(name="EmptyModel", num_sources=0)
-    ras, decs, fluxes = skymodel.as_arrays()
-    assert ras.size == 0
-    assert decs.size == 0
-    assert fluxes.size == 0
+@pytest.mark.parametrize("num_sources", [0, -5, -10])
+def test_skymodel_spec_invalid_num_sources_raises_error(num_sources):
+    """Test that SkyModelSpec with no sources behaves correctly."""
+    with pytest.raises(ValueError, match="num_sources must be > 0"):
+        SkyModelSpec(num_sources=num_sources)
 
 
-def test_skymodel_repr():
-    """Test the __repr__ method of SkyModel."""
-    skymodel = SkyModel(
-        name="ReprModel",
-        num_sources=15,
-        max_flux=2.5,
-        phase_centre=(5, -5),
-        fov=1.5,
-        seed=101,
-    )
-    repr_str = repr(skymodel)
+@pytest.mark.parametrize("max_flux", [0.0, -0.1, -10.0])
+def test_skymodel_spec_invalid_flux_raises_error(max_flux):
+    """Test that SkyModelSpec with zero or negative max_flux raises error."""
+    with pytest.raises(ValueError, match="max_flux_jy must be > 0"):
+        SkyModelSpec(num_sources=10, max_flux_jy=max_flux)
+
+
+@pytest.mark.parametrize("fov", [0, -1.0])
+def test_skymodel_spec_invalid_fov_raises_error(fov):
+    """Test that SkyModelSpec with non-positive fov raises error."""
+    with pytest.raises(ValueError, match="fov_deg must be > 0"):
+        SkyModelSpec(num_sources=10, fov_deg=fov)
+
+
+def test_skymodel_spec_repr(skymodel_spec):
+    """Test the __repr__ method of SkyModelSpec."""
+    repr_str = repr(skymodel_spec)
     expected_str = (
-        "SkyModel(name=ReprModel, num_sources=15, max_flux=2.5, "
-        "phase_centre=(5, -5), fov=1.5)"
+        "SkyModelSpec(num_sources=5, max_flux_jy=1.0, "
+        "phase_centre_deg=(0, 0), fov_deg=1.0, seed=42)"
     )
     assert repr_str == expected_str

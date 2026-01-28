@@ -5,7 +5,7 @@ from starbox.calibrate.solutions import Solutions
 from starbox.simulate.corruptions import Corruptions
 from starbox.simulate.telescope import Telescope
 import plotly.io as pio
-from starbox.simulate.skymodel import SkyModel
+from starbox.simulate.skymodel import SkyModel, SkyModelSpec
 from starbox.simulate.observation import Observation
 
 from starbox.visibility import VisibilitySet
@@ -26,9 +26,15 @@ def small_telescope():
 
 
 @pytest.fixture
-def skymodel():
+def skymodel_spec():
     """A simple sky model with a few sources."""
-    return SkyModel(name="SmallSkyModel", num_sources=5, seed=42)
+    return SkyModelSpec(num_sources=5, seed=42)
+
+
+@pytest.fixture
+def skymodel(skymodel_spec):
+    """A simple sky model instance."""
+    return SkyModel.from_spec(skymodel_spec)
 
 
 @pytest.fixture

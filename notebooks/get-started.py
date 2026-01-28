@@ -8,15 +8,19 @@ app = marimo.App(width="medium")
 def _():
     import marimo as mo
     from starbox import Telescope, SkyModel, Corruptions, Imager, Solver, Observation
+    from starbox.simulate import SkyModelSpec
     from starbox.viz import plot
     from starbox.predict.predict import predict_visibilities
     from starbox.io.save import save
+    from starbox.config import SkyModelConfig
 
     return (
         Corruptions,
         Imager,
         Observation,
         SkyModel,
+        SkyModelConfig,
+        SkyModelSpec,
         Solver,
         Telescope,
         mo,
@@ -82,6 +86,7 @@ def _(mo):
     # Sky model
     num_sources_slider = mo.ui.slider(1, 10, label="Number of point sources: ")
     max_flux_slider = mo.ui.slider(1, 10, label="Maximum source brightness (Jy): ")
+    fov_slider = mo.ui.slider(1, 10, label="Field of view (degrees): ")
 
     # Telescope
     num_stations_slider = mo.ui.slider(2, 100, label="Number of stations: ")
@@ -109,6 +114,7 @@ def _(mo):
     solint_slider = mo.ui.slider(1, 600, label="Solution interval (s): ")
     return (
         bandwidth_slider,
+        fov_slider,
         max_flux_slider,
         noise_rms_slider,
         num_channels_slider,
@@ -131,13 +137,27 @@ def _(file_browser):
 
 
 @app.cell
-def _(SkyModel, max_flux_slider, mo, num_sources_slider, plot, seed):
-    sky_model = SkyModel(
+def _(
+    SkyModel,
+    SkyModelConfig,
+    SkyModelSpec,
+    fov_slider,
+    max_flux_slider,
+    mo,
+    num_sources_slider,
+    plot,
+    seed,
+):
+    sky_model_config = SkyModelConfig(
         name="My Sky Model",
         num_sources=num_sources_slider.value,
-        max_flux=max_flux_slider.value,
+        max_flux_jy=max_flux_slider.value,
+        fov_deg=fov_slider.value,
+        phase_centre_deg=(0, 0),
         seed=seed,
     )
+    sky_model_spec = SkyModelSpec(**sky_model_config.model_dump())
+    sky_model = SkyModel.from_spec(sky_model_spec)
     sky_model_fig = mo.ui.plotly(plot.plot_sky_model(sky_model))
     return sky_model, sky_model_fig
 

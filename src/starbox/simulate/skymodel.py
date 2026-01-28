@@ -1,76 +1,77 @@
 """A class for simulating sky models."""
 
 import numpy as np
+from dataclasses import dataclass
 
 
+@dataclass(slots=True)
+class SkyModelSpec:
+    """A dataclass representing the specification for a sky model.
+
+    Attributes:
+        num_sources: Number of sources to generate
+        max_flux_jy: Maximum flux density in Jy
+        phase_centre_deg: (RA, Dec) coordinates in degrees
+        fov_deg: Field of view in degrees
+        seed: Random seed for reproducibility
+    """
+
+    num_sources: int = 1
+    max_flux_jy: float = 1.0
+    phase_centre_deg: tuple[float, float] = (0, 0)
+    fov_deg: float = 1.0
+    seed: int | None = None
+
+    def __post_init__(self):
+        if self.num_sources <= 0:
+            raise ValueError(f"num_sources must be > 0, got {self.num_sources!r}")
+        if self.max_flux_jy <= 0:
+            raise ValueError(f"max_flux_jy must be > 0, got {self.max_flux_jy!r}")
+        if self.fov_deg <= 0:
+            raise ValueError(f"fov_deg must be > 0, got {self.fov_deg!r}")
+
+
+@dataclass(slots=True)
 class SkyModel:
-    """A class representing a sky model for radio astronomy simulations."""
+    name: str
+    ra_deg: np.ndarray
+    dec_deg: np.ndarray
+    flux_jy: np.ndarray
+    spec: "SkyModelSpec | None" = None
 
-    def __init__(
-        self,
-        name: str,
-        num_sources: int,
-        max_flux: float = 1.0,
-        phase_centre: tuple[float, float] = (0, 0),
-        fov: float = 1.0,
-        seed: int = 42,
-    ):
-        """Initialize a SkyModel object.
+    @classmethod
+    def from_spec(cls, spec: "SkyModelSpec", name: str = "Sky Model") -> "SkyModel":
+        rng = np.random.default_rng(spec.seed)
 
-        Args:
-            name: Identifier for the sky model
-            num_sources: Number of sources to generate (must be > 0)
-            max_flux: Maximum flux density in Jy (must be >= 0)
-            phase_centre: (RA, Dec) coordinates in degrees
-            fov: Field of view in degrees (must be > 0)
-            seed: Random seed for reproducibility
-        """
-        self.name = name
-        self.num_sources = num_sources
-        self.max_flux = max_flux
-        self.phase_centre = phase_centre
-        self.fov = fov
-        self.rng = np.random.default_rng(seed)
-        self.sources: list[tuple[tuple[float, float], float]] = []
-        self._generate()
+        ra_centre, dec_centre = spec.phase_centre_deg
+        half_fov_deg = spec.fov_deg / 2.0
 
-    def __repr__(self):
-        return f"SkyModel(name={self.name}, num_sources={self.num_sources}, max_flux={self.max_flux}, phase_centre={self.phase_centre}, fov={self.fov})"
-
-    def as_arrays(self) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
-        """Return (ra_deg, dec_deg, flux) arrays for downstream use (including viz)."""
-        if not self.sources:
-            return np.array([]), np.array([]), np.array([])
-        ras, decs, fluxes = zip(
-            *[(pos[0], pos[1], flux) for (pos, flux) in self.sources]
+        ra = rng.uniform(
+            ra_centre - half_fov_deg, ra_centre + half_fov_deg, spec.num_sources
         )
-        return np.asarray(ras), np.asarray(decs), np.asarray(fluxes)
+        dec = rng.uniform(
+            dec_centre - half_fov_deg, dec_centre + half_fov_deg, spec.num_sources
+        )
+        flux = rng.uniform(0.0, spec.max_flux_jy, spec.num_sources)
 
-    def regenerate(self, seed: int | None = None):
-        """Generate new random sources within the field of view."""
-        if seed is not None:
-            self.rng = np.random.default_rng(seed)
-        self._generate()
-
-    def _generate(self):
-        """Generate random sources within the field of view."""
-        ras = self._get_ra_positions()
-        decs = self._get_dec_positions()
-        fluxes = self._get_source_fluxes()
-        self.sources = list(zip(zip(ras, decs), fluxes))
-
-    def _get_ra_positions(self) -> np.ndarray:
-        return self._get_coordinate_positions(self.phase_centre[0])
-
-    def _get_dec_positions(self) -> np.ndarray:
-        return self._get_coordinate_positions(self.phase_centre[1])
-
-    def _get_coordinate_positions(self, centre: float) -> np.ndarray:
-        """Return the positions of the sources."""
-        return self.rng.uniform(
-            centre - self.fov / 2, centre + self.fov / 2, self.num_sources
+        return cls(
+            name=name,
+            ra_deg=ra,
+            dec_deg=dec,
+            flux_jy=flux,
+            spec=spec,
         )
 
-    def _get_source_fluxes(self) -> np.ndarray:
-        """Return the fluxes of the sources."""
-        return self.rng.uniform(0, self.max_flux, self.num_sources)
+    def as_arrays(self):
+        return self.ra_deg, self.dec_deg, self.flux_jy
+
+    def equals(self, other: "SkyModel", tol=0.0) -> bool:
+        """Check equality with another SkyModel within a tolerance."""
+        ra1, dec1, f1 = self.as_arrays()
+        ra2, dec2, f2 = other.as_arrays()
+
+        return (
+            np.allclose(ra1, ra2, atol=tol)
+            and np.allclose(dec1, dec2, atol=tol)
+            and np.allclose(f1, f2, atol=tol)
+        )
