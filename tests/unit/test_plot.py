@@ -7,9 +7,9 @@ from starbox.viz import plot
 import numpy as np
 
 
-def test_plot_skymodel():
+def test_plot_skymodel(skymodel_spec):
     """Test that the plot method of SkyModel works without errors."""
-    skymodel = SkyModel(name="TestModel", num_sources=20, seed=42)
+    skymodel = SkyModel.from_spec(skymodel_spec)
     plot.plot_sky_model(skymodel)
 
 

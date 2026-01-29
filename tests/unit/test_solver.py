@@ -28,7 +28,7 @@ def test_solver_solve_method(visibility_set, solint, expected_shape):
         model_visibilities=model_visibilities,
         n_stations=n_stations,
     )
-    assert solutions.gains.shape[0] == expected_shape[0]
-    assert solutions.gains.shape[1] == expected_shape[1]
-    assert solutions.gains.shape[2] == n_stations
-    assert solutions.gains.dtype == "complex64"
+    assert solutions.station_phase_gains.shape[0] == expected_shape[0]
+    assert solutions.station_phase_gains.shape[1] == expected_shape[1]
+    assert solutions.station_phase_gains.shape[2] == n_stations
+    assert solutions.station_phase_gains.dtype == "complex64"

@@ -58,7 +58,7 @@ def plot_gains(solutions: Solutions) -> Figure:
     """Plot the calibration solutions."""
 
     fig = px.imshow(
-        np.real(solutions.gains[:, :, 0].T),
+        np.real(solutions.station_phase_gains[:, :, 0].T),
         title="Gains",
         labels={
             "x": "time",

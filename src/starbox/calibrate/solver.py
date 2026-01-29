@@ -33,4 +33,4 @@ class Solver:
             (n_time_bins, n_freq_bins, n_stations),
             dtype=np.complex64,
         )
-        return Solutions(gains=gains)
+        return Solutions(station_phase_gains=gains)
