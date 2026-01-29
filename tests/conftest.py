@@ -7,7 +7,7 @@ from starbox.simulate.telescope import Telescope
 import plotly.io as pio
 from starbox.simulate.skymodel import SkyModel, SkyModelSpec
 from starbox.simulate.observation import Observation
-
+from starbox.config.skymodel import SkyModelConfig
 from starbox.visibility import VisibilitySet
 import numpy as np
 
@@ -35,6 +35,18 @@ def skymodel_spec():
 def skymodel(skymodel_spec):
     """A simple sky model instance."""
     return SkyModel.from_spec(skymodel_spec)
+
+
+@pytest.fixture
+def skymodel_config():
+    """A simple sky model configuration."""
+    return SkyModelConfig(
+        num_sources=5,
+        max_flux_jy=1.0,
+        fov_deg=1.0,
+        phase_centre_deg=(0.0, 0.0),
+        seed=42,
+    )
 
 
 @pytest.fixture
@@ -99,4 +111,4 @@ def gains():
 @pytest.fixture
 def solutions(gains):
     """A simple Solutions instance for testing."""
-    return Solutions(gains=gains)
+    return Solutions(station_phase_gains=gains)
