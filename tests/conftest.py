@@ -6,8 +6,9 @@ from starbox.simulate.corruptions import Corruptions
 from starbox.simulate.telescope import Telescope
 import plotly.io as pio
 from starbox.simulate.skymodel import SkyModel, SkyModelSpec
-from starbox.simulate.observation import Observation
+from starbox.simulate.observation import Observation, ObservationSpec
 from starbox.config.skymodel import SkyModelConfig
+from starbox.config.observation import ObservationConfig
 from starbox.visibility import VisibilitySet
 import numpy as np
 
@@ -66,6 +67,32 @@ def observation():
         start_frequency=start_frequency,
         num_channels=num_channels,
         total_bandwidth=total_bandwidth,
+    )
+
+
+@pytest.fixture
+def observation_config():
+    """A simple observation configuration."""
+    return ObservationConfig(
+        start_time=0,  # in seconds
+        observation_length=180,  # in seconds
+        num_timesteps=3,
+        start_frequency=1e6,  # in Hz
+        num_channels=2,
+        total_bandwidth=1e6,  # in Hz
+    )
+
+
+@pytest.fixture
+def observation_spec():
+    """A simple ObservationSpec instance."""
+    return ObservationSpec(
+        start_time=0,  # in seconds
+        observation_length=180,  # in seconds
+        num_timesteps=3,
+        start_frequency=1e6,  # in Hz
+        num_channels=2,
+        total_bandwidth=1e6,  # in Hz
     )
 
 

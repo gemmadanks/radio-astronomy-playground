@@ -1,36 +1,26 @@
 """Tests for Observation class."""
 
-from starbox.simulate import Observation
+from starbox.simulate import Observation, ObservationSpec
 import numpy as np
 import pytest
 
 
-def test_observation_initialization():
-    """Test that the Observation initializes correctly."""
+def test_observation_spec_initialization(observation_spec):
+    """Test that the ObservationSpec initializes correctly."""
 
-    observation = Observation(
-        start_time=0,
-        observation_length=120.0,
-        num_timesteps=3,
-        start_frequency=1e6,
-        num_channels=2,
-        total_bandwidth=1e6,
-    )
-
-    assert observation.start_time == 0
-    assert observation.observation_length == 120.0
-    assert observation.num_timesteps == 3
-    assert observation.start_frequency == 1e6
-    assert observation.num_channels == 2
-    assert observation.total_bandwidth == 1e6
-    assert observation.channel_width == 500000.0
+    assert observation_spec.start_time == 0
+    assert observation_spec.observation_length == 180.0
+    assert observation_spec.num_timesteps == 3
+    assert observation_spec.start_frequency == 1e6
+    assert observation_spec.num_channels == 2
+    assert observation_spec.total_bandwidth == 1e6
 
 
-def test_observation_invalid_num_channels():
-    """Test that the Observation raises an error for invalid num_channels."""
+def test_observation_spec_invalid_num_channels():
+    """Test that the ObservationSpec raises an error for invalid num_channels."""
 
     with pytest.raises(ValueError, match="num_channels must be a positive integer"):
-        Observation(
+        ObservationSpec(
             start_time=0,
             observation_length=60.0,
             num_timesteps=2,
@@ -38,6 +28,39 @@ def test_observation_invalid_num_channels():
             num_channels=0,
             total_bandwidth=1e6,
         )
+
+
+def test_observation_spec_invalid_num_timesteps():
+    """Test that the ObservationSpec raises an error for invalid num_timesteps."""
+
+    with pytest.raises(ValueError, match="num_timesteps must be a positive integer"):
+        ObservationSpec(
+            start_time=0,
+            observation_length=60.0,
+            num_timesteps=-1,
+            start_frequency=1e6,
+            num_channels=2,
+            total_bandwidth=1e6,
+        )
+
+
+def test_observation_from_spec(observation_spec):
+    """Test that Observation can be created from ObservationSpec."""
+
+    observation = Observation.from_spec(observation_spec)
+
+    assert observation.start_time == observation_spec.start_time
+    assert observation.observation_length == observation_spec.observation_length
+    assert observation.num_timesteps == observation_spec.num_timesteps
+    assert observation.start_frequency == observation_spec.start_frequency
+    assert observation.num_channels == observation_spec.num_channels
+    assert observation.total_bandwidth == observation_spec.total_bandwidth
+    assert observation.spec == observation_spec
+    assert observation.channel_width == (
+        observation_spec.total_bandwidth / observation_spec.num_channels
+    )
+    assert observation._times is None
+    assert observation._frequencies is None
 
 
 def test_observation_times(observation: Observation):

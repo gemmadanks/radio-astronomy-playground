@@ -18,7 +18,14 @@ Functions:
 
 from .telescope import Telescope
 from .skymodel import SkyModel, SkyModelSpec
-from .observation import Observation
+from .observation import Observation, ObservationSpec
 from .corruptions import Corruptions
 
-__all__ = ["Telescope", "SkyModel", "SkyModelSpec", "Corruptions", "Observation"]
+__all__ = [
+    "Telescope",
+    "SkyModel",
+    "SkyModelSpec",
+    "Corruptions",
+    "Observation",
+    "ObservationSpec",
+]

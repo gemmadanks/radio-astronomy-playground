@@ -7,5 +7,6 @@ Exports:
 """
 
 from .skymodel import build_skymodel
+from .observation import build_observation
 
-__all__ = ["build_skymodel"]
+__all__ = ["build_skymodel", "build_observation"]

@@ -4,9 +4,17 @@ from dataclasses import dataclass, field
 import numpy as np
 
 
-@dataclass(slots=True)
-class Observation:
-    """Observation configuration and derived sampling grids."""
+@dataclass
+class ObservationSpec:
+    """A dataclass representing the specification for an observation.
+
+    Attributes:
+        start_time: Start time of the observation in MJD.
+        observation_length: Length of the observation in seconds.
+        num_timesteps: Number of time steps in the observation.
+        start_frequency: Starting frequency in Hz.
+        num_channels: Number of frequency channels.
+        total_bandwidth: Total bandwidth in Hz."""
 
     start_time: float
     observation_length: float
@@ -14,13 +22,6 @@ class Observation:
     start_frequency: float
     num_channels: int
     total_bandwidth: float
-
-    # Derived fields (initialized in __post_init__)
-    channel_width: float = field(init=False)
-
-    # Lazy cached arrays
-    _times: np.ndarray | None = field(default=None, init=False, repr=False)
-    _frequencies: np.ndarray | None = field(default=None, init=False, repr=False)
 
     def __post_init__(self):
         if self.num_channels <= 0:
@@ -33,7 +34,40 @@ class Observation:
                 f"num_timesteps must be a positive integer, got {self.num_timesteps!r}"
             )
 
-        self.channel_width = self.total_bandwidth / self.num_channels
+
+@dataclass(slots=True)
+class Observation:
+    """Observation configuration and derived sampling grids."""
+
+    start_time: float
+    observation_length: float
+    num_timesteps: int
+    start_frequency: float
+    num_channels: int
+    total_bandwidth: float
+    spec: "ObservationSpec | None" = None
+
+    # Lazy cached arrays
+    _times: np.ndarray | None = field(default=None, init=False, repr=False)
+    _frequencies: np.ndarray | None = field(default=None, init=False, repr=False)
+
+    @classmethod
+    def from_spec(cls, spec: "ObservationSpec") -> "Observation":
+        """Create an Observation instance from an ObservationSpec."""
+        return cls(
+            start_time=spec.start_time,
+            observation_length=spec.observation_length,
+            num_timesteps=spec.num_timesteps,
+            start_frequency=spec.start_frequency,
+            num_channels=spec.num_channels,
+            total_bandwidth=spec.total_bandwidth,
+            spec=spec,
+        )
+
+    @property
+    def channel_width(self) -> float:
+        """Return the width of each frequency channel."""
+        return self.total_bandwidth / self.num_channels
 
     @property
     def times(self) -> np.ndarray:

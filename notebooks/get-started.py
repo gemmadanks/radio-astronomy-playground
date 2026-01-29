@@ -7,9 +7,9 @@ app = marimo.App(width="medium")
 @app.cell
 def _():
     import marimo as mo
-    from starbox import Telescope, Corruptions, Imager, Solver, Observation
-    from starbox.config import SkyModelConfig
-    from starbox.factory import build_skymodel
+    from starbox import Telescope, Corruptions, Imager, Solver
+    from starbox.config import SkyModelConfig, ObservationConfig
+    from starbox.factory import build_skymodel, build_observation
     from starbox.viz import plot
     from starbox.predict.predict import predict_visibilities
     from starbox.io.save import save
@@ -17,10 +17,11 @@ def _():
     return (
         Corruptions,
         Imager,
-        Observation,
+        ObservationConfig,
         SkyModelConfig,
         Solver,
         Telescope,
+        build_observation,
         build_skymodel,
         mo,
         plot,
@@ -237,15 +238,16 @@ def _(
 
 @app.cell
 def _(
-    Observation,
+    ObservationConfig,
     bandwidth_slider,
+    build_observation,
     num_channels_slider,
     num_timesteps_slider,
     observation_length_slider,
     start_freq_slider,
     start_time_slider,
 ):
-    observation = Observation(
+    observation_config = ObservationConfig(
         start_time=start_time_slider.value,
         observation_length=observation_length_slider.value,
         num_timesteps=num_timesteps_slider.value,
@@ -253,6 +255,7 @@ def _(
         num_channels=num_channels_slider.value,
         total_bandwidth=bandwidth_slider.value,
     )
+    observation = build_observation(observation_config)
     return (observation,)
 
 
