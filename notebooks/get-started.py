@@ -8,21 +8,20 @@ app = marimo.App(width="medium")
 def _():
     import marimo as mo
     from starbox import Telescope, SkyModel, Corruptions, Imager, Solver, Observation
-    from starbox.simulate import SkyModelSpec
+    from starbox.config import SkyModelConfig
+    from starbox.factory import build_skymodel
     from starbox.viz import plot
     from starbox.predict.predict import predict_visibilities
     from starbox.io.save import save
-    from starbox.config import SkyModelConfig
 
     return (
         Corruptions,
         Imager,
         Observation,
-        SkyModel,
         SkyModelConfig,
-        SkyModelSpec,
         Solver,
         Telescope,
+        build_skymodel,
         mo,
         plot,
         predict_visibilities,
@@ -138,9 +137,8 @@ def _(file_browser):
 
 @app.cell
 def _(
-    SkyModel,
     SkyModelConfig,
-    SkyModelSpec,
+    build_skymodel,
     fov_slider,
     max_flux_slider,
     mo,
@@ -156,8 +154,7 @@ def _(
         phase_centre_deg=(0, 0),
         seed=seed,
     )
-    sky_model_spec = SkyModelSpec(**sky_model_config.model_dump())
-    sky_model = SkyModel.from_spec(sky_model_spec)
+    sky_model = build_skymodel(sky_model_config)
     sky_model_fig = mo.ui.plotly(plot.plot_sky_model(sky_model))
     return sky_model, sky_model_fig
 
