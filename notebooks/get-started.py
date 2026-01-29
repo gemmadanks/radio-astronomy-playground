@@ -7,7 +7,7 @@ app = marimo.App(width="medium")
 @app.cell
 def _():
     import marimo as mo
-    from starbox import Telescope, SkyModel, Corruptions, Imager, Solver, Observation
+    from starbox import Telescope, Corruptions, Imager, Solver, Observation
     from starbox.config import SkyModelConfig
     from starbox.factory import build_skymodel
     from starbox.viz import plot
