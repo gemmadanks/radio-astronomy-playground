@@ -1,47 +1,43 @@
 """Class for handling observation parameters."""
 
+from dataclasses import dataclass, field
 import numpy as np
 
 
+@dataclass(slots=True)
 class Observation:
-    """Class for handling observation parameters."""
+    """Observation configuration and derived sampling grids."""
 
-    def __init__(
-        self,
-        start_time: float,
-        observation_length: float,
-        num_timesteps: int,
-        start_frequency: float,
-        num_channels: int,
-        total_bandwidth: float,
-    ):
-        """Initialize the Observation with given parameters."""
-        self.start_time = start_time
-        self.observation_length = observation_length
-        self.num_timesteps = num_timesteps
-        self.start_frequency = start_frequency
-        self.num_channels = num_channels
-        if num_channels <= 0:
+    start_time: float
+    observation_length: float
+    num_timesteps: int
+    start_frequency: float
+    num_channels: int
+    total_bandwidth: float
+
+    # Derived fields (initialized in __post_init__)
+    channel_width: float = field(init=False)
+
+    # Lazy cached arrays
+    _times: np.ndarray | None = field(default=None, init=False, repr=False)
+    _frequencies: np.ndarray | None = field(default=None, init=False, repr=False)
+
+    def __post_init__(self):
+        if self.num_channels <= 0:
             raise ValueError(
-                f"num_channels must be a positive integer, got {num_channels!r}"
+                f"num_channels must be a positive integer, got {self.num_channels!r}"
             )
-        self.total_bandwidth = total_bandwidth
-        self.channel_width = total_bandwidth / num_channels
-        # Lazily computed, cached values
-        self._times = None
-        self._frequencies = None
+
+        if self.num_timesteps <= 0:
+            raise ValueError(
+                f"num_timesteps must be a positive integer, got {self.num_timesteps!r}"
+            )
+
+        self.channel_width = self.total_bandwidth / self.num_channels
 
     @property
     def times(self) -> np.ndarray:
-        """Generate an array of time steps for the observation.
-
-        The returned array contains ``num_timesteps`` samples. For
-        ``num_timesteps > 1``, the samples are linearly spaced from
-        ``start_time`` to ``start_time + observation_length`` inclusive,
-        with a fixed timestep of
-        ``observation_length / (num_timesteps - 1)``. For
-        ``num_timesteps == 1``, the array contains only ``start_time``.
-        """
+        """Return time samples for the observation."""
         if self._times is None:
             if self.num_timesteps > 1:
                 timestep = self.observation_length / (self.num_timesteps - 1)
@@ -54,7 +50,7 @@ class Observation:
 
     @property
     def frequencies(self) -> np.ndarray:
-        """Generate an array of frequency channels for the observation."""
+        """Return frequency channels for the observation."""
         if self._frequencies is None:
             self._frequencies = np.array(
                 [
