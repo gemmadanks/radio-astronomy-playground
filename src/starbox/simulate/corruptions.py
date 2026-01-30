@@ -1,6 +1,6 @@
 """A class for simulating corruptions."""
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 import numpy as np
 
 from starbox.visibility import VisibilitySet
@@ -33,7 +33,7 @@ class Corruptions:
     rms_noise: float | None = None
     sigma: float | None = None
     rms_phase_gain: float | None = None
-    rng: np.random.Generator | None = None
+    rng: np.random.Generator = field(init=False, repr=False)
     spec: CorruptionsSpec | None = None
 
     def __post_init__(self):

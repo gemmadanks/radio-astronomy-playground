@@ -7,24 +7,25 @@ app = marimo.App(width="medium")
 @app.cell
 def _():
     import marimo as mo
-    from starbox import Imager, Solver
+    from starbox import Imager
     from starbox.config import (
         SkyModelConfig,
         ObservationConfig,
         TelescopeConfig,
         CorruptionsConfig,
-        SolverConfig
+        SolverConfig,
     )
     from starbox.factory import (
         build_skymodel,
         build_observation,
         build_telescope,
         build_corruptions,
-        build_solver
+        build_solver,
     )
     from starbox.viz import plot
     from starbox.predict.predict import predict_visibilities
     from starbox.io.save import save
+
     return (
         CorruptionsConfig,
         Imager,
@@ -297,7 +298,9 @@ def _(
     seed,
 ):
     corruptions_config = CorruptionsConfig(
-        rms_noise=noise_rms_slider.value, rms_phase_gain=phase_rms_slider.value, seed=seed
+        rms_noise=noise_rms_slider.value,
+        rms_phase_gain=phase_rms_slider.value,
+        seed=seed,
     )
     corruptions = build_corruptions(corruptions_config)
     return (corruptions,)

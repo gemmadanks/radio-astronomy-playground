@@ -1,7 +1,7 @@
 """Tests for Corruptions class."""
 
 import pytest
-from starbox.simulate import Corruptions, CorruptionsSpec
+from starbox.simulate import Corruptions
 import numpy as np
 
 from starbox.visibility import VisibilitySet
