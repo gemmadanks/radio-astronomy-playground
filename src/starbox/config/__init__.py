@@ -2,5 +2,6 @@
 
 from .observation import ObservationConfig
 from .skymodel import SkyModelConfig
+from .telescope import TelescopeConfig
 
-__all__ = ["ObservationConfig", "SkyModelConfig"]
+__all__ = ["ObservationConfig", "SkyModelConfig", "TelescopeConfig"]

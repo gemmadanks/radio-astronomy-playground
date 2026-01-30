@@ -7,9 +7,9 @@ app = marimo.App(width="medium")
 @app.cell
 def _():
     import marimo as mo
-    from starbox import Telescope, Corruptions, Imager, Solver
-    from starbox.config import SkyModelConfig, ObservationConfig
-    from starbox.factory import build_skymodel, build_observation
+    from starbox import Corruptions, Imager, Solver
+    from starbox.config import SkyModelConfig, ObservationConfig, TelescopeConfig
+    from starbox.factory import build_skymodel, build_observation, build_telescope
     from starbox.viz import plot
     from starbox.predict.predict import predict_visibilities
     from starbox.io.save import save
@@ -20,9 +20,10 @@ def _():
         ObservationConfig,
         SkyModelConfig,
         Solver,
-        Telescope,
+        TelescopeConfig,
         build_observation,
         build_skymodel,
+        build_telescope,
         mo,
         plot,
         predict_visibilities,
@@ -162,19 +163,20 @@ def _(
 
 @app.cell
 def _(
-    Telescope,
+    TelescopeConfig,
+    build_telescope,
     mo,
     num_stations_slider,
     plot,
     seed,
     telescope_diameter_slider,
 ):
-    telescope = Telescope(
-        name="My Telescope",
+    telescope_config = TelescopeConfig(
         num_stations=num_stations_slider.value,
         diameter=telescope_diameter_slider.value,
         seed=seed,
     )
+    telescope = build_telescope(telescope_config)
     telescope_fig = mo.ui.plotly(plot.plot_array_configuration(telescope))
     return telescope, telescope_fig
 

@@ -2,8 +2,9 @@
 
 import pytest
 from starbox.calibrate.solutions import Solutions
+from starbox.config.telescope import TelescopeConfig
 from starbox.simulate.corruptions import Corruptions
-from starbox.simulate.telescope import Telescope
+from starbox.simulate.telescope import Telescope, TelescopeSpec
 import plotly.io as pio
 from starbox.simulate.skymodel import SkyModel, SkyModelSpec
 from starbox.simulate.observation import Observation, ObservationSpec
@@ -24,6 +25,18 @@ def configure_plotly_for_tests():
 def small_telescope():
     """A simple telescope model for a small array."""
     return Telescope(name="SmallArray", num_stations=10, diameter=20.0)
+
+
+@pytest.fixture
+def telescope_spec():
+    """A simple TelescopeSpec instance."""
+    return TelescopeSpec(num_stations=10, diameter=20.0, seed=42)
+
+
+@pytest.fixture
+def telescope_config():
+    """A simple telescope configuration."""
+    return TelescopeConfig(num_stations=10, diameter=20.0, seed=42)
 
 
 @pytest.fixture
@@ -139,3 +152,9 @@ def gains():
 def solutions(gains):
     """A simple Solutions instance for testing."""
     return Solutions(station_phase_gains=gains)
+
+
+@pytest.fixture
+def rng():
+    """A random number generator with a fixed seed for reproducibility."""
+    return np.random.default_rng(seed=42)
