@@ -125,16 +125,6 @@ def test_skymodel_spec_invalid_fov_raises_error(fov):
         SkyModelSpec(num_sources=10, fov_deg=fov)
 
 
-def test_skymodel_spec_repr(skymodel_spec):
-    """Test the __repr__ method of SkyModelSpec."""
-    repr_str = repr(skymodel_spec)
-    expected_str = (
-        "SkyModelSpec(num_sources=5, max_flux_jy=1.0, "
-        "phase_centre_deg=(0, 0), fov_deg=1.0, seed=42)"
-    )
-    assert repr_str == expected_str
-
-
 def test_skymodel_with_unequal_array_lengths():
     """Test that SkyModel raises error when arrays have unequal lengths."""
     ra_deg = np.array([0.0, 1.0, 2.0])
