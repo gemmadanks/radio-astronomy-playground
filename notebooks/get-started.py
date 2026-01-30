@@ -28,6 +28,7 @@ def _():
     from starbox.viz import plot
     from starbox.predict.predict import predict_visibilities
     from starbox.io.save import save
+
     return (
         CorruptionsConfig,
         ExperimentConfig,
@@ -57,7 +58,6 @@ def _():
 
 @app.cell
 def _(logging):
-
     logging.basicConfig(level=logging.INFO)
     return
 
