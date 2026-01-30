@@ -14,6 +14,7 @@ def _():
         TelescopeConfig,
         CorruptionsConfig,
         SolverConfig,
+        ExperimentConfig,
     )
     from starbox.factory import (
         build_skymodel,
@@ -28,6 +29,7 @@ def _():
 
     return (
         CorruptionsConfig,
+        ExperimentConfig,
         Imager,
         ObservationConfig,
         SkyModelConfig,
@@ -172,7 +174,7 @@ def _(
     )
     sky_model = build_skymodel(sky_model_config)
     sky_model_fig = mo.ui.plotly(plot.plot_sky_model(sky_model))
-    return sky_model, sky_model_fig
+    return sky_model, sky_model_config, sky_model_fig
 
 
 @app.cell
@@ -192,7 +194,7 @@ def _(
     )
     telescope = build_telescope(telescope_config)
     telescope_fig = mo.ui.plotly(plot.plot_array_configuration(telescope))
-    return telescope, telescope_fig
+    return telescope, telescope_config, telescope_fig
 
 
 @app.cell
@@ -272,7 +274,7 @@ def _(
         total_bandwidth=bandwidth_slider.value,
     )
     observation = build_observation(observation_config)
-    return (observation,)
+    return observation, observation_config
 
 
 @app.cell
@@ -303,30 +305,20 @@ def _(
         seed=seed,
     )
     corruptions = build_corruptions(corruptions_config)
-    return (corruptions,)
+    return corruptions, corruptions_config
 
 
 @app.cell
 def _(SolverConfig, build_solver, solint_slider):
     solver_config = SolverConfig(solint=solint_slider.value)
     solver = build_solver(solver_config)
-    return (solver,)
+    return solver, solver_config
 
 
 @app.cell
 def _(Imager):
     imager = Imager()
     return (imager,)
-
-
-@app.cell
-def _(mo, save):
-    save_button = mo.ui.button(
-        value=0, on_click=lambda: save(None), label="Save Experiment"
-    )
-    experiment_name = mo.ui.text(placeholder="your-experiment-name")
-    mo.hstack([experiment_name, save_button], justify="start")
-    return
 
 
 @app.cell(hide_code=True)
@@ -373,6 +365,59 @@ def _(corrected_image, dirty_image, gains, mo, plot):
             plot.plot_gains(gains),
         ]
     )
+    return
+
+
+@app.cell
+def _(mo):
+    experiment_name = mo.ui.text(placeholder="your-experiment-name")
+    return (experiment_name,)
+
+
+@app.cell
+def _(experiment_name):
+    experiment_name
+    return
+
+
+@app.cell
+def _(
+    ExperimentConfig,
+    corruptions_config,
+    experiment_name,
+    observation_config,
+    sky_model_config,
+    solver_config,
+    telescope_config,
+):
+    experiment_config = ExperimentConfig(
+        name=experiment_name.value,
+        skymodel=sky_model_config,
+        telescope=telescope_config,
+        corruptions=corruptions_config,
+        observation=observation_config,
+        solver=solver_config,
+    )
+    return (experiment_config,)
+
+
+@app.cell
+def _(experiment_config):
+    experiment_config
+    return
+
+
+@app.cell
+def _(mo):
+    save_button = mo.ui.run_button(label="Save Experiment")
+    save_button
+    return (save_button,)
+
+
+@app.cell
+def _(experiment_config, save, save_button):
+    if save_button.value:
+        save(experiment_config)
     return
 
 

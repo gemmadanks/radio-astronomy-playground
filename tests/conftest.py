@@ -15,6 +15,7 @@ from starbox.config.solver import SolverConfig
 from starbox.visibility import VisibilitySet
 import numpy as np
 from starbox.calibrate.solver import SolverSpec
+from starbox.config.experiment import ExperimentConfig
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -199,3 +200,22 @@ def solutions(gains):
 def rng():
     """A random number generator with a fixed seed for reproducibility."""
     return np.random.default_rng(seed=42)
+
+
+@pytest.fixture
+def experiment_config(
+    telescope_config,
+    skymodel_config,
+    observation_config,
+    corruptions_config,
+    solver_config,
+):
+    """A simple experiment configuration."""
+    return ExperimentConfig(
+        name="Test Experiment",
+        telescope=telescope_config,
+        skymodel=skymodel_config,
+        observation=observation_config,
+        corruptions=corruptions_config,
+        solver=solver_config,
+    )
