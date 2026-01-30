@@ -92,6 +92,18 @@ def test_skymodel_as_arrays(skymodel):
     np.testing.assert_array_equal(fluxes, skymodel.flux_jy)
 
 
+def test_skymodel_equality(skymodel_spec):
+    """Test the equality check between two SkyModel instances."""
+    skymodel1 = SkyModel.from_spec(skymodel_spec)
+    skymodel2 = SkyModel.from_spec(skymodel_spec)
+    assert skymodel1.equals(skymodel2, atol=1e-8, rtol=1e-5)
+
+    # Modify skymodel2 slightly
+    skymodel2.ra_deg[0] += 1e-6
+    assert not skymodel1.equals(skymodel2, atol=1e-8, rtol=1e-8)
+    assert skymodel1.equals(skymodel2, atol=1e-5, rtol=1e-3)
+
+
 @pytest.mark.parametrize("num_sources", [0, -5, -10])
 def test_skymodel_spec_invalid_num_sources_raises_error(num_sources):
     """Test that SkyModelSpec with no sources behaves correctly."""
@@ -121,3 +133,14 @@ def test_skymodel_spec_repr(skymodel_spec):
         "phase_centre_deg=(0, 0), fov_deg=1.0, seed=42)"
     )
     assert repr_str == expected_str
+
+
+def test_skymodel_with_unequal_array_lengths():
+    """Test that SkyModel raises error when arrays have unequal lengths."""
+    ra_deg = np.array([0.0, 1.0, 2.0])
+    dec_deg = np.array([0.0, 1.0])
+    flux_jy = np.array([1.0, 2.0, 3.0])
+    with pytest.raises(
+        ValueError, match="ra_deg, dec_deg, flux_jy must have same shape"
+    ):
+        SkyModel(name="InvalidModel", ra_deg=ra_deg, dec_deg=dec_deg, flux_jy=flux_jy)

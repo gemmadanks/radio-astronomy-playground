@@ -62,16 +62,20 @@ class SkyModel:
             spec=spec,
         )
 
-    def as_arrays(self):
+    def __post_init__(self):
+        if not (self.ra_deg.shape == self.dec_deg.shape == self.flux_jy.shape):
+            raise ValueError("ra_deg, dec_deg, flux_jy must have same shape")
+
+    def as_arrays(self) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
         return self.ra_deg, self.dec_deg, self.flux_jy
 
-    def equals(self, other: "SkyModel", tol=0.0) -> bool:
+    def equals(self, other: "SkyModel", atol: float = 0.0, rtol: float = 0.0) -> bool:
         """Check equality with another SkyModel within a tolerance."""
         ra1, dec1, f1 = self.as_arrays()
         ra2, dec2, f2 = other.as_arrays()
 
         return (
-            np.allclose(ra1, ra2, atol=tol)
-            and np.allclose(dec1, dec2, atol=tol)
-            and np.allclose(f1, f2, atol=tol)
+            np.allclose(ra1, ra2, atol=atol, rtol=rtol)
+            and np.allclose(dec1, dec2, atol=atol, rtol=rtol)
+            and np.allclose(f1, f2, atol=atol, rtol=rtol)
         )
