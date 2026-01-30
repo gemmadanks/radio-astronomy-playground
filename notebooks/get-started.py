@@ -165,7 +165,7 @@ def _(
     seed,
 ):
     sky_model_config = SkyModelConfig(
-        name="My Sky Model",
+
         num_sources=num_sources_slider.value,
         max_flux_jy=max_flux_slider.value,
         fov_deg=fov_slider.value,

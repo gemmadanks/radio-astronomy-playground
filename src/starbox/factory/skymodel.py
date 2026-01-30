@@ -8,7 +8,7 @@ def build_skymodel(cfg: SkyModelConfig) -> SkyModel:
     """Build a SkyModel from a SkyModelConfig.
 
     Args:
-        skymodel_config (SkyModelConfig): Configuration for the sky model.
+        cfg (SkyModelConfig): Configuration for the sky model.
 
     Returns:
         SkyModel: The constructed sky model.

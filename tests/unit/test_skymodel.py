@@ -13,7 +13,7 @@ import numpy as np
         ("TestModel3", 500, 10.0, (-5, 5), 0.5, 999),
     ],
 )
-def test_skymodel_spec_intialisation(
+def test_skymodel_spec_initialisation(
     name, num_sources, max_flux, phase_centre, fov, seed
 ):
     """Test that SkyModelSpec initializes with correct parameters."""

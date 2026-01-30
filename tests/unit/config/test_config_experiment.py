@@ -1,4 +1,4 @@
-""" "Tests for experiment configuration."""
+"""Tests for experiment configuration."""
 
 
 def test_experiment_config_fields(

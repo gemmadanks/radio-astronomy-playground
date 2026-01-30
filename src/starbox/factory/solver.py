@@ -8,7 +8,7 @@ def build_solver(cfg: SolverConfig) -> Solver:
     """Build a Solver instance from the given configuration.
 
     Args:
-        solver_config: Configuration for the solver.
+        cfg: Configuration for the solver.
     Returns:
         An instance of Solver.
     """
