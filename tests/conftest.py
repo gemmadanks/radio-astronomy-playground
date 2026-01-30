@@ -213,6 +213,7 @@ def experiment_config(
     """A simple experiment configuration."""
     return ExperimentConfig(
         name="Test Experiment",
+        description="A simple test experiment configuration.",
         telescope=telescope_config,
         skymodel=skymodel_config,
         observation=observation_config,
