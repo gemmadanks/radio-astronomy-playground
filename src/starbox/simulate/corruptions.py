@@ -1,10 +1,26 @@
 """A class for simulating corruptions."""
 
+from dataclasses import dataclass
 import numpy as np
 
 from starbox.visibility import VisibilitySet
 
 
+@dataclass(slots=True)
+class CorruptionsSpec:
+    """A specification for signal corruptions.
+
+    Attributes:
+        rms_noise: The RMS noise level to add to the visibilities.
+        rms_phase_gain: Phase gain errors for each station.
+    """
+
+    seed: int = 42
+    rms_noise: float | None = None
+    rms_phase_gain: float | None = None
+
+
+@dataclass(slots=True)
 class Corruptions:
     """A class representing corruptions to apply to a signal.
 
@@ -13,19 +29,34 @@ class Corruptions:
         station_phase_gain: Phase gain errors for each station.
     """
 
-    def __init__(self, seed: int = 42):
-        """Initialize the Corruptions with no corruptions."""
-        self.rng: np.random.Generator = np.random.default_rng(seed)
-        self.rms_noise: float | None = None
-        self.sigma: float | None = None
-        self.rms_phase_gain: float | None = None
+    seed: int = 42
+    rms_noise: float | None = None
+    sigma: float | None = None
+    rms_phase_gain: float | None = None
+    rng: np.random.Generator | None = None
+    spec: CorruptionsSpec | None = None
 
-    def add_noise(self, rms_noise: float = 1.0):
+    def __post_init__(self):
+        self.rng = np.random.default_rng(self.seed)
+        if self.rms_noise is not None:
+            self._add_noise(self.rms_noise)
+
+    @classmethod
+    def from_spec(cls, spec: CorruptionsSpec) -> "Corruptions":
+        """Create a Corruptions instance from a CorruptionsSpec."""
+        return cls(
+            seed=spec.seed,
+            rms_noise=spec.rms_noise,
+            rms_phase_gain=spec.rms_phase_gain,
+            spec=spec,
+        )
+
+    def _add_noise(self, rms_noise: float = 1.0):
         """Add Gaussian noise corruption."""
         self.rms_noise = rms_noise
         self.sigma = rms_noise / np.sqrt(2)
 
-    def add_station_phase_gain(self, rms_phase_gain: float):
+    def add_station_phase_gain(self, rms_phase_gain: float | None):
         """Add station phase gain corruption."""
         self.rms_phase_gain = rms_phase_gain
 

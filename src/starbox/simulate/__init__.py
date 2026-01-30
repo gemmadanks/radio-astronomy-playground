@@ -19,7 +19,7 @@ Functions:
 from .telescope import Telescope, TelescopeSpec
 from .skymodel import SkyModel, SkyModelSpec
 from .observation import Observation, ObservationSpec
-from .corruptions import Corruptions
+from .corruptions import Corruptions, CorruptionsSpec
 
 __all__ = [
     "Telescope",
@@ -27,6 +27,7 @@ __all__ = [
     "SkyModel",
     "SkyModelSpec",
     "Corruptions",
+    "CorruptionsSpec",
     "Observation",
     "ObservationSpec",
 ]

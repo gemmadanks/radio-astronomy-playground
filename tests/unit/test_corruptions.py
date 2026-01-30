@@ -1,13 +1,23 @@
 """Tests for Corruptions class."""
 
 import pytest
-from starbox.simulate import Corruptions
+from starbox.simulate import Corruptions, CorruptionsSpec
 import numpy as np
 
 from starbox.visibility import VisibilitySet
 
 
-def test_corruptions_init(corruptions: Corruptions):
+def test_corruptions_from_spec(corruptions_spec):
+    """Test that Corruptions can be created from CorruptionsSpec."""
+    corruptions = Corruptions.from_spec(corruptions_spec)
+
+    assert corruptions.seed == 42
+    assert corruptions.rms_noise == 1.0
+    assert corruptions.rms_phase_gain == 2.0
+    assert corruptions.sigma == 1.0 / np.sqrt(2)
+
+
+def test_corruptions_init(corruptions):
     """Test that the Corruptions class initializes correctly."""
     assert corruptions.rms_noise is None
     assert corruptions.rms_phase_gain is None
@@ -16,7 +26,7 @@ def test_corruptions_init(corruptions: Corruptions):
 
 def test_corruptions_add_noise(corruptions: Corruptions):
     """Test adding noise to the Corruptions instance."""
-    corruptions.add_noise(rms_noise=2.0)
+    corruptions._add_noise(rms_noise=2.0)
     assert corruptions.rms_noise == 2.0
     assert corruptions.sigma == 2.0 / np.sqrt(2)
 
@@ -38,7 +48,7 @@ def test_corruptions_apply_noise(
     np.testing.assert_array_equal(corrupted_vis.vis, visibility_set.vis)
 
     # Add noise and apply
-    corruptions.add_noise(rms_noise=0.1)
+    corruptions._add_noise(rms_noise=0.1)
     corrupted_vis = corruptions.apply(visibility_set)
     assert not np.array_equal(corrupted_vis.vis, visibility_set.vis)
 
@@ -53,9 +63,9 @@ def test_apply_without_rms_phase_gain(
 ):
     """Test that applying corruptions without setting rms phase."""
     spy_sample_station_phase_gains = mocker.spy(
-        corruptions, "_sample_station_phase_gains"
+        Corruptions, "_sample_station_phase_gains"
     )
-    spy_apply_station_phase_gain = mocker.spy(corruptions, "_apply_station_phase_gain")
+    spy_apply_station_phase_gain = mocker.spy(Corruptions, "_apply_station_phase_gain")
     _ = corruptions.apply(visibility_set)
     spy_sample_station_phase_gains.assert_not_called()
     spy_apply_station_phase_gain.assert_not_called()
@@ -65,7 +75,7 @@ def test_apply_without_rms_noise(
     corruptions: Corruptions, visibility_set: VisibilitySet, mocker
 ):
     """Test that applying corruptions without setting rms noise."""
-    spy_apply_noise = mocker.spy(corruptions, "_apply_noise")
+    spy_apply_noise = mocker.spy(Corruptions, "_apply_noise")
     _ = corruptions.apply(visibility_set)
     spy_apply_noise.assert_not_called()
 

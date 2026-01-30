@@ -3,13 +3,14 @@
 import pytest
 from starbox.calibrate.solutions import Solutions
 from starbox.config.telescope import TelescopeConfig
-from starbox.simulate.corruptions import Corruptions
+from starbox.simulate.corruptions import Corruptions, CorruptionsSpec
 from starbox.simulate.telescope import Telescope, TelescopeSpec
 import plotly.io as pio
 from starbox.simulate.skymodel import SkyModel, SkyModelSpec
 from starbox.simulate.observation import Observation, ObservationSpec
 from starbox.config.skymodel import SkyModelConfig
 from starbox.config.observation import ObservationConfig
+from starbox.config.corruptions import CorruptionsConfig
 from starbox.visibility import VisibilitySet
 import numpy as np
 
@@ -107,6 +108,32 @@ def observation_spec():
         num_channels=2,
         total_bandwidth=1e6,  # in Hz
     )
+
+
+@pytest.fixture
+def corruptions_config():
+    """A simple corruptions configuration."""
+    return CorruptionsConfig(
+        seed=42,
+        rms_noise=1.0,
+        rms_phase_gain=2.0,
+    )
+
+
+@pytest.fixture
+def corruptions_spec():
+    """A simple CorruptionsSpec instance."""
+    return CorruptionsSpec(
+        seed=42,
+        rms_noise=1.0,
+        rms_phase_gain=2.0,
+    )
+
+
+@pytest.fixture
+def corruptions_basic(corruptions_spec):
+    """A simple Corruptions instance."""
+    return Corruptions.from_spec(corruptions_spec)
 
 
 @pytest.fixture
