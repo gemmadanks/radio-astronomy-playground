@@ -7,6 +7,8 @@ app = marimo.App(width="medium")
 @app.cell
 def _():
     import marimo as mo
+    import logging
+
     from starbox import Imager
     from starbox.config import (
         SkyModelConfig,
@@ -26,7 +28,6 @@ def _():
     from starbox.viz import plot
     from starbox.predict.predict import predict_visibilities
     from starbox.io.save import save
-
     return (
         CorruptionsConfig,
         ExperimentConfig,
@@ -40,6 +41,7 @@ def _():
         build_skymodel,
         build_solver,
         build_telescope,
+        logging,
         mo,
         plot,
         predict_visibilities,
@@ -51,6 +53,13 @@ def _():
 def _():
     seed = 42
     return (seed,)
+
+
+@app.cell
+def _(logging):
+
+    logging.basicConfig(level=logging.INFO)
+    return
 
 
 @app.cell
