@@ -1,6 +1,7 @@
 """Test the Telescope class."""
 
 import pytest
+import re
 
 from starbox.simulate.telescope import Telescope, _compute_coordinates, TelescopeSpec
 import numpy as np
@@ -65,6 +66,102 @@ def test_telescope_array(name, num_stations, diameter, seed):
         telescope.station_ids,
         np.array([f"{name}_STN{idx:03d}" for idx in range(num_stations)]),
     )
+
+
+def test_telescope_array_supplied(mocker):
+    """Test that supplying an array works correctly."""
+    num_stations = 5
+    diameter = 10.0
+    array = np.array(
+        [
+            [0.0, 0.0, 0.0],
+            [1.0, 0.0, 0.0],
+            [0.0, 1.0, 0.0],
+            [1.0, 1.0, 0.0],
+            [0.5, 0.5, 0.0],
+        ]
+    )
+    spy_ = mocker.spy(Telescope, "_configure_array")
+    telescope = Telescope(
+        name="CustomArray", num_stations=num_stations, array=array, diameter=diameter
+    )
+    assert spy_.call_count == 0  # _configure_array should not be called
+    assert telescope.array is not None
+    assert telescope.array.shape == (num_stations, 3)
+    np.testing.assert_array_equal(telescope.array, array)
+    np.testing.assert_array_equal(
+        telescope.station_ids,
+        np.array([f"CustomArray_STN{idx:03d}" for idx in range(num_stations)]),
+    )
+
+
+def test_telescope_station_ids_supplied(mocker):
+    """Test that supplying station IDs works correctly."""
+    num_stations = 3
+    diameter = 10.0
+    station_ids = np.array(["STA001", "STA002", "STA003"])
+    spy_ = mocker.spy(Telescope, "_configure_array")
+    telescope = Telescope(
+        name="CustomIDs",
+        num_stations=num_stations,
+        station_ids=station_ids,
+        diameter=diameter,
+    )
+    assert spy_.call_count == 1  # _configure_array should be called
+    assert telescope.station_ids is not None
+    assert telescope.array is not None
+    assert telescope.station_ids.shape == (num_stations,)
+    np.testing.assert_array_equal(telescope.station_ids, station_ids)
+    assert telescope.array.shape == (num_stations, 3)
+
+
+def test_telescope_invalid_array_shape():
+    """Test that Telescope raises error for invalid array shape."""
+    num_stations = 4
+    diameter = 10.0
+    invalid_array = np.array(
+        [
+            [0.0, 0.0],
+            [1.0, 0.0],
+            [0.0, 1.0],
+            [1.0, 1.0],
+        ]
+    )  # Invalid shape (4,2) instead of (4,3)
+    expected_message = re.escape(
+        f"Array shape must be ({num_stations}, 3), got {invalid_array.shape!r}"
+    )
+    with pytest.raises(
+        ValueError,
+        match=expected_message,
+    ):
+        Telescope(
+            name="InvalidArray",
+            num_stations=num_stations,
+            array=invalid_array,
+            diameter=diameter,
+        )
+
+
+def test_telescope_invalid_station_ids_shape():
+    """Test that Telescope raises error for invalid station_ids shape."""
+    num_stations = 4
+    diameter = 10.0
+    invalid_station_ids = np.array(
+        ["STA001", "STA002"]
+    )  # Invalid shape (2,) instead of (4,)
+    expected_message = re.escape(
+        f"station_ids shape must be ({num_stations},), got {invalid_station_ids.shape!r}"
+    )
+    with pytest.raises(
+        ValueError,
+        match=expected_message,
+    ):
+        Telescope(
+            name="InvalidIDs",
+            num_stations=num_stations,
+            station_ids=invalid_station_ids,
+            diameter=diameter,
+        )
 
 
 def test_telescope_array_determinism():

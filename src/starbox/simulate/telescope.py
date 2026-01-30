@@ -53,6 +53,14 @@ class Telescope:
             self.station_ids = np.array(
                 [f"{self.name}_STN{idx:03d}" for idx in range(self.num_stations)]
             )
+        if self.array.shape != (self.num_stations, 3):
+            raise ValueError(
+                f"Array shape must be ({self.num_stations}, 3), got {self.array.shape!r}"
+            )
+        if self.station_ids.shape != (self.num_stations,):
+            raise ValueError(
+                f"station_ids shape must be ({self.num_stations},), got {self.station_ids.shape!r}"
+            )
 
     @classmethod
     def from_spec(cls, spec: "TelescopeSpec", name: str = "Telescope") -> "Telescope":

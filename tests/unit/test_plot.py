@@ -6,6 +6,8 @@ from starbox.viz import plot
 
 import numpy as np
 
+import pytest
+
 
 def test_plot_skymodel(skymodel_spec):
     """Test that the plot method of SkyModel works without errors."""
@@ -39,3 +41,11 @@ def test_plot_uv_coverage():
 def test_plot_gains(solutions):
     """Test that the gain plotting function works without errors."""
     plot.plot_gains(solutions)
+
+
+def test_plot_telescope_array_is_none():
+    """Test that plot_array_configuration raises ValueError when array is None."""
+    telescope = Telescope(name="NoArray", num_stations=10, diameter=20.0)
+    telescope.array = None  # Manually set array to None to simulate uninitialized state
+    with pytest.raises(ValueError, match="Telescope array is not initialised."):
+        plot.plot_array_configuration(telescope)
