@@ -20,7 +20,7 @@ class SkyModelSpec:
     max_flux_jy: float = 1.0
     phase_centre_deg: tuple[float, float] = (0, 0)
     fov_deg: float = 1.0
-    seed: int | None = None
+    seed: int = 42
 
     def __post_init__(self):
         if self.num_sources <= 0:

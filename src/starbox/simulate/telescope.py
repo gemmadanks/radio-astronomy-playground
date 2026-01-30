@@ -43,7 +43,7 @@ class Telescope:
     diameter: float
     array: np.ndarray | None = None
     station_ids: np.ndarray | None = None
-    seed: int | None = None
+    seed: int = 42
     spec: "TelescopeSpec | None" = None
 
     def __post_init__(self):
