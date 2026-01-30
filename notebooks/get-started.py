@@ -13,12 +13,14 @@ def _():
         ObservationConfig,
         TelescopeConfig,
         CorruptionsConfig,
+        SolverConfig
     )
     from starbox.factory import (
         build_skymodel,
         build_observation,
         build_telescope,
         build_corruptions,
+        build_solver
     )
     from starbox.viz import plot
     from starbox.predict.predict import predict_visibilities
@@ -28,11 +30,12 @@ def _():
         Imager,
         ObservationConfig,
         SkyModelConfig,
-        Solver,
+        SolverConfig,
         TelescopeConfig,
         build_corruptions,
         build_observation,
         build_skymodel,
+        build_solver,
         build_telescope,
         mo,
         plot,
@@ -301,8 +304,9 @@ def _(
 
 
 @app.cell
-def _(Solver, solint_slider):
-    solver = Solver(solint=solint_slider.value)
+def _(SolverConfig, build_solver, solint_slider):
+    solver_config = SolverConfig(solint=solint_slider.value)
+    solver = build_solver(solver_config)
     return (solver,)
 
 

@@ -11,8 +11,10 @@ from starbox.simulate.observation import Observation, ObservationSpec
 from starbox.config.skymodel import SkyModelConfig
 from starbox.config.observation import ObservationConfig
 from starbox.config.corruptions import CorruptionsConfig
+from starbox.config.solver import SolverConfig
 from starbox.visibility import VisibilitySet
 import numpy as np
+from starbox.calibrate.solver import SolverSpec
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -167,6 +169,18 @@ def visibility_set():
         freqs_hz=freqs_hz,
         weights=weights,
     )
+
+
+@pytest.fixture
+def solver_spec():
+    """A simple SolverSpec instance."""
+    return SolverSpec(solint=10)
+
+
+@pytest.fixture
+def solver_config():
+    """A simple solver configuration."""
+    return SolverConfig(solint=10)
 
 
 @pytest.fixture

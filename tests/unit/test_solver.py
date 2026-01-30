@@ -9,13 +9,23 @@ def test_solver_initialization():
     solver = Solver(solint=10)
     assert solver.solint == 10
 
-    solver_default = Solver()
-    assert solver_default.solint is None
+
+def test_solver_invalid_solint():
+    """Test that the Solver raises error for invalid solint."""
+    with pytest.raises(ValueError, match="Solution interval must be positive."):
+        Solver(solint=0)
+    with pytest.raises(ValueError, match="Solution interval must be positive."):
+        Solver(solint=-5)
 
 
-@pytest.mark.parametrize(
-    "solint, expected_shape", [(1, (3, 2)), (2, (2, 2)), (None, (3, 2))]
-)
+def test_solver_from_spec(solver_spec):
+    """Test that Solver can be created from SolverSpec."""
+
+    solver = Solver.from_spec(solver_spec)
+    assert solver.solint == 10
+
+
+@pytest.mark.parametrize("solint, expected_shape", [(1, (3, 2)), (2, (2, 2))])
 def test_solver_solve_method(visibility_set, solint, expected_shape):
     """Test the solve method of the Solver class."""
     solver = Solver(solint=solint)

@@ -3,14 +3,34 @@
 import numpy as np
 from starbox.calibrate.solutions import Solutions
 from starbox.visibility import VisibilitySet
+from dataclasses import dataclass
 
 
+@dataclass(slots=True)
+class SolverSpec:
+    """Specification for the calibration solver.
+
+    Attributes:
+        solint: Solution interval in seconds.
+    """
+
+    solint: float
+
+
+@dataclass(slots=True)
 class Solver:
     """Class to handle calibration solving."""
 
-    def __init__(self, solint: int | None = None):
-        """Initialize the Solver."""
-        self.solint = solint
+    solint: float
+
+    def __post_init__(self):
+        if self.solint <= 0:
+            raise ValueError("Solution interval must be positive.")
+
+    @classmethod
+    def from_spec(cls, spec: SolverSpec) -> "Solver":
+        """Create a Solver instance from a SolverSpec."""
+        return cls(solint=spec.solint)
 
     def solve(
         self,
