@@ -3,8 +3,9 @@
 This module contains the Telescope class.
 
 Example:
-    >>> from starbox.simulate import Telescope
-    >>> telescope = Telescope(name="ELA", num_stations=100, diameter=50.0)
+    >>> from starbox.simulate import Telescope, TelescopeSpec
+    >>> spec = TelescopeSpec(num_stations=100, diameter=50.0, seed=42)
+    >>> telescope = Telescope.from_spec(spec, name="ELA")
     >>> print(telescope.name)
     ELA
 """
