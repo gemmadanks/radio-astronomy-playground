@@ -4,7 +4,7 @@ from dataclasses import dataclass, field
 import numpy as np
 
 
-@dataclass
+@dataclass(slots=True)
 class ObservationSpec:
     """A dataclass representing the specification for an observation.
 
