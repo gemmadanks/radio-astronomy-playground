@@ -57,7 +57,15 @@ class Corruptions:
         self.sigma = rms_noise / np.sqrt(2)
 
     def add_station_phase_gain(self, rms_phase_gain: float | None):
-        """Add station phase gain corruption."""
+        """Add or update station phase gain corruption.
+
+        Args:
+            rms_phase_gain: The RMS of the station phase gain errors to apply.
+                If a float is provided, random station phase gains with this RMS
+                will be applied when :meth:`apply` is called. If ``None`` is
+                provided, station phase gain corruption is disabled (i.e. no
+                phase gain corruption will be applied).
+        """
         self.rms_phase_gain = rms_phase_gain
 
     def apply(self, visibility_set: VisibilitySet) -> VisibilitySet:
