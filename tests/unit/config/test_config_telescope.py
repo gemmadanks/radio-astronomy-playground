@@ -4,8 +4,6 @@ import pytest
 from starbox.config.telescope import TelescopeConfig
 from pydantic import ValidationError
 
-from starbox.simulate.telescope import TelescopeSpec
-
 
 def test_telescope_config_from_dict():
     parameter_dict = {
@@ -47,11 +45,3 @@ def test_telescope_config_to_dict():
     assert cfg_dict["num_stations"] == 10
     assert cfg_dict["diameter"] == 25.0
     assert cfg_dict["seed"] == 0
-
-
-def test_telescope_config_to_spec():
-    cfg = TelescopeConfig(num_stations=10, diameter=25.0, seed=0)
-    spec = TelescopeSpec(**cfg.model_dump())
-    assert spec.num_stations == cfg.num_stations
-    assert spec.diameter == cfg.diameter
-    assert spec.seed == cfg.seed

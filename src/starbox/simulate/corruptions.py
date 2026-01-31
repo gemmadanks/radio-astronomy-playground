@@ -1,26 +1,11 @@
 """A class for simulating corruptions."""
 
-from dataclasses import dataclass, field
 import numpy as np
 
 from starbox.visibility import VisibilitySet
+from starbox.config.corruptions import CorruptionsConfig
 
 
-@dataclass(slots=True)
-class CorruptionsSpec:
-    """A specification for signal corruptions.
-
-    Attributes:
-        rms_noise: The RMS noise level to add to the visibilities.
-        rms_phase_gain: Phase gain errors for each station.
-    """
-
-    seed: int = 42
-    rms_noise: float | None = None
-    rms_phase_gain: float | None = None
-
-
-@dataclass(slots=True)
 class Corruptions:
     """A class representing corruptions to apply to a signal.
 
@@ -29,44 +14,27 @@ class Corruptions:
         station_phase_gain: Phase gain errors for each station.
     """
 
-    seed: int = 42
-    rms_noise: float | None = None
-    sigma: float | None = None
-    rms_phase_gain: float | None = None
-    rng: np.random.Generator = field(init=False, repr=False)
-    spec: CorruptionsSpec | None = None
+    def __init__(self, config: CorruptionsConfig):
+        self.config = config
+        self.rng = np.random.default_rng(self.config.seed)
+        self._add_noise()
+        self._add_station_phase_gain()
 
-    def __post_init__(self):
-        self.rng = np.random.default_rng(self.seed)
-        if self.rms_noise is not None:
-            self._add_noise(self.rms_noise)
-
-    @classmethod
-    def from_spec(cls, spec: CorruptionsSpec) -> "Corruptions":
-        """Create a Corruptions instance from a CorruptionsSpec."""
-        return cls(
-            seed=spec.seed,
-            rms_noise=spec.rms_noise,
-            rms_phase_gain=spec.rms_phase_gain,
-            spec=spec,
+    def _add_noise(self):
+        """Add Gaussian noise corruption."""
+        self.sigma = (
+            self.config.rms_noise / np.sqrt(2)
+            if self.config.rms_noise is not None
+            else None
         )
 
-    def _add_noise(self, rms_noise: float = 1.0):
-        """Add Gaussian noise corruption."""
-        self.rms_noise = rms_noise
-        self.sigma = rms_noise / np.sqrt(2)
-
-    def add_station_phase_gain(self, rms_phase_gain: float | None):
-        """Add or update station phase gain corruption.
-
-        Args:
-            rms_phase_gain: The RMS of the station phase gain errors to apply.
-                If a float is provided, random station phase gains with this RMS
-                will be applied when :meth:`apply` is called. If ``None`` is
-                provided, station phase gain corruption is disabled (i.e. no
-                phase gain corruption will be applied).
-        """
-        self.rms_phase_gain = rms_phase_gain
+    def _add_station_phase_gain(self):
+        """Add station phase gain corruption."""
+        self.rms_phase_gain = (
+            self.config.rms_phase_gain
+            if self.config.rms_phase_gain is not None
+            else None
+        )
 
     def apply(self, visibility_set: VisibilitySet) -> VisibilitySet:
         """Apply the corruptions to the given visibilities."""

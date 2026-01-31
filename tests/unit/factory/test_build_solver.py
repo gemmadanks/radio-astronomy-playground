@@ -9,4 +9,4 @@ def test_build_solver_returns_solver(solver_config):
     solver = build_solver(solver_config)
 
     assert isinstance(solver, Solver)
-    assert solver.solint == solver_config.solint
+    assert solver.config == solver_config

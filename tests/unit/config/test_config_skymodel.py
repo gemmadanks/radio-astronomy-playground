@@ -3,7 +3,6 @@
 from starbox.config.skymodel import SkyModelConfig
 import pytest
 from pydantic import ValidationError
-from starbox.simulate.skymodel import SkyModelSpec
 
 
 def test_skymodel_config_from_dict():
@@ -45,13 +44,3 @@ def test_skymodel_config_roundtrip_json():
     cfg = SkyModelConfig(num_sources=5, max_flux_jy=1.0, fov_deg=1.0, seed=0)
     cfg2 = SkyModelConfig.model_validate_json(cfg.model_dump_json())
     assert cfg2 == cfg
-
-
-def test_skymodel_config_to_spec():
-    cfg = SkyModelConfig(num_sources=5, max_flux_jy=1.0, fov_deg=1.0, seed=0)
-    spec = SkyModelSpec(**cfg.model_dump())
-    assert spec.num_sources == cfg.num_sources
-    assert spec.max_flux_jy == cfg.max_flux_jy
-    assert spec.phase_centre_deg == cfg.phase_centre_deg
-    assert spec.fov_deg == cfg.fov_deg
-    assert spec.seed == cfg.seed

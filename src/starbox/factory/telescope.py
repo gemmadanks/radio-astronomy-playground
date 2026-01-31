@@ -1,10 +1,10 @@
 """Functions to build telescopes."""
 
-from starbox.simulate.telescope import Telescope, TelescopeSpec
+from starbox.simulate.telescope import Telescope
 from starbox.config.telescope import TelescopeConfig
 
 
-def build_telescope(cfg: TelescopeConfig) -> Telescope:
+def build_telescope(cfg: TelescopeConfig, name="Telescope") -> Telescope:
     """Build a Telescope from a TelescopeConfig.
 
     Args:
@@ -13,5 +13,4 @@ def build_telescope(cfg: TelescopeConfig) -> Telescope:
     Returns:
         Telescope: The constructed telescope.
     """
-    spec = TelescopeSpec(**cfg.model_dump())
-    return Telescope.from_spec(spec)
+    return Telescope(cfg, name=name)

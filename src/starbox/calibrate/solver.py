@@ -2,35 +2,15 @@
 
 import numpy as np
 from starbox.calibrate.solutions import Solutions
+from starbox.config.solver import SolverConfig
 from starbox.visibility import VisibilitySet
-from dataclasses import dataclass
 
 
-@dataclass(slots=True)
-class SolverSpec:
-    """Specification for the calibration solver.
-
-    Attributes:
-        solint: Solution interval in seconds.
-    """
-
-    solint: float
-
-
-@dataclass(slots=True)
 class Solver:
     """Class to handle calibration solving."""
 
-    solint: float
-
-    def __post_init__(self):
-        if self.solint <= 0:
-            raise ValueError("Solution interval must be positive.")
-
-    @classmethod
-    def from_spec(cls, spec: SolverSpec) -> "Solver":
-        """Create a Solver instance from a SolverSpec."""
-        return cls(solint=spec.solint)
+    def __init__(self, config: SolverConfig):
+        self.config = config
 
     def solve(
         self,
@@ -43,7 +23,7 @@ class Solver:
         n_timesteps, _, n_channels = observed_visibilities.vis.shape
 
         # Default: solve per timestep / per channel
-        tbin = self.solint or 1
+        tbin = self.config.solint or 1
 
         n_time_bins = int(np.ceil(n_timesteps / tbin))
         n_freq_bins = int(np.ceil(n_channels / 1))

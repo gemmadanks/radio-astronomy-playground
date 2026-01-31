@@ -1,6 +1,6 @@
 """Functions to build sky models."""
 
-from starbox.simulate.skymodel import SkyModel, SkyModelSpec
+from starbox.simulate.skymodel import SkyModel
 from starbox.config.skymodel import SkyModelConfig
 
 
@@ -13,5 +13,4 @@ def build_skymodel(cfg: SkyModelConfig) -> SkyModel:
     Returns:
         SkyModel: The constructed sky model.
     """
-    spec = SkyModelSpec(**cfg.model_dump())
-    return SkyModel.from_spec(spec)
+    return SkyModel(config=cfg)

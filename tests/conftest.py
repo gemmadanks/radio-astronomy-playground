@@ -3,18 +3,17 @@
 import pytest
 from starbox.calibrate.solutions import Solutions
 from starbox.config.telescope import TelescopeConfig
-from starbox.simulate.corruptions import Corruptions, CorruptionsSpec
-from starbox.simulate.telescope import Telescope, TelescopeSpec
+from starbox.simulate.corruptions import Corruptions
+from starbox.simulate.telescope import Telescope
 import plotly.io as pio
-from starbox.simulate.skymodel import SkyModel, SkyModelSpec
-from starbox.simulate.observation import Observation, ObservationSpec
+from starbox.simulate.skymodel import SkyModel
+from starbox.simulate.observation import Observation
 from starbox.config.skymodel import SkyModelConfig
 from starbox.config.observation import ObservationConfig
 from starbox.config.corruptions import CorruptionsConfig
 from starbox.config.solver import SolverConfig
 from starbox.visibility import VisibilitySet
 import numpy as np
-from starbox.calibrate.solver import SolverSpec
 from starbox.config.experiment import ExperimentConfig
 
 
@@ -26,33 +25,15 @@ def configure_plotly_for_tests():
 
 
 @pytest.fixture
-def small_telescope():
-    """A simple telescope model for a small array."""
-    return Telescope(name="SmallArray", num_stations=10, diameter=20.0)
-
-
-@pytest.fixture
-def telescope_spec():
-    """A simple TelescopeSpec instance."""
-    return TelescopeSpec(num_stations=10, diameter=20.0, seed=42)
-
-
-@pytest.fixture
 def telescope_config():
     """A simple telescope configuration."""
     return TelescopeConfig(num_stations=10, diameter=20.0, seed=42)
 
 
 @pytest.fixture
-def skymodel_spec():
-    """A simple sky model with a few sources."""
-    return SkyModelSpec(num_sources=5, seed=42)
-
-
-@pytest.fixture
-def skymodel(skymodel_spec):
-    """A simple sky model instance."""
-    return SkyModel.from_spec(skymodel_spec)
+def small_telescope(telescope_config):
+    """A simple telescope model for a small array."""
+    return Telescope(telescope_config, name="SmallArray")
 
 
 @pytest.fixture
@@ -68,23 +49,9 @@ def skymodel_config():
 
 
 @pytest.fixture
-def observation():
-    """A simple observation setup."""
-    start_time = 0  # in seconds
-    observation_length = 180  # in seconds
-    num_timesteps = 3
-    start_frequency = 1e6  # in Hz
-    num_channels = 2
-    total_bandwidth = 1e6  # in Hz
-
-    return Observation(
-        start_time=start_time,
-        observation_length=observation_length,
-        num_timesteps=num_timesteps,
-        start_frequency=start_frequency,
-        num_channels=num_channels,
-        total_bandwidth=total_bandwidth,
-    )
+def skymodel(skymodel_config):
+    """A simple sky model instance."""
+    return SkyModel(skymodel_config)
 
 
 @pytest.fixture
@@ -101,16 +68,9 @@ def observation_config():
 
 
 @pytest.fixture
-def observation_spec():
-    """A simple ObservationSpec instance."""
-    return ObservationSpec(
-        start_time=0,  # in seconds
-        observation_length=180,  # in seconds
-        num_timesteps=3,
-        start_frequency=1e6,  # in Hz
-        num_channels=2,
-        total_bandwidth=1e6,  # in Hz
-    )
+def observation(observation_config):
+    """A simple observation setup."""
+    return Observation(observation_config)
 
 
 @pytest.fixture
@@ -124,25 +84,9 @@ def corruptions_config():
 
 
 @pytest.fixture
-def corruptions_spec():
-    """A simple CorruptionsSpec instance."""
-    return CorruptionsSpec(
-        seed=42,
-        rms_noise=1.0,
-        rms_phase_gain=2.0,
-    )
-
-
-@pytest.fixture
-def corruptions_basic(corruptions_spec):
+def corruptions(corruptions_config):
     """A simple Corruptions instance."""
-    return Corruptions.from_spec(corruptions_spec)
-
-
-@pytest.fixture
-def corruptions():
-    """A simple Corruptions instance."""
-    return Corruptions()
+    return Corruptions(corruptions_config)
 
 
 @pytest.fixture
@@ -170,12 +114,6 @@ def visibility_set():
         freqs_hz=freqs_hz,
         weights=weights,
     )
-
-
-@pytest.fixture
-def solver_spec():
-    """A simple SolverSpec instance."""
-    return SolverSpec(solint=10)
 
 
 @pytest.fixture

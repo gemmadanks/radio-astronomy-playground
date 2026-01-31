@@ -1,6 +1,6 @@
 """Functions to build calibration solvers."""
 
-from starbox.calibrate.solver import Solver, SolverSpec
+from starbox.calibrate.solver import Solver
 from starbox.config.solver import SolverConfig
 
 
@@ -12,5 +12,4 @@ def build_solver(cfg: SolverConfig) -> Solver:
     Returns:
         An instance of Solver.
     """
-    spec = SolverSpec(**cfg.model_dump())
-    return Solver.from_spec(spec)
+    return Solver(cfg)

@@ -3,7 +3,6 @@
 from starbox.config.solver import SolverConfig
 import pytest
 from pydantic import ValidationError
-from starbox.calibrate.solver import SolverSpec
 
 
 def test_solver_config_from_dict():
@@ -31,9 +30,3 @@ def test_solver_config_roundtrip_json():
     cfg = SolverConfig(solint=10)
     cfg2 = SolverConfig.model_validate_json(cfg.model_dump_json())
     assert cfg2 == cfg
-
-
-def test_solver_config_to_spec():
-    cfg = SolverConfig(solint=10)
-    spec = SolverSpec(**cfg.model_dump())
-    assert spec.solint == cfg.solint

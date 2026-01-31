@@ -36,7 +36,7 @@ def plot_sky_model(sky_model: SkyModel) -> Figure:
     return fig
 
 
-def plot_array_configuration(telescope: Telescope) -> Figure:
+def plot_telescope(telescope: Telescope) -> Figure:
     """Plot the array configuration given antenna coordinates."""
     array = telescope.array
     if array is None:

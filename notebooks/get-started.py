@@ -399,7 +399,7 @@ def _(
     telescope_config,
 ):
     experiment_config = ExperimentConfig(
-        name=experiment_name.value,
+        name=experiment_name.value if experiment_name.value else "experiment",
         skymodel=sky_model_config,
         telescope=telescope_config,
         corruptions=corruptions_config,

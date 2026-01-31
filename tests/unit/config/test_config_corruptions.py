@@ -4,8 +4,6 @@ import pytest
 from starbox.config.corruptions import CorruptionsConfig
 from pydantic import ValidationError
 
-from starbox.simulate.corruptions import CorruptionsSpec
-
 
 def test_corruptions_config_from_dict():
     parameter_dict = {
@@ -40,10 +38,3 @@ def test_corruptions_config_to_dict(corruptions_config):
     assert cfg_dict["seed"] == corruptions_config.seed
     assert cfg_dict["rms_noise"] == corruptions_config.rms_noise
     assert cfg_dict["rms_phase_gain"] == corruptions_config.rms_phase_gain
-
-
-def test_corruptions_config_to_spec(corruptions_config):
-    corruptions_spec = CorruptionsSpec(**corruptions_config.model_dump())
-    assert corruptions_spec.seed == corruptions_config.seed
-    assert corruptions_spec.rms_noise == corruptions_config.rms_noise
-    assert corruptions_spec.rms_phase_gain == corruptions_config.rms_phase_gain

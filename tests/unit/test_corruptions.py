@@ -1,54 +1,57 @@
 """Tests for Corruptions class."""
 
 import pytest
+from starbox.config.corruptions import CorruptionsConfig
 from starbox.simulate import Corruptions
 import numpy as np
 
 from starbox.visibility import VisibilitySet
 
 
-def test_corruptions_from_spec(corruptions_spec):
-    """Test that Corruptions can be created from CorruptionsSpec."""
-    corruptions = Corruptions.from_spec(corruptions_spec)
-
-    assert corruptions.seed == 42
-    assert corruptions.rms_noise == 1.0
-    assert corruptions.rms_phase_gain == 2.0
-    assert corruptions.sigma == 1.0 / np.sqrt(2)
-
-
-def test_corruptions_init(corruptions):
-    """Test that the Corruptions class initializes correctly."""
-    assert corruptions.rms_noise is None
-    assert corruptions.rms_phase_gain is None
-    assert corruptions.sigma is None
-
-
-def test_corruptions_add_noise(corruptions: Corruptions):
+@pytest.mark.parametrize(
+    "seed,rms_noise,rms_phase_gain",
+    [
+        (42, 1.0, 0.5),
+        (123, 0.1, 1.0),
+        (999, 0.0, 0.0),
+    ],
+)
+def test_corruptions_initialisation(seed, rms_noise, rms_phase_gain):
     """Test adding noise to the Corruptions instance."""
-    corruptions._add_noise(rms_noise=2.0)
-    assert corruptions.rms_noise == 2.0
-    assert corruptions.sigma == 2.0 / np.sqrt(2)
+    corruptions_config = CorruptionsConfig(
+        seed=seed,
+        rms_noise=rms_noise,
+        rms_phase_gain=rms_phase_gain,
+    )
+    corruptions = Corruptions(corruptions_config)
+    assert corruptions.config.rms_noise == rms_noise
+    assert (
+        corruptions.sigma == (rms_noise / np.sqrt(2)) if rms_noise is not None else None
+    )
+    assert corruptions.config.rms_phase_gain == rms_phase_gain
 
 
-@pytest.mark.parametrize("phase_gain", [0.5, 1.0, 3.0, None])
-def test_corruptions_add_station_phase_gain(corruptions: Corruptions, phase_gain):
-    """Test adding station phase gain to the Corruptions instance."""
-    corruptions.add_station_phase_gain(phase_gain)
-    assert corruptions.rms_phase_gain == phase_gain
-
-
-def test_corruptions_apply_noise(
-    corruptions: Corruptions, visibility_set: VisibilitySet
-):
-    """Test applying corruptions to visibilities."""
-
-    # Apply without any corruptions
+def test_corruptions_apply_no_noise_no_phase_gain(visibility_set: VisibilitySet):
+    """Test applying corruptions with no noise and no phase gain set."""
+    corruptions_config = CorruptionsConfig(
+        seed=42,
+        rms_noise=0.0,
+        rms_phase_gain=0.0,
+    )
+    corruptions = Corruptions(corruptions_config)
     corrupted_vis = corruptions.apply(visibility_set)
     np.testing.assert_array_equal(corrupted_vis.vis, visibility_set.vis)
 
-    # Add noise and apply
-    corruptions._add_noise(rms_noise=0.1)
+
+def test_corruptions_apply_with_only_noise(mocker, visibility_set: VisibilitySet):
+    """Test applying noise-only corruptions to visibilities."""
+    corruptions_config = CorruptionsConfig(
+        seed=42,
+        rms_noise=0.1,
+        rms_phase_gain=0.0,
+    )
+    corruptions = Corruptions(corruptions_config)
+
     corrupted_vis = corruptions.apply(visibility_set)
     assert not np.array_equal(corrupted_vis.vis, visibility_set.vis)
 
@@ -58,34 +61,17 @@ def test_corruptions_apply_noise(
     assert np.isclose(measured_rms, 0.1, atol=0.05)
 
 
-def test_apply_without_rms_phase_gain(
-    corruptions: Corruptions, visibility_set: VisibilitySet, mocker
-):
-    """Test that applying corruptions without setting rms phase."""
-    spy_sample_station_phase_gains = mocker.spy(
-        Corruptions, "_sample_station_phase_gains"
-    )
-    spy_apply_station_phase_gain = mocker.spy(Corruptions, "_apply_station_phase_gain")
-    _ = corruptions.apply(visibility_set)
-    spy_sample_station_phase_gains.assert_not_called()
-    spy_apply_station_phase_gain.assert_not_called()
-
-
-def test_apply_without_rms_noise(
-    corruptions: Corruptions, visibility_set: VisibilitySet, mocker
-):
+def test_apply_with_only_station_phase_gains(visibility_set: VisibilitySet, mocker):
     """Test that applying corruptions without setting rms noise."""
-    spy_apply_noise = mocker.spy(Corruptions, "_apply_noise")
-    _ = corruptions.apply(visibility_set)
-    spy_apply_noise.assert_not_called()
+    corruptions_config = CorruptionsConfig(
+        seed=42,
+        rms_noise=0.0,
+        rms_phase_gain=0.5,
+    )
+    corruptions = Corruptions(corruptions_config)
+    corrupted_vis = corruptions.apply(visibility_set)
 
-
-def test_apply_noise_without_sigma_raises(
-    corruptions: Corruptions, visibility_set: VisibilitySet
-):
-    """Test that applying noise without setting sigma raises an error."""
-    with pytest.raises(ValueError, match="Sigma for noise is not set."):
-        corruptions._apply_noise(visibility_set)
+    assert not np.array_equal(corrupted_vis.vis, visibility_set.vis)
 
 
 def test_corruptions_apply_station_phase_gain(
@@ -122,7 +108,13 @@ def test_corruptions_apply_station_phase_gain(
 
 def test_corruptions_sample_station_phase_gains(corruptions: Corruptions):
     """Test sampling of station phase gains."""
-    corruptions.add_station_phase_gain(rms_phase_gain=0.5)
+    config = CorruptionsConfig(
+        seed=42,
+        rms_noise=1.0,
+        rms_phase_gain=0.5,
+    )
+    corruptions = Corruptions(config)
+    corruptions._add_station_phase_gain()
     num_stations = 5
     phase_gains = corruptions._sample_station_phase_gains(num_stations)
 
@@ -131,18 +123,11 @@ def test_corruptions_sample_station_phase_gains(corruptions: Corruptions):
     assert np.isclose(phase_gains[0], 1.0 + 0j)
 
 
-def test_corruptions_sample_station_phase_gains_no_rms(corruptions: Corruptions):
-    """Test that sampling station phase gains without setting rms raises an error."""
-    num_stations = 5
-    with pytest.raises(ValueError, match="RMS phase gain is not set."):
-        corruptions._sample_station_phase_gains(num_stations)
-
-
 def test_corruptions_apply_with_station_phase_gain(
     corruptions: Corruptions, visibility_set: VisibilitySet
 ):
     """Test applying corruptions with station phase gain set."""
-    corruptions.add_station_phase_gain(rms_phase_gain=0.5)
+    corruptions._add_station_phase_gain()
     corrupted_vis = corruptions.apply(visibility_set)
 
     assert not np.array_equal(corrupted_vis.vis, visibility_set.vis)

@@ -1,7 +1,7 @@
 """Functions to build corruptions."""
 
 from starbox.config.corruptions import CorruptionsConfig
-from starbox.simulate.corruptions import Corruptions, CorruptionsSpec
+from starbox.simulate.corruptions import Corruptions
 
 
 def build_corruptions(cfg: CorruptionsConfig) -> Corruptions:
@@ -12,5 +12,4 @@ def build_corruptions(cfg: CorruptionsConfig) -> Corruptions:
     Returns:
         A Corruptions instance.
     """
-    spec = CorruptionsSpec(**cfg.model_dump())
-    return Corruptions.from_spec(spec)
+    return Corruptions(cfg)

@@ -9,5 +9,5 @@ def test_build_corruptions_returns_corruptions(corruptions_config):
     corruptions = build_corruptions(corruptions_config)
 
     assert isinstance(corruptions, Corruptions)
-    assert corruptions.rms_noise == corruptions_config.rms_noise
-    assert corruptions.rms_phase_gain == corruptions_config.rms_phase_gain
+    assert corruptions.config.rms_noise == corruptions_config.rms_noise
+    assert corruptions.config.rms_phase_gain == corruptions_config.rms_phase_gain

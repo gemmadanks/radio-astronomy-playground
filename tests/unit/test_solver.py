@@ -3,32 +3,21 @@
 from starbox.calibrate.solver import Solver
 import pytest
 
-
-def test_solver_initialization():
-    """Test that the Solver initializes correctly."""
-    solver = Solver(solint=10)
-    assert solver.solint == 10
+from starbox.config.solver import SolverConfig
 
 
-def test_solver_invalid_solint():
-    """Test that the Solver raises error for invalid solint."""
-    with pytest.raises(ValueError, match="Solution interval must be positive."):
-        Solver(solint=0)
-    with pytest.raises(ValueError, match="Solution interval must be positive."):
-        Solver(solint=-5)
+def test_solver_from_config(solver_config):
+    """Test that Solver can be created from SolverConfig."""
 
-
-def test_solver_from_spec(solver_spec):
-    """Test that Solver can be created from SolverSpec."""
-
-    solver = Solver.from_spec(solver_spec)
-    assert solver.solint == 10
+    solver = Solver(solver_config)
+    assert solver.config.solint == 10
 
 
 @pytest.mark.parametrize("solint, expected_shape", [(1, (3, 2)), (2, (2, 2))])
 def test_solver_solve_method(visibility_set, solint, expected_shape):
     """Test the solve method of the Solver class."""
-    solver = Solver(solint=solint)
+    solver_config = SolverConfig(solint=solint)
+    solver = Solver(solver_config)
     n_stations = 4
 
     observed_visibilities = visibility_set

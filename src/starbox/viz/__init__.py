@@ -12,7 +12,7 @@ Functions:
 """
 
 from starbox.viz.plot import (
-    plot_array_configuration,
+    plot_telescope,
     plot_gains,
     plot_sky_model,
     plot_uv_coverage,
@@ -20,7 +20,7 @@ from starbox.viz.plot import (
 )
 
 __all__ = [
-    "plot_array_configuration",
+    "plot_telescope",
     "plot_gains",
     "plot_sky_model",
     "plot_uv_coverage",
