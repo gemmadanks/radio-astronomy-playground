@@ -1,4 +1,4 @@
-# ADR-004: Use Pydantic models for configuration schemas
+# ADR-003: Use Pydantic models for configuration schemas
 
 | | |
 | ---| ---|
