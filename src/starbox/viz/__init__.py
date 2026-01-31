@@ -4,7 +4,7 @@ This module provides functions for plotting radio telescope
 array configurations, sky models, uv-coverage, calibration solutions and images.
 
 Functions:
-    plot_array_configuration: Plot the array configuration of a telescope.
+    plot_telescope: Plot the array configuration of a telescope.
     plot_sky_model: Plot the sky model sources.
     plot_uv_coverage: Plot the UV coverage given UVW coordinates.
     plot_gains: Plot the calibration solutions.
