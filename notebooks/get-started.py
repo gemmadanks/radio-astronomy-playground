@@ -137,7 +137,9 @@ def _(mo):
     noise_rms_slider = mo.ui.slider(1, 100, label="Noise RMS: ")
 
     # Calibration
-    solint_slider = mo.ui.slider(1, 600, label="Solution interval (s): ")
+    solution_interval_seconds_slider = mo.ui.slider(
+        1, 600, label="Solution interval (s): "
+    )
     return (
         bandwidth_slider,
         fov_slider,
@@ -149,7 +151,7 @@ def _(mo):
         num_timesteps_slider,
         observation_length_slider,
         phase_rms_slider,
-        solint_slider,
+        solution_interval_seconds_slider,
         start_freq_slider,
         start_time_slider,
         telescope_diameter_slider,
@@ -317,8 +319,10 @@ def _(
 
 
 @app.cell
-def _(SolverConfig, build_solver, solint_slider):
-    solver_config = SolverConfig(solint=solint_slider.value)
+def _(SolverConfig, build_solver, solution_interval_seconds_slider):
+    solver_config = SolverConfig(
+        solution_interval_seconds=solution_interval_seconds_slider.value
+    )
     solver = build_solver(solver_config)
     return solver, solver_config
 

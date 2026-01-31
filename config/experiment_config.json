@@ -25,7 +25,7 @@
     "seed": 42
   },
   "solver": {
-    "solint": 1.0
+    "solution_interval_seconds": 1.0
   },
   "telescope": {
     "diameter": 1.0,

@@ -23,7 +23,7 @@ class Solver:
         n_timesteps, _, n_channels = observed_visibilities.vis.shape
 
         # Default: solve per timestep / per channel
-        tbin = self.config.solint or 1
+        tbin = self.config.solution_interval_seconds or 1
 
         n_time_bins = int(np.ceil(n_timesteps / tbin))
         n_freq_bins = int(np.ceil(n_channels / 1))

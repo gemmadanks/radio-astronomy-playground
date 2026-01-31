@@ -119,7 +119,7 @@ def visibility_set():
 @pytest.fixture
 def solver_config():
     """A simple solver configuration."""
-    return SolverConfig(solint=10)
+    return SolverConfig(solution_interval_seconds=10)
 
 
 @pytest.fixture

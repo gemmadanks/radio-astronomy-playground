@@ -10,13 +10,15 @@ def test_solver_from_config(solver_config):
     """Test that Solver can be created from SolverConfig."""
 
     solver = Solver(solver_config)
-    assert solver.config.solint == 10
+    assert solver.config.solution_interval_seconds == 10
 
 
-@pytest.mark.parametrize("solint, expected_shape", [(1, (3, 2)), (2, (2, 2))])
-def test_solver_solve_method(visibility_set, solint, expected_shape):
+@pytest.mark.parametrize(
+    "solution_interval_seconds, expected_shape", [(1, (3, 2)), (2, (2, 2))]
+)
+def test_solver_solve_method(visibility_set, solution_interval_seconds, expected_shape):
     """Test the solve method of the Solver class."""
-    solver_config = SolverConfig(solint=solint)
+    solver_config = SolverConfig(solution_interval_seconds=solution_interval_seconds)
     solver = Solver(solver_config)
     n_stations = 4
 
