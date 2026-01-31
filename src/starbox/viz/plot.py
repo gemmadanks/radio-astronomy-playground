@@ -36,11 +36,11 @@ def plot_sky_model(sky_model: SkyModel) -> Figure:
     return fig
 
 
-def plot_array_configuration(telescope: Telescope) -> Figure:
+def plot_telescope(telescope: Telescope) -> Figure:
     """Plot the array configuration given antenna coordinates."""
     fig = px.scatter(
-        x=telescope.array[:, 0],
-        y=telescope.array[:, 1],
+        x=telescope.station_positions[:, 0],
+        y=telescope.station_positions[:, 1],
         title=f"{telescope.name}",
     )
     fig.update_layout(
@@ -58,7 +58,7 @@ def plot_gains(solutions: Solutions) -> Figure:
     """Plot the calibration solutions."""
 
     fig = px.imshow(
-        np.real(solutions.gains[:, :, 0].T),
+        np.real(solutions.station_phase_gains[:, :, 0].T),
         title="Gains",
         labels={
             "x": "time",

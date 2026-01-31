@@ -2,15 +2,15 @@
 
 import numpy as np
 from starbox.calibrate.solutions import Solutions
+from starbox.config.solver import SolverConfig
 from starbox.visibility import VisibilitySet
 
 
 class Solver:
     """Class to handle calibration solving."""
 
-    def __init__(self, solint: int | None = None):
-        """Initialize the Solver."""
-        self.solint = solint
+    def __init__(self, config: SolverConfig):
+        self.config = config
 
     def solve(
         self,
@@ -23,7 +23,7 @@ class Solver:
         n_timesteps, _, n_channels = observed_visibilities.vis.shape
 
         # Default: solve per timestep / per channel
-        tbin = self.solint or 1
+        tbin = self.config.solution_interval_seconds or 1
 
         n_time_bins = int(np.ceil(n_timesteps / tbin))
         n_freq_bins = int(np.ceil(n_channels / 1))
@@ -33,4 +33,4 @@ class Solver:
             (n_time_bins, n_freq_bins, n_stations),
             dtype=np.complex64,
         )
-        return Solutions(gains=gains)
+        return Solutions(station_phase_gains=gains)

@@ -1,22 +1,18 @@
 """Tests for plotting functions."""
 
-from starbox.simulate.skymodel import SkyModel
-from starbox.simulate.telescope import Telescope
 from starbox.viz import plot
 
 import numpy as np
 
 
-def test_plot_skymodel():
+def test_plot_skymodel(skymodel):
     """Test that the plot method of SkyModel works without errors."""
-    skymodel = SkyModel(name="TestModel", num_sources=20, seed=42)
     plot.plot_sky_model(skymodel)
 
 
-def test_plot_telescope():
+def test_plot_telescope(small_telescope):
     """Test that the plot method of Telescope works without errors."""
-    telescope = Telescope(name="PlotArray", num_stations=20, diameter=50.0, seed=42)
-    plot.plot_array_configuration(telescope)
+    plot.plot_telescope(small_telescope)
 
 
 def test_plot_image():

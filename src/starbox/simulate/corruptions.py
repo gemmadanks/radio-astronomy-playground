@@ -3,6 +3,7 @@
 import numpy as np
 
 from starbox.visibility import VisibilitySet
+from starbox.config.corruptions import CorruptionsConfig
 
 
 class Corruptions:
@@ -13,21 +14,27 @@ class Corruptions:
         station_phase_gain: Phase gain errors for each station.
     """
 
-    def __init__(self, seed: int = 42):
-        """Initialize the Corruptions with no corruptions."""
-        self.rng: np.random.Generator = np.random.default_rng(seed)
-        self.rms_noise: float | None = None
-        self.sigma: float | None = None
-        self.rms_phase_gain: float | None = None
+    def __init__(self, config: CorruptionsConfig):
+        self.config = config
+        self.rng = np.random.default_rng(self.config.seed)
+        self._add_noise()
+        self._add_station_phase_gain()
 
-    def add_noise(self, rms_noise: float = 1.0):
+    def _add_noise(self):
         """Add Gaussian noise corruption."""
-        self.rms_noise = rms_noise
-        self.sigma = rms_noise / np.sqrt(2)
+        self.sigma = (
+            self.config.rms_noise / np.sqrt(2)
+            if self.config.rms_noise is not None
+            else None
+        )
 
-    def add_station_phase_gain(self, rms_phase_gain: float):
+    def _add_station_phase_gain(self):
         """Add station phase gain corruption."""
-        self.rms_phase_gain = rms_phase_gain
+        self.rms_phase_gain = (
+            self.config.rms_phase_gain
+            if self.config.rms_phase_gain is not None
+            else None
+        )
 
     def apply(self, visibility_set: VisibilitySet) -> VisibilitySet:
         """Apply the corruptions to the given visibilities."""

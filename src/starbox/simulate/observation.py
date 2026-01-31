@@ -2,64 +2,37 @@
 
 import numpy as np
 
+from starbox.config.observation import ObservationConfig
+
 
 class Observation:
-    """Class for handling observation parameters."""
+    """Observation configuration and derived sampling grids."""
 
-    def __init__(
-        self,
-        start_time: float,
-        observation_length: float,
-        num_timesteps: int,
-        start_frequency: float,
-        num_channels: int,
-        total_bandwidth: float,
-    ):
-        """Initialize the Observation with given parameters."""
-        self.start_time = start_time
-        self.observation_length = observation_length
-        self.num_timesteps = num_timesteps
-        self.start_frequency = start_frequency
-        self.num_channels = num_channels
-        if num_channels <= 0:
-            raise ValueError(
-                f"num_channels must be a positive integer, got {num_channels!r}"
-            )
-        self.total_bandwidth = total_bandwidth
-        self.channel_width = total_bandwidth / num_channels
-        # Lazily computed, cached values
-        self._times = None
-        self._frequencies = None
+    def __init__(self, config: ObservationConfig):
+        self.config = config
+        self.channel_width = self.config.total_bandwidth / self.config.num_channels
 
-    @property
-    def times(self) -> np.ndarray:
-        """Generate an array of time steps for the observation.
+        self._get_times()
+        self._get_frequencies()
 
-        The returned array contains ``num_timesteps`` samples. For
-        ``num_timesteps > 1``, the samples are linearly spaced from
-        ``start_time`` to ``start_time + observation_length`` inclusive,
-        with a fixed timestep of
-        ``observation_length / (num_timesteps - 1)``. For
-        ``num_timesteps == 1``, the array contains only ``start_time``.
-        """
-        if self._times is None:
-            if self.num_timesteps > 1:
-                timestep = self.observation_length / (self.num_timesteps - 1)
-                self._times = np.array(
-                    [self.start_time + i * timestep for i in range(self.num_timesteps)]
-                )
-            else:
-                self._times = np.array([self.start_time])
-        return self._times
-
-    @property
-    def frequencies(self) -> np.ndarray:
-        """Generate an array of frequency channels for the observation."""
-        if self._frequencies is None:
-            self._frequencies = np.array(
+    def _get_times(self) -> None:
+        """Return time samples for the observation."""
+        if self.config.num_timesteps > 1:
+            timestep = self.config.observation_length / (self.config.num_timesteps - 1)
+            self.times = np.array(
                 [
-                    self.start_frequency + i * self.channel_width
-                    for i in range(self.num_channels)
+                    self.config.start_time + i * timestep
+                    for i in range(self.config.num_timesteps)
                 ]
             )
-        return self._frequencies
+        else:
+            self.times = np.array([self.config.start_time])
+
+    def _get_frequencies(self) -> None:
+        """Return frequency channels for the observation."""
+        self.frequencies = np.array(
+            [
+                self.config.start_frequency + i * self.channel_width
+                for i in range(self.config.num_channels)
+            ]
+        )

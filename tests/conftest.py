@@ -2,14 +2,19 @@
 
 import pytest
 from starbox.calibrate.solutions import Solutions
+from starbox.config.telescope import TelescopeConfig
 from starbox.simulate.corruptions import Corruptions
 from starbox.simulate.telescope import Telescope
 import plotly.io as pio
 from starbox.simulate.skymodel import SkyModel
 from starbox.simulate.observation import Observation
-
+from starbox.config.skymodel import SkyModelConfig
+from starbox.config.observation import ObservationConfig
+from starbox.config.corruptions import CorruptionsConfig
+from starbox.config.solver import SolverConfig
 from starbox.visibility import VisibilitySet
 import numpy as np
+from starbox.config.experiment import ExperimentConfig
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -20,41 +25,68 @@ def configure_plotly_for_tests():
 
 
 @pytest.fixture
-def small_telescope():
+def telescope_config():
+    """A simple telescope configuration."""
+    return TelescopeConfig(num_stations=10, diameter=20.0, seed=42)
+
+
+@pytest.fixture
+def small_telescope(telescope_config):
     """A simple telescope model for a small array."""
-    return Telescope(name="SmallArray", num_stations=10, diameter=20.0)
+    return Telescope(telescope_config, name="SmallArray")
 
 
 @pytest.fixture
-def skymodel():
-    """A simple sky model with a few sources."""
-    return SkyModel(name="SmallSkyModel", num_sources=5, seed=42)
-
-
-@pytest.fixture
-def observation():
-    """A simple observation setup."""
-    start_time = 0  # in seconds
-    observation_length = 180  # in seconds
-    num_timesteps = 3
-    start_frequency = 1e6  # in Hz
-    num_channels = 2
-    total_bandwidth = 1e6  # in Hz
-
-    return Observation(
-        start_time=start_time,
-        observation_length=observation_length,
-        num_timesteps=num_timesteps,
-        start_frequency=start_frequency,
-        num_channels=num_channels,
-        total_bandwidth=total_bandwidth,
+def skymodel_config():
+    """A simple sky model configuration."""
+    return SkyModelConfig(
+        num_sources=5,
+        max_flux_jy=1.0,
+        fov_deg=1.0,
+        phase_centre_deg=(0.0, 0.0),
+        seed=42,
     )
 
 
 @pytest.fixture
-def corruptions():
+def skymodel(skymodel_config):
+    """A simple sky model instance."""
+    return SkyModel(skymodel_config)
+
+
+@pytest.fixture
+def observation_config():
+    """A simple observation configuration."""
+    return ObservationConfig(
+        start_time=0,  # in seconds
+        observation_length=180,  # in seconds
+        num_timesteps=3,
+        start_frequency=1e6,  # in Hz
+        num_channels=2,
+        total_bandwidth=1e6,  # in Hz
+    )
+
+
+@pytest.fixture
+def observation(observation_config):
+    """A simple observation setup."""
+    return Observation(observation_config)
+
+
+@pytest.fixture
+def corruptions_config():
+    """A simple corruptions configuration."""
+    return CorruptionsConfig(
+        seed=42,
+        rms_noise=1.0,
+        rms_phase_gain=2.0,
+    )
+
+
+@pytest.fixture
+def corruptions(corruptions_config):
     """A simple Corruptions instance."""
-    return Corruptions()
+    return Corruptions(corruptions_config)
 
 
 @pytest.fixture
@@ -85,6 +117,12 @@ def visibility_set():
 
 
 @pytest.fixture
+def solver_config():
+    """A simple solver configuration."""
+    return SolverConfig(solution_interval_seconds=10)
+
+
+@pytest.fixture
 def gains():
     """A simple gains array for testing."""
     return np.random.rand(3, 2, 4).astype("complex64")
@@ -93,4 +131,30 @@ def gains():
 @pytest.fixture
 def solutions(gains):
     """A simple Solutions instance for testing."""
-    return Solutions(gains=gains)
+    return Solutions(station_phase_gains=gains)
+
+
+@pytest.fixture
+def rng():
+    """A random number generator with a fixed seed for reproducibility."""
+    return np.random.default_rng(seed=42)
+
+
+@pytest.fixture
+def experiment_config(
+    telescope_config,
+    skymodel_config,
+    observation_config,
+    corruptions_config,
+    solver_config,
+):
+    """A simple experiment configuration."""
+    return ExperimentConfig(
+        name="Test Experiment",
+        description="A simple test experiment configuration.",
+        telescope=telescope_config,
+        skymodel=skymodel_config,
+        observation=observation_config,
+        corruptions=corruptions_config,
+        solver=solver_config,
+    )

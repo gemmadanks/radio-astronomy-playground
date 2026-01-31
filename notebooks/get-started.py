@@ -7,18 +7,42 @@ app = marimo.App(width="medium")
 @app.cell
 def _():
     import marimo as mo
-    from starbox import Telescope, SkyModel, Corruptions, Imager, Solver, Observation
+    import logging
+
+    from starbox import Imager
+    from starbox.config import (
+        SkyModelConfig,
+        ObservationConfig,
+        TelescopeConfig,
+        CorruptionsConfig,
+        SolverConfig,
+        ExperimentConfig,
+    )
+    from starbox.factory import (
+        build_skymodel,
+        build_observation,
+        build_telescope,
+        build_corruptions,
+        build_solver,
+    )
     from starbox.viz import plot
     from starbox.predict.predict import predict_visibilities
     from starbox.io.save import save
 
     return (
-        Corruptions,
+        CorruptionsConfig,
+        ExperimentConfig,
         Imager,
-        Observation,
-        SkyModel,
-        Solver,
-        Telescope,
+        ObservationConfig,
+        SkyModelConfig,
+        SolverConfig,
+        TelescopeConfig,
+        build_corruptions,
+        build_observation,
+        build_skymodel,
+        build_solver,
+        build_telescope,
+        logging,
         mo,
         plot,
         predict_visibilities,
@@ -30,6 +54,12 @@ def _():
 def _():
     seed = 42
     return (seed,)
+
+
+@app.cell
+def _(logging):
+    logging.basicConfig(level=logging.INFO)
+    return
 
 
 @app.cell
@@ -82,6 +112,7 @@ def _(mo):
     # Sky model
     num_sources_slider = mo.ui.slider(1, 10, label="Number of point sources: ")
     max_flux_slider = mo.ui.slider(1, 10, label="Maximum source brightness (Jy): ")
+    fov_slider = mo.ui.slider(1, 10, label="Field of view (degrees): ")
 
     # Telescope
     num_stations_slider = mo.ui.slider(2, 100, label="Number of stations: ")
@@ -106,9 +137,12 @@ def _(mo):
     noise_rms_slider = mo.ui.slider(1, 100, label="Noise RMS: ")
 
     # Calibration
-    solint_slider = mo.ui.slider(1, 600, label="Solution interval (s): ")
+    solution_interval_seconds_slider = mo.ui.slider(
+        1, 600, label="Solution interval (s): "
+    )
     return (
         bandwidth_slider,
+        fov_slider,
         max_flux_slider,
         noise_rms_slider,
         num_channels_slider,
@@ -117,7 +151,7 @@ def _(mo):
         num_timesteps_slider,
         observation_length_slider,
         phase_rms_slider,
-        solint_slider,
+        solution_interval_seconds_slider,
         start_freq_slider,
         start_time_slider,
         telescope_diameter_slider,
@@ -131,34 +165,46 @@ def _(file_browser):
 
 
 @app.cell
-def _(SkyModel, max_flux_slider, mo, num_sources_slider, plot, seed):
-    sky_model = SkyModel(
-        name="My Sky Model",
+def _(
+    SkyModelConfig,
+    build_skymodel,
+    fov_slider,
+    max_flux_slider,
+    mo,
+    num_sources_slider,
+    plot,
+    seed,
+):
+    sky_model_config = SkyModelConfig(
         num_sources=num_sources_slider.value,
-        max_flux=max_flux_slider.value,
+        max_flux_jy=max_flux_slider.value,
+        fov_deg=fov_slider.value,
+        phase_centre_deg=(0, 0),
         seed=seed,
     )
+    sky_model = build_skymodel(sky_model_config)
     sky_model_fig = mo.ui.plotly(plot.plot_sky_model(sky_model))
-    return sky_model, sky_model_fig
+    return sky_model, sky_model_config, sky_model_fig
 
 
 @app.cell
 def _(
-    Telescope,
+    TelescopeConfig,
+    build_telescope,
     mo,
     num_stations_slider,
     plot,
     seed,
     telescope_diameter_slider,
 ):
-    telescope = Telescope(
-        name="My Telescope",
+    telescope_config = TelescopeConfig(
         num_stations=num_stations_slider.value,
         diameter=telescope_diameter_slider.value,
         seed=seed,
     )
-    telescope_fig = mo.ui.plotly(plot.plot_array_configuration(telescope))
-    return telescope, telescope_fig
+    telescope = build_telescope(telescope_config)
+    telescope_fig = mo.ui.plotly(plot.plot_telescope(telescope))
+    return telescope, telescope_config, telescope_fig
 
 
 @app.cell
@@ -220,15 +266,16 @@ def _(
 
 @app.cell
 def _(
-    Observation,
+    ObservationConfig,
     bandwidth_slider,
+    build_observation,
     num_channels_slider,
     num_timesteps_slider,
     observation_length_slider,
     start_freq_slider,
     start_time_slider,
 ):
-    observation = Observation(
+    observation_config = ObservationConfig(
         start_time=start_time_slider.value,
         observation_length=observation_length_slider.value,
         num_timesteps=num_timesteps_slider.value,
@@ -236,7 +283,8 @@ def _(
         num_channels=num_channels_slider.value,
         total_bandwidth=bandwidth_slider.value,
     )
-    return (observation,)
+    observation = build_observation(observation_config)
+    return observation, observation_config
 
 
 @app.cell
@@ -254,33 +302,35 @@ def _(mo, noise_rms_slider, phase_rms_slider):
 
 
 @app.cell
-def _(Corruptions, noise_rms_slider, phase_rms_slider):
-    corruptions = Corruptions()
-    corruptions.add_noise(noise_rms_slider.value)
-    corruptions.add_station_phase_gain(phase_rms_slider.value)
-    return (corruptions,)
+def _(
+    CorruptionsConfig,
+    build_corruptions,
+    noise_rms_slider,
+    phase_rms_slider,
+    seed,
+):
+    corruptions_config = CorruptionsConfig(
+        rms_noise=noise_rms_slider.value,
+        rms_phase_gain=phase_rms_slider.value,
+        seed=seed,
+    )
+    corruptions = build_corruptions(corruptions_config)
+    return corruptions, corruptions_config
 
 
 @app.cell
-def _(Solver, solint_slider):
-    solver = Solver(solint=solint_slider.value)
-    return (solver,)
+def _(SolverConfig, build_solver, solution_interval_seconds_slider):
+    solver_config = SolverConfig(
+        solution_interval_seconds=solution_interval_seconds_slider.value
+    )
+    solver = build_solver(solver_config)
+    return solver, solver_config
 
 
 @app.cell
 def _(Imager):
     imager = Imager()
     return (imager,)
-
-
-@app.cell
-def _(mo, save):
-    save_button = mo.ui.button(
-        value=0, on_click=lambda: save(None), label="Save Experiment"
-    )
-    experiment_name = mo.ui.text(placeholder="your-experiment-name")
-    mo.hstack([experiment_name, save_button], justify="start")
-    return
 
 
 @app.cell(hide_code=True)
@@ -327,6 +377,59 @@ def _(corrected_image, dirty_image, gains, mo, plot):
             plot.plot_gains(gains),
         ]
     )
+    return
+
+
+@app.cell
+def _(mo):
+    experiment_name = mo.ui.text(placeholder="your-experiment-name")
+    return (experiment_name,)
+
+
+@app.cell
+def _(experiment_name):
+    experiment_name
+    return
+
+
+@app.cell
+def _(
+    ExperimentConfig,
+    corruptions_config,
+    experiment_name,
+    observation_config,
+    sky_model_config,
+    solver_config,
+    telescope_config,
+):
+    experiment_config = ExperimentConfig(
+        name=experiment_name.value if experiment_name.value else "experiment",
+        skymodel=sky_model_config,
+        telescope=telescope_config,
+        corruptions=corruptions_config,
+        observation=observation_config,
+        solver=solver_config,
+    )
+    return (experiment_config,)
+
+
+@app.cell
+def _(experiment_config):
+    experiment_config
+    return
+
+
+@app.cell
+def _(mo):
+    save_button = mo.ui.run_button(label="Save Experiment")
+    save_button
+    return (save_button,)
+
+
+@app.cell
+def _(experiment_config, save, save_button):
+    if save_button.value:
+        save(experiment_config)
     return
 
 

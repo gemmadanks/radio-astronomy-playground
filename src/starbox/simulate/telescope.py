@@ -4,37 +4,39 @@ This module contains the Telescope class.
 
 Example:
     >>> from starbox.simulate import Telescope
-    >>> telescope = Telescope(name="ELA", num_stations=100, diameter=50.0)
-    >>> print(telescope)
-    Telescope(name=ELA, num_stations=100, diameter=50.0 m)
+    >>> from starbox.config import TelescopeConfig
+    >>> config = TelescopeConfig(num_stations=100, diameter=50.0, seed=42)
+    >>> telescope = Telescope(config, name="ELA")
+    >>> print(telescope.name)
+    ELA
 """
 
+from starbox.config import TelescopeConfig
 import numpy as np
 
 
 class Telescope:
     """A class representing a radio telescope array."""
 
-    def __init__(self, name: str, num_stations: int, diameter: float, seed: int = 42):
-        """Initialize a Telescope object.
+    def __init__(
+        self,
+        cfg: TelescopeConfig,
+        name: str = "Telescope",
+    ):
+        """Initialize the Telescope.
 
         Args:
-            name: Identifier for the telescope.
-            num_stations: Number of stations in the telescope.
-            diameter: Diameter of the telescope in metres.
-            seed: Random seed for reproducibility.
+            cfg: TelescopeConfig instance containing configuration parameters.
+            name: Name of the telescope.
         """
-        self.name: str = name
-        self.num_stations: int = num_stations
-        self.diameter: float = diameter
-        self.rng: np.random.Generator = np.random.default_rng(seed)
-        self.array: np.ndarray = self._configure_array()
-        self.station_ids: np.ndarray = np.array(
-            [f"{name}_STN{idx:03d}" for idx in range(num_stations)]
-        )
+        self.name = name
+        self.config = cfg
 
-    def __repr__(self) -> str:
-        return f"Telescope(name={self.name}, num_stations={self.num_stations}, diameter={self.diameter} m)"
+        self.rng = np.random.default_rng(self.config.seed)
+        self.station_positions = self._configure_array()
+        self.station_ids = np.array(
+            [f"{self.name}_STN{idx:03d}" for idx in range(self.config.num_stations)]
+        )
 
     def _configure_array(self) -> np.ndarray:
         """Configure an array of antennas.
@@ -47,25 +49,14 @@ class Telescope:
         x, y, z = _compute_coordinates(angles, radii)
         return np.column_stack((x, y, z))
 
-    def reconfigure(self, seed: int | None = None) -> None:
-        """Reconfigure the array with a new random configuration.
-
-        Args:
-            seed: Optional new seed for random number generator. If None,
-                  uses current RNG state for different configuration.
-        """
-        if seed is not None:
-            self.rng = np.random.default_rng(seed)
-        self.array = self._configure_array()
-
     def _get_angles(self) -> np.ndarray:
         """Generate random angles for antenna placement."""
-        return self.rng.uniform(0, 2 * np.pi, self.num_stations)
+        return self.rng.uniform(0, 2 * np.pi, self.config.num_stations)
 
     def _get_radii(self) -> np.ndarray:
         """Generate random radii for antenna placement within the telescope diameter."""
-        radius = self.diameter / 2
-        return radius * np.sqrt(self.rng.uniform(0, 1, self.num_stations))
+        radius = self.config.diameter / 2
+        return radius * np.sqrt(self.rng.uniform(0, 1, self.config.num_stations))
 
 
 def _compute_coordinates(

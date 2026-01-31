@@ -13,7 +13,7 @@ def predict_visibilities(
     """Predict visibilities given a telescope, sky model, and observation."""
 
     # Placeholder implementation: return zeros
-    num_stations = telescope.num_stations
+    num_stations = telescope.config.num_stations
     num_times = len(observation.times)
     num_channels = len(observation.frequencies)
     num_baselines = num_stations * (num_stations - 1) // 2

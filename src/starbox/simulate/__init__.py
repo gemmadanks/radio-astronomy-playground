@@ -21,4 +21,9 @@ from .skymodel import SkyModel
 from .observation import Observation
 from .corruptions import Corruptions
 
-__all__ = ["Telescope", "SkyModel", "Corruptions", "Observation"]
+__all__ = [
+    "Telescope",
+    "SkyModel",
+    "Corruptions",
+    "Observation",
+]
