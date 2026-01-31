@@ -12,8 +12,8 @@ def test_telescope_initialisation():
     assert telescope.name == "ELA"
     assert telescope.config.num_stations == 100
     assert telescope.config.diameter == 50.0
-    assert telescope.array is not None
-    assert telescope.array.shape == (100, 3)
+    assert telescope.station_positions is not None
+    assert telescope.station_positions.shape == (100, 3)
     np.testing.assert_array_equal(
         telescope.station_ids, np.array([f"ELA_STN{idx:03d}" for idx in range(100)])
     )
@@ -25,9 +25,11 @@ def test_telescope_array_determinism():
     telescope1 = Telescope(config1, name="DeterministicArray")
     config2 = TelescopeConfig(num_stations=50, diameter=30.0, seed=123)
     telescope2 = Telescope(config2, name="DeterministicArray")
-    assert telescope1.array is not None
-    assert telescope2.array is not None
-    np.testing.assert_array_equal(telescope1.array, telescope2.array)
+    assert telescope1.station_positions is not None
+    assert telescope2.station_positions is not None
+    np.testing.assert_array_equal(
+        telescope1.station_positions, telescope2.station_positions
+    )
 
 
 def test_telescope_array_variability():
@@ -37,9 +39,11 @@ def test_telescope_array_variability():
     config2 = TelescopeConfig(num_stations=50, diameter=30.0, seed=456)
     telescope2 = Telescope(config2, name="VariableArray")
 
-    assert telescope1.array is not None
-    assert telescope2.array is not None
-    assert not np.array_equal(telescope1.array, telescope2.array)
+    assert telescope1.station_positions is not None
+    assert telescope2.station_positions is not None
+    assert not np.array_equal(
+        telescope1.station_positions, telescope2.station_positions
+    )
 
 
 def test_telescope_get_angles(small_telescope):

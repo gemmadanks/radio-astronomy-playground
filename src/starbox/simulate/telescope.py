@@ -33,7 +33,7 @@ class Telescope:
         self.config = cfg
 
         self.rng = np.random.default_rng(self.config.seed)
-        self.array = self._configure_array()
+        self.station_positions = self._configure_array()
         self.station_ids = np.array(
             [f"{self.name}_STN{idx:03d}" for idx in range(self.config.num_stations)]
         )

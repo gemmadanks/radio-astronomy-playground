@@ -10,5 +10,5 @@ def test_build_telescope_returns_telescope(telescope_config):
 
     assert isinstance(telescope, Telescope)
     assert telescope.config == telescope_config
-    assert telescope.array.shape == (telescope_config.num_stations, 3)
+    assert telescope.station_positions.shape == (telescope_config.num_stations, 3)
     assert len(telescope.station_ids) == telescope_config.num_stations
