@@ -1,6 +1,6 @@
 [project]
 name = "starbox"
-version = "0.6.3"
+version = "0.7.0"
 description = "A python package for exploring radio astronomy."
 authors = [
     {name = "Gemma Danks"}

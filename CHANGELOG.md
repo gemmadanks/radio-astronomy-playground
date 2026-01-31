@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.0](https://github.com/gemmadanks/radio-astronomy-playground/compare/v0.6.3...v0.7.0) (2026-01-31)
+
+
+### 🚀 Features
+
+* use pydantic models ([#55](https://github.com/gemmadanks/radio-astronomy-playground/issues/55)) ([d10f645](https://github.com/gemmadanks/radio-astronomy-playground/commit/d10f645665b35f971f646e506d6fc6ccd8bfd4ce))
+
 ## [0.6.3](https://github.com/gemmadanks/radio-astronomy-playground/compare/v0.6.2...v0.6.3) (2026-01-25)
 
 
