@@ -201,7 +201,7 @@ def _(
         seed=seed,
     )
     telescope = build_telescope(telescope_config)
-    telescope_fig = mo.ui.plotly(plot.plot_array_configuration(telescope))
+    telescope_fig = mo.ui.plotly(plot.plot_telescope(telescope))
     return telescope, telescope_config, telescope_fig
 
 
