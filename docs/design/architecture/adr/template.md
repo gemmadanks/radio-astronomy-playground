@@ -5,7 +5,6 @@
 | **Created**  | YYYY-MM-DD |
 | **Last Updated**  | YYYY-MM-DD |
 | **Deciders** | Name |
-| **Tags** | template |
 
 ---
 
