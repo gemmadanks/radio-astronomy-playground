@@ -38,13 +38,9 @@ def plot_sky_model(sky_model: SkyModel) -> Figure:
 
 def plot_telescope(telescope: Telescope) -> Figure:
     """Plot the array configuration given antenna coordinates."""
-    array = telescope.array
-    if array is None:
-        msg = "Telescope array is not initialised."
-        raise ValueError(msg)
     fig = px.scatter(
-        x=array[:, 0],
-        y=array[:, 1],
+        x=telescope.array[:, 0],
+        y=telescope.array[:, 1],
         title=f"{telescope.name}",
     )
     fig.update_layout(
