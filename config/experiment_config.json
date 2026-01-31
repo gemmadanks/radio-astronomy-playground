@@ -1,35 +1,35 @@
 {
-    "name": "experiment",
-    "description": null,
-    "telescope": {
-        "num_stations": 2,
-        "diameter": 1.0,
-        "seed": 42
-    },
-    "skymodel": {
-        "num_sources": 1,
-        "max_flux_jy": 1.0,
-        "phase_centre_deg": [
-            0.0,
-            0.0
-        ],
-        "fov_deg": 1.0,
-        "seed": 42
-    },
-    "observation": {
-        "start_time": 1.0,
-        "observation_length": 1.0,
-        "num_timesteps": 1,
-        "start_frequency": 1.0,
-        "num_channels": 1,
-        "total_bandwidth": 1.0
-    },
-    "corruptions": {
-        "seed": 42,
-        "rms_noise": 1.0,
-        "rms_phase_gain": 0.0
-    },
-    "solver": {
-        "solint": 1.0
-    }
+  "corruptions": {
+    "rms_noise": 1.0,
+    "rms_phase_gain": 0.0,
+    "seed": 42
+  },
+  "description": null,
+  "name": "experiment",
+  "observation": {
+    "num_channels": 1,
+    "num_timesteps": 1,
+    "observation_length": 1.0,
+    "start_frequency": 1.0,
+    "start_time": 1.0,
+    "total_bandwidth": 1.0
+  },
+  "skymodel": {
+    "fov_deg": 1.0,
+    "max_flux_jy": 1.0,
+    "num_sources": 1,
+    "phase_centre_deg": [
+      0.0,
+      0.0
+    ],
+    "seed": 42
+  },
+  "solver": {
+    "solint": 1.0
+  },
+  "telescope": {
+    "diameter": 1.0,
+    "num_stations": 2,
+    "seed": 42
+  }
 }
