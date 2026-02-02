@@ -32,7 +32,7 @@ jobs:
           enable-cache: true
 
       - name: Install dependencies
-        run: uv sync --all-groups
+        run: uv sync --all-extras
 
       # Run the same hooks as locally; include push stage so pre-push hooks run too
       - name: Run pre-commit (all files, commit & push stages)
@@ -65,7 +65,7 @@ jobs:
           enable-cache: true
 
       - name: Install dependencies
-        run: uv sync --all-groups
+        run: uv sync --all-extras
 
       - name: Run tests (full suite)
         run: uv run pytest --cov --cov-branch --cov-report=xml
