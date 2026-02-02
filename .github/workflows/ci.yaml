@@ -75,7 +75,7 @@ jobs:
 
   docs:
     name: Build docs (mkdocs)
-    needs: [pre-commit, test]
+    needs: [pre-commit, test, architecture-tests]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -140,7 +140,7 @@ jobs:
 
   package:
     name: Package smoke test
-    needs: test
+    needs: [pre-commit, test, architecture-tests]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -158,7 +158,7 @@ jobs:
           enable-cache: true
 
       - name: Install dependencies
-        run: uv sync --all-groups
+        run: uv sync
 
       - name: Build and install wheel
         run: |
