@@ -5,7 +5,6 @@ from starbox.calibrate.solutions import Solutions
 from starbox.config.telescope import TelescopeConfig
 from starbox.simulate.corruptions import Corruptions
 from starbox.simulate.telescope import Telescope
-import plotly.io as pio
 from starbox.simulate.skymodel import SkyModel
 from starbox.simulate.observation import Observation
 from starbox.config.skymodel import SkyModelConfig
@@ -15,13 +14,6 @@ from starbox.config.solver import SolverConfig
 from starbox.visibility import VisibilitySet
 import numpy as np
 from starbox.config.experiment import ExperimentConfig
-
-
-@pytest.fixture(scope="session", autouse=True)
-def configure_plotly_for_tests():
-    """Configure Plotly to not open browser during tests."""
-    # Set renderer to 'json' or 'png' instead of 'browser'
-    pio.renderers.default = "json"
 
 
 @pytest.fixture
