@@ -3,7 +3,7 @@
 import numpy as np
 
 from starbox.config.skymodel import SkyModelConfig
-import plotly.express as px
+
 
 class SkyModel:
     """A class representing a sky model.

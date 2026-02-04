@@ -106,6 +106,7 @@ jobs:
 
   architecture-tests:
     name: Architecture tests ${{ matrix.os }} / py${{ matrix.python }}
+    needs: [pre-commit]
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
