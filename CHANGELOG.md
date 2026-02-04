@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.8.0](https://github.com/gemmadanks/radio-astronomy-playground/compare/v0.7.0...v0.8.0) (2026-02-04)
+
+
+### 🚀 Features
+
+* ensure core functionality is independent of UI/visualisation ([#57](https://github.com/gemmadanks/radio-astronomy-playground/issues/57)) ([b80b312](https://github.com/gemmadanks/radio-astronomy-playground/commit/b80b312326d159758a12738f466faca2c5a02a23))
+
+
+### 📦 Build
+
+* **deps:** bump numpy from 2.4.1 to 2.4.2 ([#58](https://github.com/gemmadanks/radio-astronomy-playground/issues/58)) ([1500331](https://github.com/gemmadanks/radio-astronomy-playground/commit/15003312e646982d8c33eec4cca415fc287a4c03))
+* **deps:** bump ruff from 0.14.14 to 0.15.0 ([#59](https://github.com/gemmadanks/radio-astronomy-playground/issues/59)) ([f7261ab](https://github.com/gemmadanks/radio-astronomy-playground/commit/f7261abf934c1c9fd60603604517f1e9d0d2c119))
+
 ## [0.7.0](https://github.com/gemmadanks/radio-astronomy-playground/compare/v0.6.3...v0.7.0) (2026-01-31)
 
 
