@@ -2539,12 +2539,17 @@ name = "starbox"
 version = "0.7.0"
 source = { editable = "." }
 dependencies = [
+    { name = "numpy" },
+    { name = "pandas" },
+    { name = "pydantic" },
+]
+
+[package.optional-dependencies]
+viz = [
     { name = "ipykernel" },
     { name = "ipywidgets" },
     { name = "jupyter" },
     { name = "marimo", extra = ["recommended"] },
-    { name = "numpy" },
-    { name = "pandas" },
     { name = "plotly" },
 ]
 
@@ -2567,14 +2572,16 @@ docs = [
 
 [package.metadata]
 requires-dist = [
-    { name = "ipykernel", specifier = "==7.1.0" },
-    { name = "ipywidgets", specifier = ">=8.1.7,<9.0.0" },
-    { name = "jupyter", specifier = ">=1.1.1,<2.0.0" },
-    { name = "marimo", extras = ["recommended"], specifier = ">=0.19.4" },
+    { name = "ipykernel", marker = "extra == 'viz'", specifier = "==7.1.0" },
+    { name = "ipywidgets", marker = "extra == 'viz'", specifier = ">=8.1.7,<9.0.0" },
+    { name = "jupyter", marker = "extra == 'viz'", specifier = ">=1.1.1,<2.0.0" },
+    { name = "marimo", extras = ["recommended"], marker = "extra == 'viz'", specifier = ">=0.19.4" },
     { name = "numpy", specifier = ">=2.3.3,<3.0.0" },
     { name = "pandas", specifier = ">=2.3.3" },
-    { name = "plotly", specifier = ">=6.3.0,<7.0.0" },
+    { name = "plotly", marker = "extra == 'viz'", specifier = ">=6.3.0,<7.0.0" },
+    { name = "pydantic", specifier = ">=2.12.5" },
 ]
+provides-extras = ["viz"]
 
 [package.metadata.requires-dev]
 dev = [

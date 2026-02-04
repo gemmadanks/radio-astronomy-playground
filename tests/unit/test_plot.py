@@ -3,6 +3,16 @@
 from starbox.viz import plot
 
 import numpy as np
+import pytest
+
+import plotly.io as pio
+
+
+@pytest.fixture(scope="session", autouse=True)
+def configure_plotly_for_tests():
+    """Configure Plotly to not open browser during tests."""
+    # Set renderer to 'json' or 'png' instead of 'browser'
+    pio.renderers.default = "json"
 
 
 def test_plot_skymodel(skymodel):
