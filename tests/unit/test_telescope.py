@@ -1,13 +1,21 @@
 """Test the Telescope class."""
 
 from starbox.simulate.telescope import Telescope, _compute_coordinates
-from starbox.config import TelescopeConfig
+from starbox.config import TelescopeConfig, TelescopeSiteConfig
 import numpy as np
 
 
-def test_telescope_initialisation():
+def test_telescope_site_initialisation():
+    """Test that a TelescopeSiteConfig object initialises correctly."""
+    site_config = TelescopeSiteConfig(latitude_deg=45.0, longitude_deg=90.0, altitude_m=100.0)
+    assert site_config.latitude_deg == 45.0
+    assert site_config.longitude_deg == 90.0
+    assert site_config.altitude_m == 100.0
+
+
+def test_telescope_initialisation(telescope_site_config):
     """Test that a Telescope object initialises correctly from a TelescopeConfig."""
-    config = TelescopeConfig(num_stations=100, diameter=50.0, seed=42)
+    config = TelescopeConfig(num_stations=100, diameter=50.0, seed=42, site=telescope_site_config)
     telescope = Telescope(config, name="ELA")
     assert telescope.name == "ELA"
     assert telescope.config.num_stations == 100
@@ -19,11 +27,11 @@ def test_telescope_initialisation():
     )
 
 
-def test_telescope_array_determinism():
+def test_telescope_array_determinism(telescope_site_config):
     """Test that the array configuration is deterministic given the same seed."""
-    config1 = TelescopeConfig(num_stations=50, diameter=30.0, seed=123)
+    config1 = TelescopeConfig(num_stations=50, diameter=30.0, seed=123, site=telescope_site_config)
     telescope1 = Telescope(config1, name="DeterministicArray")
-    config2 = TelescopeConfig(num_stations=50, diameter=30.0, seed=123)
+    config2 = TelescopeConfig(num_stations=50, diameter=30.0, seed=123, site=telescope_site_config)
     telescope2 = Telescope(config2, name="DeterministicArray")
     assert telescope1.station_positions is not None
     assert telescope2.station_positions is not None
@@ -32,11 +40,11 @@ def test_telescope_array_determinism():
     )
 
 
-def test_telescope_array_variability():
+def test_telescope_array_variability(telescope_site_config):
     """Test that different seeds produce different array configurations."""
-    config1 = TelescopeConfig(num_stations=50, diameter=30.0, seed=123)
+    config1 = TelescopeConfig(num_stations=50, diameter=30.0, seed=123, site=telescope_site_config)
     telescope1 = Telescope(config1, name="VariableArray")
-    config2 = TelescopeConfig(num_stations=50, diameter=30.0, seed=456)
+    config2 = TelescopeConfig(num_stations=50, diameter=30.0, seed=456, site=telescope_site_config)
     telescope2 = Telescope(config2, name="VariableArray")
 
     assert telescope1.station_positions is not None

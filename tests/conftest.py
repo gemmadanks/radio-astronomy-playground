@@ -2,7 +2,7 @@
 
 import pytest
 from starbox.calibrate.solutions import Solutions
-from starbox.config.telescope import TelescopeConfig
+from starbox.config.telescope import TelescopeConfig, TelescopeSiteConfig
 from starbox.simulate.corruptions import Corruptions
 from starbox.simulate.telescope import Telescope
 from starbox.simulate.skymodel import SkyModel
@@ -17,14 +17,23 @@ from starbox.config.experiment import ExperimentConfig
 
 
 @pytest.fixture
-def telescope_config():
-    """A simple telescope configuration."""
-    return TelescopeConfig(num_stations=10, diameter=20.0, seed=42)
+def telescope_site_config():
+    """A simple telescope site configuration."""
+    return TelescopeSiteConfig(latitude_deg=45.0, longitude_deg=90.0, altitude_m=100.0)
 
 
 @pytest.fixture
-def small_telescope(telescope_config):
+def telescope_config(telescope_site_config):
+    """A simple telescope configuration."""
+    return TelescopeConfig(
+        num_stations=10, diameter=20.0, seed=42, site=telescope_site_config
+    )
+
+
+@pytest.fixture
+def small_telescope(telescope_config, telescope_site_config):
     """A simple telescope model for a small array."""
+    telescope_config.site = telescope_site_config
     return Telescope(telescope_config, name="SmallArray")
 
 

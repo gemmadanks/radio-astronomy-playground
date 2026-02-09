@@ -14,6 +14,7 @@ def _():
         SkyModelConfig,
         ObservationConfig,
         TelescopeConfig,
+        TelescopeSiteConfig,
         CorruptionsConfig,
         SolverConfig,
         ExperimentConfig,
@@ -37,6 +38,7 @@ def _():
         SkyModelConfig,
         SolverConfig,
         TelescopeConfig,
+        TelescopeSiteConfig,
         build_corruptions,
         build_observation,
         build_skymodel,
@@ -190,6 +192,7 @@ def _(
 @app.cell
 def _(
     TelescopeConfig,
+    TelescopeSiteConfig,
     build_telescope,
     mo,
     num_stations_slider,
@@ -197,10 +200,14 @@ def _(
     seed,
     telescope_diameter_slider,
 ):
+    telescope_site = TelescopeSiteConfig(
+        latitude_deg=0.0, longitude_deg=0.0, altitude_m=0.0
+    )
     telescope_config = TelescopeConfig(
         num_stations=num_stations_slider.value,
         diameter=telescope_diameter_slider.value,
         seed=seed,
+        site=telescope_site,
     )
     telescope = build_telescope(telescope_config)
     telescope_fig = mo.ui.plotly(plot.plot_telescope(telescope))

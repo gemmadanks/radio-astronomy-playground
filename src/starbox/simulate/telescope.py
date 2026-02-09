@@ -4,8 +4,9 @@ This module contains the Telescope class.
 
 Example:
     >>> from starbox.simulate import Telescope
-    >>> from starbox.config import TelescopeConfig
-    >>> config = TelescopeConfig(num_stations=100, diameter=50.0, seed=42)
+    >>> from starbox.config import TelescopeConfig, TelescopeSiteConfig
+    >>> site_config = TelescopeSiteConfig(latitude_deg=45.0, longitude_deg=90.0, altitude_m=100.0)
+    >>> config = TelescopeConfig(num_stations=100, diameter=50.0, seed=42, site=site_config)
     >>> telescope = Telescope(config, name="ELA")
     >>> print(telescope.name)
     ELA
