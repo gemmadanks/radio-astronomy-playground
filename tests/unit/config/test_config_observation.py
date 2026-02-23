@@ -11,6 +11,8 @@ def test_observation_config_from_dict():
         "start_frequency": 100.0,
         "total_bandwidth": 10.0,
         "num_channels": 5,
+        "phase_center_ra": 180.0,
+        "phase_center_dec": -45.0,
     }
     observation_config = ObservationConfig(**parameter_dict)
     for key, value in parameter_dict.items():

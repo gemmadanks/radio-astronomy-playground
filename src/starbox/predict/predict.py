@@ -14,8 +14,8 @@ def predict_visibilities(
 
     # Placeholder implementation: return zeros
     num_stations = telescope.config.num_stations
-    num_times = len(observation.times)
-    num_channels = len(observation.frequencies)
+    num_times = len(observation.times_mjd)
+    num_channels = len(observation.frequencies_hz)
     num_baselines = num_stations * (num_stations - 1) // 2
     station1_index, station2_index = np.triu_indices(
         num_stations, k=1
@@ -27,8 +27,8 @@ def predict_visibilities(
         uvw_m=np.zeros((num_times, num_baselines, 3)),
         station1=station1_index,
         station2=station2_index,
-        times_mjd=observation.times,
-        freqs_hz=observation.frequencies,
+        times_mjd=observation.times_mjd,
+        freqs_hz=observation.frequencies_hz,
         weights=np.ones((num_times, num_baselines, num_channels)),
     )
     return visibilities_set

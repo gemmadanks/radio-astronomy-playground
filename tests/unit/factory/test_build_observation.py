@@ -12,5 +12,5 @@ def test_build_observation_returns_observation(observation_config):
     assert observation.channel_width == (
         observation_config.total_bandwidth / observation_config.num_channels
     )
-    assert observation.times.shape == (observation_config.num_timesteps,)
-    assert observation.frequencies.shape == (observation_config.num_channels,)
+    assert observation.times_mjd.shape == (observation_config.num_timesteps,)
+    assert observation.frequencies_hz.shape == (observation_config.num_channels,)

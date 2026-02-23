@@ -12,3 +12,7 @@ class ObservationConfig(BaseModel):
     start_frequency: float = Field(gt=0)
     num_channels: int = Field(ge=1)
     total_bandwidth: float = Field(gt=0)
+    phase_center_ra: float = Field(ge=0, le=360, default=0)
+    phase_center_dec: float = Field(ge=-90, le=90, default=0)
+    pointing_center_ra: float = Field(ge=0, le=360, default=0)
+    pointing_center_dec: float = Field(ge=-90, le=90, default=0)
