@@ -44,7 +44,7 @@ def skymodel_config():
         num_sources=5,
         max_flux_jy=1.0,
         fov_deg=1.0,
-        phase_centre_deg=(0.0, 0.0),
+        field_centre_deg=(0.0, 0.0),
         seed=42,
     )
 

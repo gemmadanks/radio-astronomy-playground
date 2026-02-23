@@ -181,7 +181,7 @@ def _(
         num_sources=num_sources_slider.value,
         max_flux_jy=max_flux_slider.value,
         fov_deg=fov_slider.value,
-        phase_centre_deg=(0, 0),
+        field_centre_deg=(0, 0),
         seed=seed,
     )
     sky_model = build_skymodel(sky_model_config)

@@ -28,7 +28,7 @@ class SkyModel:
     def _generate_sources(self):
         """Generate the sky model sources."""
         rng = np.random.default_rng(self.config.seed)
-        ra_centre, dec_centre = self.config.phase_centre_deg
+        ra_centre, dec_centre = self.config.field_centre_deg
         half_fov_deg = self.config.fov_deg / 2.0
 
         self.ra_deg = rng.uniform(

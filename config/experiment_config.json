@@ -18,7 +18,7 @@
     "fov_deg": 1.0,
     "max_flux_jy": 1.0,
     "num_sources": 1,
-    "phase_centre_deg": [
+    "field_centre_deg": [
       0.0,
       0.0
     ],
