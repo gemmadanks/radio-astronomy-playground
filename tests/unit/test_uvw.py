@@ -1,7 +1,7 @@
 """Tests for geometry calculations in radio astronomy."""
 
 import numpy as np
-from starbox.simulate.geometry import (
+from starbox.geometry.uvw import (
     calculate_uvw,
     _uvw_basis_from_phase_centre,
     _rot_z,

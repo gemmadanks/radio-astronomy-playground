@@ -1,4 +1,4 @@
-"""Module for functions related to geometry calculations in radio astronomy."""
+"""Module for functions related to UVW calculations."""
 
 import numpy as np
 
@@ -58,7 +58,7 @@ def _uvw_basis_from_phase_centre(
 
 
 def _rot_z(gmst_rad: float) -> np.ndarray:
-    """Calculate the transformation matrix to rotate Greenwich mean sideral time to the equatorial frame.
+    """Calculate the transformation matrix to rotate Greenwich mean sidereal time to the equatorial frame.
 
     Args:
         gmst_rad: The Greenwich mean sidereal time in radians.

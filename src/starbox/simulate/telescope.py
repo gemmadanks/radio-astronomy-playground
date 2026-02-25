@@ -34,9 +34,11 @@ class Telescope:
         self.config = cfg
 
         self.rng = np.random.default_rng(self.config.seed)
+        self.num_stations = self.config.num_stations
+        self.num_baselines = self.num_stations * (self.num_stations - 1) // 2
         self.station_positions = self._configure_array()
         self.station_ids = np.array(
-            [f"{self.name}_STN{idx:03d}" for idx in range(self.config.num_stations)]
+            [f"{self.name}_STN{idx:03d}" for idx in range(self.num_stations)]
         )
         self.baselines_ecef = self._compute_baselines(self._enu_to_ecef())
 
@@ -60,13 +62,12 @@ class Telescope:
         Returns:
             A numpy array of shape (num_baselines, 3) containing the baseline vectors.
         """
-        num_stations = positions.shape[0]
-        i, j = np.triu_indices(num_stations, k=1)
+        i, j = np.triu_indices(self.num_stations, k=1)
         return positions[j] - positions[i]
 
     def _get_angles(self) -> np.ndarray:
         """Generate random angles for antenna placement."""
-        return self.rng.uniform(0, 2 * np.pi, self.config.num_stations)
+        return self.rng.uniform(0, 2 * np.pi, self.num_stations)
 
     def _get_radii(self) -> np.ndarray:
         """Generate random radii for antenna placement within the telescope diameter."""

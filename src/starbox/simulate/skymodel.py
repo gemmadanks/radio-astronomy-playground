@@ -46,6 +46,9 @@ class SkyModel:
     def as_arrays(self) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
         return self.ra_deg, self.dec_deg, self.flux_jy
 
+    def as_arrays_rad(self) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+        return np.deg2rad(self.ra_deg), np.deg2rad(self.dec_deg), self.flux_jy
+
     def equals(self, other: "SkyModel", atol: float = 0.0, rtol: float = 0.0) -> bool:
         """Check equality with another SkyModel within a tolerance."""
         ra1, dec1, f1 = self.as_arrays()

@@ -15,13 +15,13 @@
     "total_bandwidth": 1.0
   },
   "skymodel": {
-    "fov_deg": 1.0,
-    "max_flux_jy": 1.0,
-    "num_sources": 1,
     "field_centre_deg": [
       0.0,
       0.0
     ],
+    "fov_deg": 1.0,
+    "max_flux_jy": 1.0,
+    "num_sources": 1,
     "seed": 42
   },
   "solver": {

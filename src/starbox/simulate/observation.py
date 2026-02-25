@@ -1,6 +1,7 @@
 """Class for handling observation parameters."""
 
 import numpy as np
+import numpy.typing as npt
 
 from astropy.time import Time
 from astropy.utils import iers
@@ -15,11 +16,10 @@ class Observation:
     def __init__(self, config: ObservationConfig):
         self.config = config
         self.channel_width = self.config.total_bandwidth / self.config.num_channels
-        self.times_mjd = None
-        self.frequencies_hz = None
-
         self._get_times()
+        self.num_times = len(self.times_mjd)
         self._get_frequencies()
+        self.num_channels = len(self.frequencies_hz)
 
     @property
     def phase_centre_rad(self) -> tuple[float, float]:
@@ -36,11 +36,14 @@ class Observation:
         return ra_rad, dec_rad
 
     @property
-    def gmst_rad(self) -> np.array:
+    def gmst_rad(self) -> npt.NDArray[np.float64]:
         """Return the times converted to Greenwich mean sidereal time."""
         iers.conf.auto_download = False  # avoid network calls
         times = Time(self.times_mjd, format="mjd", scale="utc")
-        return times.sidereal_time("mean", "greenwich").rad
+        return np.asarray(
+            times.sidereal_time("mean", "greenwich").rad,
+            dtype=np.float64,
+        )
 
     def _get_times(self) -> None:
         """Return time samples for the observation."""

@@ -29,7 +29,6 @@ def _():
     from starbox.viz import plot
     from starbox.predict.predict import predict_visibilities
     from starbox.io.save import save
-
     return (
         CorruptionsConfig,
         ExperimentConfig,
