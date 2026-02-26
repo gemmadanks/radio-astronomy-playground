@@ -29,6 +29,7 @@ def _():
     from starbox.viz import plot
     from starbox.predict.predict import predict_visibilities
     from starbox.io.save import save
+
     return (
         CorruptionsConfig,
         ExperimentConfig,
@@ -123,8 +124,12 @@ def _(mo):
 
     # Observation
     start_time_slider = mo.ui.slider(59000, 69000, label="Start time (MJD): ")
-    observation_length_slider = mo.ui.slider(1, 24, value=6, label="Observation length (hrs): ")
-    num_timesteps_slider = mo.ui.slider(1, 24 * 3600, value=6*60, label="Number of timesteps: ")
+    observation_length_slider = mo.ui.slider(
+        1, 24, value=6, label="Observation length (hrs): "
+    )
+    num_timesteps_slider = mo.ui.slider(
+        1, 24 * 3600, value=6 * 60, label="Number of timesteps: "
+    )
     start_freq_slider = mo.ui.slider(
         100, 1000, label="Mid-point frequency of first channel (MHz): "
     )
@@ -204,7 +209,7 @@ def _(
     )
     telescope_config = TelescopeConfig(
         num_stations=num_stations_slider.value,
-        diameter=telescope_diameter_slider.value*1000,
+        diameter=telescope_diameter_slider.value * 1000,
         seed=seed,
         site=telescope_site,
     )
@@ -227,7 +232,8 @@ def _(
     mo.hstack(
         [
             mo.vstack(
-                [sky_model_fig, num_sources_slider, max_flux_slider, fov_slider], justify="start"
+                [sky_model_fig, num_sources_slider, max_flux_slider, fov_slider],
+                justify="start",
             ),
             mo.vstack(
                 [telescope_fig, num_stations_slider, telescope_diameter_slider],
@@ -401,9 +407,15 @@ def _(corrected_image, dirty_image, fov_slider, gains, mo, model_image, plot):
         [
             mo.hstack(
                 [
-                    plot.plot_image(model_image, title="Model", fov_deg=fov_slider.value),
-                    plot.plot_image(dirty_image, title="Dirty", fov_deg=fov_slider.value),
-                    plot.plot_image(corrected_image, title="Calibrated", fov_deg=fov_slider.value),
+                    plot.plot_image(
+                        model_image, title="Model", fov_deg=fov_slider.value
+                    ),
+                    plot.plot_image(
+                        dirty_image, title="Dirty", fov_deg=fov_slider.value
+                    ),
+                    plot.plot_image(
+                        corrected_image, title="Calibrated", fov_deg=fov_slider.value
+                    ),
                 ]
             ),
             plot.plot_gains(gains),

@@ -23,17 +23,13 @@ class Corruptions:
     def _add_noise(self):
         """Add Gaussian noise corruption."""
         self.sigma = (
-            self.config.rms_noise / np.sqrt(2)
-            if self.config.rms_noise
-            else None
+            self.config.rms_noise / np.sqrt(2) if self.config.rms_noise else None
         )
 
     def _add_station_phase_gain(self):
         """Add station phase gain corruption."""
         self.rms_phase_gain = (
-            self.config.rms_phase_gain
-            if self.config.rms_phase_gain
-            else None
+            self.config.rms_phase_gain if self.config.rms_phase_gain else None
         )
 
     def apply(self, visibility_set: VisibilitySet) -> VisibilitySet:

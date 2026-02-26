@@ -37,12 +37,14 @@ def test_imager_grid_output_shape(visibility_set):
     gridded_visibilities = imager.grid(visibilities=visibility_set)
     assert gridded_visibilities.shape == (imager.grid_size, imager.grid_size)
 
+
 def test_imager_grid_hermitian_symmetry(visibility_set):
     """Test that the grid method produces Hermitian symmetric output."""
     imager = Imager()
     gridded_visibilities = imager.grid(visibilities=visibility_set)
     flipped_conj = np.conj(np.flip(np.flip(gridded_visibilities, axis=0), axis=1))
     assert np.allclose(gridded_visibilities, flipped_conj, atol=1e-12, rtol=0.0)
+
 
 def test_imager_grid_accumulates_visibilities(visibility_set):
     """Test that the grid method accumulates visibilities at the correct locations."""
@@ -70,4 +72,3 @@ def test_imager_grid_uses_all_channels():
 
     gridded_visibilities = imager.grid(visibilities=visibilities)
     assert np.max(np.abs(gridded_visibilities)) > 0.0
-

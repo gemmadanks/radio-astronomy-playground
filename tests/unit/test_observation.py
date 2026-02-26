@@ -23,7 +23,9 @@ def test_observation_times(observation: Observation):
     """Test that the times property generates correct time steps."""
 
     expected_times = np.array([0.0, 90.0 / 86_400.0, 180.0 / 86_400.0])
-    np.testing.assert_allclose(observation.times_mjd, expected_times, atol=1e-12, rtol=0.0)
+    np.testing.assert_allclose(
+        observation.times_mjd, expected_times, atol=1e-12, rtol=0.0
+    )
     assert np.isclose(
         observation.times_mjd[-1] - observation.times_mjd[0],
         observation.config.observation_length / 86_400.0,

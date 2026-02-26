@@ -5,6 +5,7 @@ import numpy as np
 from starbox.visibility import VisibilitySet
 from starbox.constants import SPEED_OF_LIGHT
 
+
 class Imager:
     """Class for handling image processing."""
 
@@ -31,9 +32,9 @@ class Imager:
         """
         grid = np.zeros((self.grid_size, self.grid_size), dtype=np.complex128)
 
-        uvw_m = np.asarray(visibilities.uvw_m, dtype=float)       # (T,B,3)
-        vis = np.asarray(visibilities.vis, dtype=np.complex128)   # (T,B,F)
-        freqs = np.asarray(visibilities.freqs_hz, dtype=float)    # (F,)
+        uvw_m = np.asarray(visibilities.uvw_m, dtype=float)  # (T,B,3)
+        vis = np.asarray(visibilities.vis, dtype=np.complex128)  # (T,B,F)
+        freqs = np.asarray(visibilities.freqs_hz, dtype=float)  # (F,)
 
         num_times, num_baselines, _ = uvw_m.shape
         num_channels = freqs.size
@@ -74,7 +75,9 @@ class Imager:
                         val = vis_tb[b_idx]
                         grid[vi, ui] += val
                         # Hermitian symmetric point
-                        grid[self.grid_size - vi - 1, self.grid_size - ui - 1] += np.conj(val)
+                        grid[self.grid_size - vi - 1, self.grid_size - ui - 1] += (
+                            np.conj(val)
+                        )
 
         return grid
 
