@@ -24,7 +24,7 @@ class Corruptions:
         """Add Gaussian noise corruption."""
         self.sigma = (
             self.config.rms_noise / np.sqrt(2)
-            if self.config.rms_noise is not None
+            if self.config.rms_noise
             else None
         )
 
@@ -32,7 +32,7 @@ class Corruptions:
         """Add station phase gain corruption."""
         self.rms_phase_gain = (
             self.config.rms_phase_gain
-            if self.config.rms_phase_gain is not None
+            if self.config.rms_phase_gain
             else None
         )
 

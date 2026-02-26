@@ -116,26 +116,26 @@ def _(mo):
     fov_slider = mo.ui.slider(1, 10, label="Field of view (degrees): ")
 
     # Telescope
-    num_stations_slider = mo.ui.slider(2, 100, label="Number of stations: ")
+    num_stations_slider = mo.ui.slider(2, 100, value=20, label="Number of stations: ")
     telescope_diameter_slider = mo.ui.slider(
         1, 100, label="Maximum diameter of telescope (km): "
     )
 
     # Observation
-    start_time_slider = mo.ui.slider(1, 100, label="Start time (MJD): ")
-    observation_length_slider = mo.ui.slider(1, 100, label="Observation length: ")
-    num_timesteps_slider = mo.ui.slider(1, 600, label="Number of timesteps: ")
+    start_time_slider = mo.ui.slider(59000, 69000, label="Start time (MJD): ")
+    observation_length_slider = mo.ui.slider(1, 24, value=6, label="Observation length (hrs): ")
+    num_timesteps_slider = mo.ui.slider(1, 24 * 3600, value=6*60, label="Number of timesteps: ")
     start_freq_slider = mo.ui.slider(
-        1, 100, label="Mid-point frequency of first channel (Hz): "
+        100, 1000, label="Mid-point frequency of first channel (MHz): "
     )
     num_channels_slider = mo.ui.slider(1, 100, label="Number of channels: ")
-    bandwidth_slider = mo.ui.slider(1, 100, label="Total frequency bandwidth (Hz): ")
+    bandwidth_slider = mo.ui.slider(1, 100, label="Total frequency bandwidth (MHz): ")
 
     # Corruptions
     phase_rms_slider = mo.ui.slider(
         0, 30, label="Per-station phase gain RMS (degrees): "
     )
-    noise_rms_slider = mo.ui.slider(1, 100, label="Noise RMS: ")
+    noise_rms_slider = mo.ui.slider(0, 100, label="Noise RMS: ")
 
     # Calibration
     solution_interval_seconds_slider = mo.ui.slider(
@@ -204,7 +204,7 @@ def _(
     )
     telescope_config = TelescopeConfig(
         num_stations=num_stations_slider.value,
-        diameter=telescope_diameter_slider.value,
+        diameter=telescope_diameter_slider.value*1000,
         seed=seed,
         site=telescope_site,
     )
@@ -215,6 +215,7 @@ def _(
 
 @app.cell
 def _(
+    fov_slider,
     max_flux_slider,
     mo,
     num_sources_slider,
@@ -226,7 +227,7 @@ def _(
     mo.hstack(
         [
             mo.vstack(
-                [sky_model_fig, num_sources_slider, max_flux_slider], justify="start"
+                [sky_model_fig, num_sources_slider, max_flux_slider, fov_slider], justify="start"
             ),
             mo.vstack(
                 [telescope_fig, num_stations_slider, telescope_diameter_slider],
@@ -283,11 +284,11 @@ def _(
 ):
     observation_config = ObservationConfig(
         start_time=start_time_slider.value,
-        observation_length=observation_length_slider.value,
+        observation_length=observation_length_slider.value * 3600,
         num_timesteps=num_timesteps_slider.value,
-        start_frequency=start_freq_slider.value,
+        start_frequency=start_freq_slider.value * 1e6,
         num_channels=num_channels_slider.value,
-        total_bandwidth=bandwidth_slider.value,
+        total_bandwidth=bandwidth_slider.value * 1e6,
     )
     observation = build_observation(observation_config)
     return observation, observation_config
@@ -334,8 +335,8 @@ def _(SolverConfig, build_solver, solution_interval_seconds_slider):
 
 
 @app.cell
-def _(Imager):
-    imager = Imager()
+def _(Imager, fov_slider):
+    imager = Imager(fov_deg=fov_slider.value)
     return (imager,)
 
 
@@ -344,6 +345,29 @@ def _(mo):
     mo.md(r"""
     ## Results
     """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(fov_slider, imager, mo):
+    pixels_per_degree = imager.grid_size / max(fov_slider.value, 1e-12)
+    degrees_per_pixel = fov_slider.value / imager.grid_size
+    mo.md(
+        f"""
+        **Image sampling**
+
+        - Field of view: **{fov_slider.value:.2f}°**
+        - Image size: **{imager.grid_size} × {imager.grid_size}** pixels
+        - Pixel scale: **{degrees_per_pixel:.5f}°/pixel**
+        - Sampling density: **{pixels_per_degree:.2f} pixels/degree**
+        """
+    )
+    return
+
+
+@app.cell
+def _(sky_model):
+    sky_model.config
     return
 
 
@@ -367,17 +391,19 @@ def _(
 
     dirty_image = imager.image(observed_visibilities)
     corrected_image = imager.image(corrected_visibilities)
-    return corrected_image, dirty_image, gains
+    model_image = imager.image(model_visibilities)
+    return corrected_image, dirty_image, gains, model_image
 
 
 @app.cell
-def _(corrected_image, dirty_image, gains, mo, plot):
+def _(corrected_image, dirty_image, fov_slider, gains, mo, model_image, plot):
     mo.vstack(
         [
             mo.hstack(
                 [
-                    plot.plot_image(dirty_image, title="Dirty"),
-                    plot.plot_image(corrected_image, title="Calibrated"),
+                    plot.plot_image(model_image, title="Model", fov_deg=fov_slider.value),
+                    plot.plot_image(dirty_image, title="Dirty", fov_deg=fov_slider.value),
+                    plot.plot_image(corrected_image, title="Calibrated", fov_deg=fov_slider.value),
                 ]
             ),
             plot.plot_gains(gains),

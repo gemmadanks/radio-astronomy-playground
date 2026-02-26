@@ -48,10 +48,13 @@ class Observation:
     def _get_times(self) -> None:
         """Return time samples for the observation."""
         if self.config.num_timesteps > 1:
-            timestep = self.config.observation_length / (self.config.num_timesteps - 1)
+            timestep_seconds = self.config.observation_length / (
+                self.config.num_timesteps - 1
+            )
+            timestep_mjd_days = timestep_seconds / 86_400.0
             self.times_mjd = np.array(
                 [
-                    self.config.start_time + i * timestep
+                    self.config.start_time + i * timestep_mjd_days
                     for i in range(self.config.num_timesteps)
                 ]
             )
