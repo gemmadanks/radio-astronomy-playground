@@ -1,6 +1,7 @@
 """Tests for plotting functions."""
 
 from starbox.viz import plot
+from typing import Any, cast
 
 import numpy as np
 import pytest
@@ -40,8 +41,9 @@ def test_plot_image_with_fov():
     fig = plot.plot_image(image_data, title="Image Test With FOV", fov_deg=fov_deg)
     assert fig is not None
     # Check that coordinate arrays encode the requested FOV
-    x_coords = np.array(fig.data[0].x)
-    y_coords = np.array(fig.data[0].y)
+    image_trace = cast(Any, fig.data[0])
+    x_coords = np.array(image_trace.x)
+    y_coords = np.array(image_trace.y)
     expected_range = fov_deg / 2
     assert np.isclose(x_coords[0], -expected_range)
     assert np.isclose(x_coords[-1], expected_range)

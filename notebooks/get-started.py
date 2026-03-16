@@ -105,7 +105,7 @@ def _(mo):
         filetypes=["yaml"],
         restrict_navigation=False,
     )
-    file_browser
+    file_browser  # pyright: ignore[reportUnusedExpression]
     return (file_browser,)
 
 
@@ -433,7 +433,7 @@ def _(mo):
 
 @app.cell
 def _(experiment_name):
-    experiment_name
+    experiment_name  # pyright: ignore[reportUnusedExpression]
     return
 
 
@@ -460,14 +460,14 @@ def _(
 
 @app.cell
 def _(experiment_config):
-    experiment_config
+    experiment_config  # pyright: ignore[reportUnusedExpression]
     return
 
 
 @app.cell
 def _(mo):
     save_button = mo.ui.run_button(label="Save Experiment")
-    save_button
+    save_button  # pyright: ignore[reportUnusedExpression]
     return (save_button,)
 
 
