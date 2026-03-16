@@ -58,6 +58,7 @@ def test_imager_grid_hermitian_symmetry(visibility_set):
     flipped_conj = np.conj(gridded_visibilities[sym_ii, sym_jj])
     assert np.allclose(gridded_visibilities, flipped_conj, atol=1e-12, rtol=0.0)
 
+
 def test_imager_grid_hermitian_symmetry_does_not_double_count(visibility_set):
     """Test that the grid method does not double-count samples whose symmetric pixel is the same."""
     imager = Imager(grid_size=64, fov_deg=1.0)
