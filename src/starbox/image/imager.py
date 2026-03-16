@@ -50,34 +50,50 @@ class Imager:
         scale = (half - 1) / uv_max
 
         # Second pass: grid all samples
+        # Vectorized over times and baselines for each channel.
+        grid_flat = grid.ravel()
         for i in range(num_channels):
             lam = SPEED_OF_LIGHT / freqs[i]
             u = uvw_m[:, :, 0] / lam  # (T,B) wavelengths
             v = uvw_m[:, :, 1] / lam
 
+            # Pixel coordinates for all times and baselines at this channel
             u_pix = np.rint(u * scale + half).astype(int)  # (T,B)
             v_pix = np.rint(v * scale + half).astype(int)
 
-            for t_idx in range(num_times):
-                vis_tb = vis[t_idx, :, i]  # (B,)
-                up = u_pix[t_idx]
-                vp = v_pix[t_idx]
+            # Flatten (T,B) -> (N,) where N = T * B
+            u_flat = u.ravel()
+            v_flat = v.ravel()
+            up_flat = u_pix.ravel()
+            vp_flat = v_pix.ravel()
+            vis_flat = vis[:, :, i].ravel().astype(np.complex128)
 
-                for b_idx in range(num_baselines):
-                    ui = up[b_idx]
-                    vi = vp[b_idx]
+            # Mask samples outside the imaged FoV in uv-space
+            fov_mask = (np.abs(u_flat) <= uv_max) & (np.abs(v_flat) <= uv_max)
 
-                    # Skip samples outside the imaged FoV
-                    if abs(u[t_idx, b_idx]) > uv_max or abs(v[t_idx, b_idx]) > uv_max:
-                        continue
+            # Mask samples with pixel coordinates outside the grid
+            in_x = (up_flat >= 0) & (up_flat < self.grid_size)
+            in_y = (vp_flat >= 0) & (vp_flat < self.grid_size)
+            pix_mask = in_x & in_y
 
-                    if 0 <= ui < self.grid_size and 0 <= vi < self.grid_size:
-                        val = vis_tb[b_idx]
-                        grid[vi, ui] += val
-                        # Hermitian symmetric point about the DC center (half, half)
-                        sym_u = (2 * half - ui) % self.grid_size
-                        sym_v = (2 * half - vi) % self.grid_size
-                        grid[sym_v, sym_u] += np.conj(val)
+            # Combined validity mask
+            mask = fov_mask & pix_mask
+            if not np.any(mask):
+                continue
+
+            up_valid = up_flat[mask]
+            vp_valid = vp_flat[mask]
+            vals_valid = vis_flat[mask]
+
+            # Linear indices into flattened grid for direct accumulation
+            idx = vp_valid * self.grid_size + up_valid
+            np.add.at(grid_flat, idx, vals_valid)
+
+            # Hermitian symmetric points about the DC center (half, half)
+            sym_u = (2 * half - up_valid) % self.grid_size
+            sym_v = (2 * half - vp_valid) % self.grid_size
+            sym_idx = sym_v * self.grid_size + sym_u
+            np.add.at(grid_flat, sym_idx, np.conj(vals_valid))
 
         return grid
 
