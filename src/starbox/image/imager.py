@@ -16,6 +16,8 @@ class Imager:
             grid_size: Number of pixels along each image axis.
             fov_deg: Imaged field of view in degrees.
         """
+        if fov_deg <= 0:
+            raise ValueError(f"fov_deg must be positive, got {fov_deg!r}")
         self.grid_size = grid_size
         self.fov_deg = fov_deg
 
