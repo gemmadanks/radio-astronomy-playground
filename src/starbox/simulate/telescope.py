@@ -72,7 +72,7 @@ class Telescope:
     def _get_radii(self) -> np.ndarray:
         """Generate random radii for antenna placement within the telescope diameter."""
         radius = self.config.diameter / 2
-        return radius * np.sqrt(self.rng.uniform(0, 1, self.config.num_stations))
+        return radius * np.sqrt(self.rng.uniform(0, 1, self.num_stations))
 
     def _enu_to_ecef(self) -> np.ndarray:
         """Convert station ENU coordinates to ECEF coordinates.
