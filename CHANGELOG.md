@@ -1,5 +1,26 @@
 # Changelog
 
+## [0.9.0](https://github.com/gemmadanks/radio-astronomy-playground/compare/v0.8.0...v0.9.0) (2026-03-16)
+
+
+### 🚀 Features
+
+* add geometry module with uvw calculation ([0cdc9b4](https://github.com/gemmadanks/radio-astronomy-playground/commit/0cdc9b49821ca36c49464dd2ebc9cdc7a3ecb44f))
+* add method to compute baselines ([0cdc9b4](https://github.com/gemmadanks/radio-astronomy-playground/commit/0cdc9b49821ca36c49464dd2ebc9cdc7a3ecb44f))
+* add quickstart recipe to justfile ([0cdc9b4](https://github.com/gemmadanks/radio-astronomy-playground/commit/0cdc9b49821ca36c49464dd2ebc9cdc7a3ecb44f))
+* add simple gridder ([0cdc9b4](https://github.com/gemmadanks/radio-astronomy-playground/commit/0cdc9b49821ca36c49464dd2ebc9cdc7a3ecb44f))
+* add telescope site to telescope configuration ([0cdc9b4](https://github.com/gemmadanks/radio-astronomy-playground/commit/0cdc9b49821ca36c49464dd2ebc9cdc7a3ecb44f))
+* animate solutions plot over stations ([0cdc9b4](https://github.com/gemmadanks/radio-astronomy-playground/commit/0cdc9b49821ca36c49464dd2ebc9cdc7a3ecb44f))
+* predict visibilities from sky model ([#71](https://github.com/gemmadanks/radio-astronomy-playground/issues/71)) ([0cdc9b4](https://github.com/gemmadanks/radio-astronomy-playground/commit/0cdc9b49821ca36c49464dd2ebc9cdc7a3ecb44f))
+
+
+### 🐛 Bug Fixes
+
+* rename and add attributes to observation class ([0cdc9b4](https://github.com/gemmadanks/radio-astronomy-playground/commit/0cdc9b49821ca36c49464dd2ebc9cdc7a3ecb44f))
+* rename observation start_time to start_time_mjd ([0cdc9b4](https://github.com/gemmadanks/radio-astronomy-playground/commit/0cdc9b49821ca36c49464dd2ebc9cdc7a3ecb44f))
+* rename sky model phase centre to field centre ([0cdc9b4](https://github.com/gemmadanks/radio-astronomy-playground/commit/0cdc9b49821ca36c49464dd2ebc9cdc7a3ecb44f))
+* wrap image plots in notebook ([0cdc9b4](https://github.com/gemmadanks/radio-astronomy-playground/commit/0cdc9b49821ca36c49464dd2ebc9cdc7a3ecb44f))
+
 ## [0.8.0](https://github.com/gemmadanks/radio-astronomy-playground/compare/v0.7.0...v0.8.0) (2026-02-04)
 
 
