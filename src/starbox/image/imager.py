@@ -27,7 +27,6 @@ class Imager:
         using all times and frequency channels.
 
         Notes:
-          - Ignores w-term (small-field).
           - Uses uniform weighting (simple sum).
           - Adds Hermitian symmetric samples to encourage a real dirty image.
           - Grid is centered: DC is at (grid_size//2, grid_size//2).
@@ -37,8 +36,6 @@ class Imager:
         uvw_m = np.asarray(visibilities.uvw_m, dtype=float)  # (T,B,3)
         vis = np.asarray(visibilities.vis, dtype=np.complex128)  # (T,B,F)
         freqs = np.asarray(visibilities.freqs_hz, dtype=float)  # (F,)
-
-        num_channels = freqs.size
 
         half = self.grid_size // 2
         centre = (self.grid_size - 1) / 2.0
@@ -99,8 +96,8 @@ class Imager:
             n_pix = grid_flat.size
 
             # Accumulate direct contributions using bincount on real and imaginary parts
-            real_accum = np.bincount(idx, weights=vals_valid.real, minlength=n_pix)
-            imag_accum = np.bincount(idx, weights=vals_valid.imag, minlength=n_pix)
+            real_accum = np.bincount(idx, weights=np.real(vals_valid), minlength=n_pix)
+            imag_accum = np.bincount(idx, weights=np.imag(vals_valid), minlength=n_pix)
             grid_flat += real_accum + 1j * imag_accum
 
             # Hermitian symmetric points about the DC centre (half, half)
@@ -115,12 +112,12 @@ class Imager:
                 sym_vals_valid = np.conj(vals_valid[self_sym_mask])
                 real_sym = np.bincount(
                     sym_idx_valid,
-                    weights=sym_vals_valid.real,
+                    weights=np.real(sym_vals_valid),
                     minlength=n_pix,
                 )
                 imag_sym = np.bincount(
                     sym_idx_valid,
-                    weights=sym_vals_valid.imag,
+                    weights=np.imag(sym_vals_valid),
                     minlength=n_pix,
                 )
                 grid_flat += real_sym + 1j * imag_sym
