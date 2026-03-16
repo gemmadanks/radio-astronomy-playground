@@ -30,6 +30,11 @@
   "telescope": {
     "diameter": 1.0,
     "num_stations": 2,
-    "seed": 42
+    "seed": 42,
+    "site": {
+      "latitude_deg": 0.0,
+      "longitude_deg": 0.0,
+      "altitude_m": 0.0
+    }
   }
 }
