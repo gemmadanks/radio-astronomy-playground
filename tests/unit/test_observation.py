@@ -24,9 +24,9 @@ def test_observation_times(observation: Observation):
 
     expected_times = np.array(
         [
-            observation.config.start_time,
-            observation.config.start_time + 90.0 / 86_400.0,
-            observation.config.start_time + 180.0 / 86_400.0,
+            observation.config.start_time_mjd,
+            observation.config.start_time_mjd + 90.0 / 86_400.0,
+            observation.config.start_time_mjd + 180.0 / 86_400.0,
         ]
     )
     np.testing.assert_allclose(
@@ -48,7 +48,7 @@ def test_observation_frequencies(observation: Observation):
 def test_observation_single_timestep():
     """Test that the Observation handles single timestep correctly."""
     config = ObservationConfig(
-        start_time=59000.0,
+        start_time_mjd=59000.0,
         observation_length=60.0,
         num_timesteps=1,
         start_frequency=1e6,

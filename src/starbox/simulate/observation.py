@@ -53,15 +53,15 @@ class Observation:
             timestep_seconds = self.config.observation_length / (
                 self.config.num_timesteps - 1
             )
-            timestep_mjd_days = timestep_seconds / 86_400.0
+            timestep_mjd = timestep_seconds / 86_400.0
             self.times_mjd = np.array(
                 [
-                    self.config.start_time + i * timestep_mjd_days
+                    self.config.start_time_mjd + i * timestep_mjd
                     for i in range(self.config.num_timesteps)
                 ]
             )
         else:
-            self.times_mjd = np.array([self.config.start_time])
+            self.times_mjd = np.array([self.config.start_time_mjd])
 
     def _get_frequencies(self) -> None:
         """Return frequency channels for the observation."""

@@ -36,7 +36,6 @@ class Imager:
         vis = np.asarray(visibilities.vis, dtype=np.complex128)  # (T,B,F)
         freqs = np.asarray(visibilities.freqs_hz, dtype=float)  # (F,)
 
-        num_times, num_baselines, _ = uvw_m.shape
         num_channels = freqs.size
 
         half = self.grid_size // 2

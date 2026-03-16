@@ -11,7 +11,7 @@
     "num_timesteps": 1,
     "observation_length": 1.0,
     "start_frequency": 1.0,
-    "start_time": 59000.0,
+    "start_time_mjd": 59000.0,
     "total_bandwidth": 1.0
   },
   "skymodel": {

@@ -123,7 +123,7 @@ def _(mo):
     )
 
     # Observation
-    start_time_slider = mo.ui.slider(59000, 69000, label="Start time (MJD): ")
+    start_time_mjd_slider = mo.ui.slider(59000, 69000, label="Start time (MJD): ")
     observation_length_slider = mo.ui.slider(
         1, 24, value=6, label="Observation length (hrs): "
     )
@@ -159,7 +159,7 @@ def _(mo):
         phase_rms_slider,
         solution_interval_seconds_slider,
         start_freq_slider,
-        start_time_slider,
+        start_time_mjd_slider,
         telescope_diameter_slider,
     )
 
@@ -260,12 +260,16 @@ def _(
     num_timesteps_slider,
     observation_length_slider,
     start_freq_slider,
-    start_time_slider,
+    start_time_mjd_slider,
 ):
     mo.vstack(
         [
             mo.hstack(
-                [start_time_slider, observation_length_slider, num_timesteps_slider],
+                [
+                    start_time_mjd_slider,
+                    observation_length_slider,
+                    num_timesteps_slider,
+                ],
                 justify="start",
             ),
             mo.hstack(
@@ -286,10 +290,10 @@ def _(
     num_timesteps_slider,
     observation_length_slider,
     start_freq_slider,
-    start_time_slider,
+    start_time_mjd_slider,
 ):
     observation_config = ObservationConfig(
-        start_time=start_time_slider.value,
+        start_time_mjd=start_time_mjd_slider.value,
         observation_length=observation_length_slider.value * 3600,
         num_timesteps=num_timesteps_slider.value,
         start_frequency=start_freq_slider.value * 1e6,

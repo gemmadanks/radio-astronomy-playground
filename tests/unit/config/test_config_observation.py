@@ -5,7 +5,7 @@ from starbox.config.observation import ObservationConfig
 
 def test_observation_config_from_dict():
     parameter_dict = {
-        "start_time": 59000.0,
+        "start_time_mjd": 59000.0,
         "observation_length": 3600,
         "num_timesteps": 10,
         "start_frequency": 100.0,
