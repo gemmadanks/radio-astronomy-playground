@@ -79,7 +79,12 @@ def plot_image(
     """Plot the image."""
 
     if fov_deg is None:
-        fig = px.imshow(image, title=title, labels={"x": "RA", "y": "Dec"})
+        fig = px.imshow(
+            image,
+            origin="lower",
+            title=title,
+            labels={"x": "RA", "y": "Dec"},
+        )
     else:
         x_deg = np.linspace(-fov_deg / 2.0, fov_deg / 2.0, image.shape[1])
         y_deg = np.linspace(-fov_deg / 2.0, fov_deg / 2.0, image.shape[0])
