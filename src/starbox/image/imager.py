@@ -56,58 +56,74 @@ class Imager:
         scale = (self.grid_size - 1) / (2.0 * uv_max)
 
         # Grid all samples
-        # Vectorized over times and baselines for each channel.
+        # Vectorized over times, baselines, and frequency channels.
         grid_flat = grid.ravel()
-        for i in range(num_channels):
-            lam = SPEED_OF_LIGHT / freqs[i]
-            u = uvw_m[:, :, 0] / lam  # (T,B) wavelengths
-            v = uvw_m[:, :, 1] / lam
 
-            # Pixel coordinates for all times and baselines at this channel
-            u_pix = np.rint(u * scale + centre).astype(int)  # (T,B)
-            v_pix = np.rint(v * scale + centre).astype(int)
+        # Broadcast uvw with frequency axis to get u, v in wavelengths for all channels
+        # uvw_m[..., 0] and uvw_m[..., 1] have shape (T, B); freqs has shape (F,)
+        # Use u = u_m * f / c rather than dividing by lambda explicitly.
+        u_m = uvw_m[:, :, 0]  # (T, B)
+        v_m = uvw_m[:, :, 1]  # (T, B)
+        freqs_reshaped = freqs.reshape(1, 1, -1)  # (1, 1, F)
+        u = u_m[:, :, None] * freqs_reshaped / SPEED_OF_LIGHT  # (T, B, F)
+        v = v_m[:, :, None] * freqs_reshaped / SPEED_OF_LIGHT  # (T, B, F)
 
-            # Flatten (T,B) -> (N,) where N = T * B
-            u_flat = u.ravel()
-            v_flat = v.ravel()
-            up_flat = u_pix.ravel()
-            vp_flat = v_pix.ravel()
-            vis_flat = vis[:, :, i].ravel().astype(np.complex128)
+        # Pixel coordinates for all times, baselines, and channels
+        u_pix = np.rint(u * scale + centre).astype(np.int64)  # (T, B, F)
+        v_pix = np.rint(v * scale + centre).astype(np.int64)  # (T, B, F)
 
-            # Mask samples outside the imaged FoV in uv-space
-            fov_mask = (np.abs(u_flat) <= uv_max) & (np.abs(v_flat) <= uv_max)
+        # Flatten (T, B, F) -> (N,) where N = T * B * F
+        u_flat = u.ravel()
+        v_flat = v.ravel()
+        up_flat = u_pix.ravel()
+        vp_flat = v_pix.ravel()
+        vis_flat = vis.ravel().astype(np.complex128)
 
-            # Mask samples with pixel coordinates outside the grid
-            in_x = (up_flat >= 0) & (up_flat < self.grid_size)
-            in_y = (vp_flat >= 0) & (vp_flat < self.grid_size)
-            pix_mask = in_x & in_y
+        # Mask samples outside the imaged FoV in uv-space
+        fov_mask = (np.abs(u_flat) <= uv_max) & (np.abs(v_flat) <= uv_max)
 
-            # Combined validity mask
-            mask = fov_mask & pix_mask
-            if not np.any(mask):
-                continue
+        # Mask samples with pixel coordinates outside the grid
+        in_x = (up_flat >= 0) & (up_flat < self.grid_size)
+        in_y = (vp_flat >= 0) & (vp_flat < self.grid_size)
+        pix_mask = in_x & in_y
 
+        # Combined validity mask
+        mask = fov_mask & pix_mask
+        if np.any(mask):
             up_valid = up_flat[mask]
             vp_valid = vp_flat[mask]
             vals_valid = vis_flat[mask]
 
             # Linear indices into flattened grid for direct accumulation
-            idx = vp_valid * self.grid_size + up_valid
-            np.add.at(grid_flat, idx, vals_valid)
+            idx = (vp_valid * self.grid_size + up_valid).astype(np.int64)
+            n_pix = grid_flat.size
+
+            # Accumulate direct contributions using bincount on real and imaginary parts
+            real_accum = np.bincount(idx, weights=vals_valid.real, minlength=n_pix)
+            imag_accum = np.bincount(idx, weights=vals_valid.imag, minlength=n_pix)
+            grid_flat += real_accum + 1j * imag_accum
 
             # Hermitian symmetric points about the DC centre (half, half)
             sym_u = (2 * half - up_valid) % self.grid_size
             sym_v = (2 * half - vp_valid) % self.grid_size
-            sym_idx = sym_v * self.grid_size + sym_u
+            sym_idx = (sym_v * self.grid_size + sym_u).astype(np.int64)
 
             # Avoid double-counting samples whose symmetric pixel is the same as the original
             self_sym_mask = sym_idx != idx
             if np.any(self_sym_mask):
-                np.add.at(
-                    grid_flat,
-                    sym_idx[self_sym_mask],
-                    np.conj(vals_valid[self_sym_mask]),
+                sym_idx_valid = sym_idx[self_sym_mask]
+                sym_vals_valid = np.conj(vals_valid[self_sym_mask])
+                real_sym = np.bincount(
+                    sym_idx_valid,
+                    weights=sym_vals_valid.real,
+                    minlength=n_pix,
                 )
+                imag_sym = np.bincount(
+                    sym_idx_valid,
+                    weights=sym_vals_valid.imag,
+                    minlength=n_pix,
+                )
+                grid_flat += real_sym + 1j * imag_sym
 
         return grid
 
