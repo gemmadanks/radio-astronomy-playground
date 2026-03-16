@@ -28,7 +28,7 @@ class SkyModel:
     def _generate_sources(self):
         """Generate the sky model sources."""
         rng = np.random.default_rng(self.config.seed)
-        ra_centre, dec_centre = self.config.phase_centre_deg
+        ra_centre, dec_centre = self.config.field_centre_deg
         half_fov_deg = self.config.fov_deg / 2.0
 
         self.ra_deg = rng.uniform(
@@ -45,6 +45,9 @@ class SkyModel:
 
     def as_arrays(self) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
         return self.ra_deg, self.dec_deg, self.flux_jy
+
+    def as_arrays_rad(self) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+        return np.deg2rad(self.ra_deg), np.deg2rad(self.dec_deg), self.flux_jy
 
     def equals(self, other: "SkyModel", atol: float = 0.0, rtol: float = 0.0) -> bool:
         """Check equality with another SkyModel within a tolerance."""

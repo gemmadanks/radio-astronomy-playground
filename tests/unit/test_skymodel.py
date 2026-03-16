@@ -7,7 +7,7 @@ import numpy as np
 
 
 @pytest.mark.parametrize(
-    "name,num_sources,max_flux,phase_centre,fov,seed",
+    "name,num_sources,max_flux,field_centre_deg,fov,seed",
     [
         ("TestModel1", 10, 1.0, (0, 0), 1.0, 42),
         ("TestModel2", 100, 5.0, (10, -10), 2.0, 123),
@@ -15,35 +15,35 @@ import numpy as np
     ],
 )
 def test_skymodel_config_initialisation(
-    name, num_sources, max_flux, phase_centre, fov, seed
+    name, num_sources, max_flux, field_centre_deg, fov, seed
 ):
     """Test that SkyModelConfig initializes with correct parameters."""
     skymodel_config = SkyModelConfig(
         num_sources=num_sources,
         max_flux_jy=max_flux,
-        phase_centre_deg=phase_centre,
+        field_centre_deg=field_centre_deg,
         fov_deg=fov,
         seed=seed,
     )
     assert skymodel_config.num_sources == num_sources
     assert skymodel_config.max_flux_jy == max_flux
-    assert skymodel_config.phase_centre_deg == phase_centre
+    assert skymodel_config.field_centre_deg == field_centre_deg
     assert skymodel_config.fov_deg == fov
     assert skymodel_config.seed == seed
 
 
 @pytest.mark.parametrize(
-    "num_sources,phase_centre,seed",
+    "num_sources,field_centre_deg,seed",
     [
         (50, (0, 0), 42),
         (200, (20, -20), 123),
     ],
 )
-def test_skymodel_generate_sources(num_sources, phase_centre, seed):
+def test_skymodel_generate_sources(num_sources, field_centre_deg, seed):
     """Test that _generate_sources method works correctly."""
     skymodel_config = SkyModelConfig(
         num_sources=num_sources,
-        phase_centre_deg=phase_centre,
+        field_centre_deg=field_centre_deg,
         fov_deg=1.0,
         max_flux_jy=1.0,
         seed=seed,
@@ -54,14 +54,14 @@ def test_skymodel_generate_sources(num_sources, phase_centre, seed):
     assert len(skymodel.ra_deg) == num_sources
     for ra, dec, flux in zip(skymodel.ra_deg, skymodel.dec_deg, skymodel.flux_jy):
         assert (
-            config.phase_centre_deg[0] - config.fov_deg / 2
+            config.field_centre_deg[0] - config.fov_deg / 2
             <= ra
-            <= config.phase_centre_deg[0] + config.fov_deg / 2
+            <= config.field_centre_deg[0] + config.fov_deg / 2
         )
         assert (
-            config.phase_centre_deg[1] - config.fov_deg / 2
+            config.field_centre_deg[1] - config.fov_deg / 2
             <= dec
-            <= config.phase_centre_deg[1] + config.fov_deg / 2
+            <= config.field_centre_deg[1] + config.fov_deg / 2
         )
         assert 0 <= flux <= config.max_flux_jy
 
@@ -82,7 +82,7 @@ def test_skymodel_variability():
             num_sources=5,
             max_flux_jy=1.0,
             fov_deg=1.0,
-            phase_centre_deg=(0.0, 0.0),
+            field_centre_deg=(0.0, 0.0),
             seed=123,
         )
     )
@@ -91,7 +91,7 @@ def test_skymodel_variability():
             num_sources=5,
             max_flux_jy=1.0,
             fov_deg=1.0,
-            phase_centre_deg=(0.0, 0.0),
+            field_centre_deg=(0.0, 0.0),
             seed=456,
         )
     )

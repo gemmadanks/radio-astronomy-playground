@@ -9,7 +9,7 @@ def test_skymodel_config_from_dict():
     parameter_dict = {
         "num_sources": 100,
         "max_flux_jy": 5.0,
-        "phase_centre_deg": (10, -10),
+        "field_centre_deg": (10, -10),
         "fov_deg": 2.0,
         "seed": 42,
     }

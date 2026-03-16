@@ -2,7 +2,7 @@
 
 import pytest
 from starbox.calibrate.solutions import Solutions
-from starbox.config.telescope import TelescopeConfig
+from starbox.config.telescope import TelescopeConfig, TelescopeSiteConfig
 from starbox.simulate.corruptions import Corruptions
 from starbox.simulate.telescope import Telescope
 from starbox.simulate.skymodel import SkyModel
@@ -17,9 +17,17 @@ from starbox.config.experiment import ExperimentConfig
 
 
 @pytest.fixture
-def telescope_config():
+def telescope_site_config():
+    """A simple telescope site configuration."""
+    return TelescopeSiteConfig(latitude_deg=45.0, longitude_deg=90.0, altitude_m=100.0)
+
+
+@pytest.fixture
+def telescope_config(telescope_site_config):
     """A simple telescope configuration."""
-    return TelescopeConfig(num_stations=10, diameter=20.0, seed=42)
+    return TelescopeConfig(
+        num_stations=10, diameter=20.0, seed=42, site=telescope_site_config
+    )
 
 
 @pytest.fixture
@@ -35,7 +43,7 @@ def skymodel_config():
         num_sources=5,
         max_flux_jy=1.0,
         fov_deg=1.0,
-        phase_centre_deg=(0.0, 0.0),
+        field_centre_deg=(0.0, 0.0),
         seed=42,
     )
 
@@ -50,12 +58,16 @@ def skymodel(skymodel_config):
 def observation_config():
     """A simple observation configuration."""
     return ObservationConfig(
-        start_time=0,  # in seconds
+        start_time_mjd=59000.0,  # in MJD
         observation_length=180,  # in seconds
         num_timesteps=3,
         start_frequency=1e6,  # in Hz
         num_channels=2,
         total_bandwidth=1e6,  # in Hz
+        phase_centre_ra=180.0,  # in degrees
+        phase_centre_dec=-45.0,  # in degrees
+        pointing_centre_ra=180.0,  # in degrees
+        pointing_centre_dec=-45.0,  # in degrees
     )
 
 

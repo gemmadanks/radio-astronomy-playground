@@ -11,17 +11,17 @@
     "num_timesteps": 1,
     "observation_length": 1.0,
     "start_frequency": 1.0,
-    "start_time": 1.0,
+    "start_time_mjd": 59000.0,
     "total_bandwidth": 1.0
   },
   "skymodel": {
-    "fov_deg": 1.0,
-    "max_flux_jy": 1.0,
-    "num_sources": 1,
-    "phase_centre_deg": [
+    "field_centre_deg": [
       0.0,
       0.0
     ],
+    "fov_deg": 1.0,
+    "max_flux_jy": 1.0,
+    "num_sources": 1,
     "seed": 42
   },
   "solver": {
@@ -30,6 +30,11 @@
   "telescope": {
     "diameter": 1.0,
     "num_stations": 2,
-    "seed": 42
+    "seed": 42,
+    "site": {
+      "altitude_m": 0.0,
+      "latitude_deg": 0.0,
+      "longitude_deg": 0.0
+    }
   }
 }
