@@ -75,23 +75,33 @@ class Telescope:
         return radius * np.sqrt(self.rng.uniform(0, 1, self.num_stations))
 
     def _enu_to_ecef(self) -> np.ndarray:
-        """Convert station ENU coordinates to ECEF coordinates.
+        """Express station ENU offsets in the ECEF basis at the telescope site.
 
         This method uses the telescope's station positions stored in
         ``self.station_positions`` (in local ENU coordinates) and applies the
-        site-specific rotation matrix to obtain Earth-Centered, Earth-Fixed (ECEF)
-        coordinates.
+        site-specific ENU→ECEF rotation matrix. The result is a set of station
+        displacement vectors expressed in the global Earth-Centered, Earth-Fixed
+        (ECEF) coordinate basis, but **no origin translation to the site's
+        absolute ECEF position is applied**.
+
+        This is appropriate for computing baselines (differences between station
+        vectors), where any common origin offset cancels out. It does *not*
+        produce absolute ECEF positions of the stations.
 
         Returns:
-            A numpy array of shape (num_stations, 3) containing ECEF coordinates
-            for each station.
+            A numpy array of shape (num_stations, 3) containing station vectors
+            in the ECEF basis at the site.
         """
         rotation_matrix = self._rotation_matrix()
         ecef = self.station_positions @ rotation_matrix.T
         return ecef
 
     def _rotation_matrix(self) -> np.ndarray:
-        """Calculate the rotation matrix for ENU to ECEF conversion."""
+        """Calculate the ENU→ECEF rotation matrix at the telescope site.
+
+        The returned matrix rotates local ENU vectors at the site's latitude and
+        longitude into the global Earth-Centered, Earth-Fixed (ECEF) frame.
+        """
         lat0_rad = np.radians(self.config.site.latitude_deg)
         lon0_rad = np.radians(self.config.site.longitude_deg)
 
