@@ -95,7 +95,7 @@ def test_predict_single_offset_source_matches_geometric_phase(
 
     visibilities = predict_visibilities(small_telescope, skymodel, observation)
 
-    l_dir, m_dir, _ = calculate_lmn(
+    l_dir, m_dir, n_dir = calculate_lmn(
         ra_dec_rad=(np.deg2rad(source_ra_deg), np.deg2rad(source_dec_deg)),
         phase_centre_rad=observation.phase_centre_rad,
     )
@@ -103,6 +103,7 @@ def test_predict_single_offset_source_matches_geometric_phase(
     phase_cycles = (
         uvw_m[:, :, 0][:, :, np.newaxis] * l_dir
         + uvw_m[:, :, 1][:, :, np.newaxis] * m_dir
+        + uvw_m[:, :, 2][:, :, np.newaxis] * (n_dir - 1)
     ) * (observation.frequencies_hz / SPEED_OF_LIGHT)[np.newaxis, np.newaxis, :]
     expected_vis = flux_jy * np.exp(-2j * np.pi * phase_cycles)
 
