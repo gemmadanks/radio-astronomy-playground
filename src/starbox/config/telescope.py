@@ -8,7 +8,7 @@ class TelescopeSiteConfig(BaseModel):
 
     latitude_deg: float = Field(ge=-90.0, le=90.0)
     longitude_deg: float = Field(ge=-180.0, le=180.0)
-    altitude_m: float
+    altitude_m: float = 0.0
 
 
 class TelescopeConfig(BaseModel):
