@@ -68,9 +68,9 @@ def predict_visibilities(
             # Path difference (meters) projected for source s: (num_times, num_baselines)
             proj_s = proj[:, :, s]
             # Convert to phase cycles for all channels: (num_times, num_baselines, num_channels)
-            phase_cycles_s = proj_s[:, :, np.newaxis] * inv_wavelength_m[
-                np.newaxis, np.newaxis, :
-            ]
+            phase_cycles_s = (
+                proj_s[:, :, np.newaxis] * inv_wavelength_m[np.newaxis, np.newaxis, :]
+            )
             # Add this source's contribution, weighted by its flux.
             visibilities += np.exp(-2j * np.pi * phase_cycles_s) * flux_arr[s]
 
