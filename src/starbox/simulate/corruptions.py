@@ -26,11 +26,7 @@ class Corruptions:
 
     def _add_station_phase_gain(self):
         """Add station phase gain corruption."""
-        self.rms_phase_gain = (
-            self.config.rms_phase_gain
-            if self.config.rms_phase_gain is not None
-            else None
-        )
+        self.rms_phase_gain = self.config.rms_phase_gain
 
     def apply(self, visibility_set: VisibilitySet) -> VisibilitySet:
         """Apply the corruptions to the given visibilities."""
@@ -43,15 +39,15 @@ class Corruptions:
             freqs_hz=visibility_set.freqs_hz,
             weights=visibility_set.weights,
         )
-        if self.rms_phase_gain is not None:
+        if abs(self.rms_phase_gain) != 0.0:
             station_phase_gains = self._sample_station_phase_gains(
                 num_stations=visibility_set.num_stations
             )
             corrupted_visibility_set = self._apply_station_phase_gain(
                 corrupted_visibility_set, station_phase_gains
             )
-
-        corrupted_visibility_set = self._apply_noise(corrupted_visibility_set)
+        if abs(self.sigma) != 0.0:
+            corrupted_visibility_set = self._apply_noise(corrupted_visibility_set)
 
         return corrupted_visibility_set
 
@@ -59,7 +55,6 @@ class Corruptions:
         self, visibility_set: VisibilitySet, station_phase_gains: np.ndarray
     ) -> VisibilitySet:
         """Apply only the station phase gain corruption to the given visibilities."""
-
         phase_gains_1 = station_phase_gains[visibility_set.station1]
         phase_gains_2 = station_phase_gains[visibility_set.station2]
         # Broadcast station gains to all times and channels
@@ -71,14 +66,12 @@ class Corruptions:
 
     def _sample_station_phase_gains(self, num_stations: int) -> np.ndarray:
         """Sample random phase gains for each station."""
-        if self.rms_phase_gain is None:
-            raise ValueError("RMS phase gain is not set.")
         phi = self.rng.normal(loc=0.0, scale=self.rms_phase_gain, size=num_stations)
         # Reference station to have zero phase gain
         ref_station = 0
         phi[ref_station] = 0.0
-
         station_phase_gains = np.exp(1j * phi)
+
         return station_phase_gains
 
     def _apply_noise(self, visibility_set: VisibilitySet) -> VisibilitySet:
