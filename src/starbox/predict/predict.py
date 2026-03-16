@@ -21,25 +21,53 @@ def predict_visibilities(
         baselines_ecef_m=telescope.baselines_ecef,
     )
 
-    visibilities = np.zeros(
-        (observation.num_times, telescope.num_baselines, observation.num_channels),
-        dtype=np.complex128,
-    )
+    # Inverse wavelength for each channel (1 / meters)
     inv_wavelength_m = observation.frequencies_hz / SPEED_OF_LIGHT
-    u_m = uvw_m[:, :, 0]
-    v_m = uvw_m[:, :, 1]
-    w_m = uvw_m[:, :, 2]
 
-    for ra_rad, dec_rad, flux in zip(*skymodel.as_arrays_rad()):
-        l_dir, m_dir, n_dir = calculate_lmn(
-            ra_dec_rad=(ra_rad, dec_rad), phase_centre_rad=observation.phase_centre_rad
+    # Extract sky model parameters as arrays
+    ra_arr, dec_arr, flux_arr = skymodel.as_arrays_rad()
+
+    # Handle empty sky model: return zero visibilities
+    if ra_arr.size == 0:
+        visibilities = np.zeros(
+            (observation.num_times, telescope.num_baselines, observation.num_channels),
+            dtype=np.complex128,
         )
-        phase_cycles = (
-            u_m[:, :, np.newaxis] * l_dir
-            + v_m[:, :, np.newaxis] * m_dir
-            + w_m[:, :, np.newaxis] * (n_dir - 1.0)
-        ) * inv_wavelength_m[np.newaxis, np.newaxis, :]
-        visibilities += flux * np.exp(-2j * np.pi * phase_cycles)
+    else:
+        # Precompute direction cosines (l, m, n-1) for all sources
+        num_sources = ra_arr.size
+        l_arr = np.empty(num_sources, dtype=np.float64)
+        m_arr = np.empty(num_sources, dtype=np.float64)
+        n_arr = np.empty(num_sources, dtype=np.float64)
+        for i, (ra_rad, dec_rad) in enumerate(zip(ra_arr, dec_arr)):
+            l_dir, m_dir, n_dir = calculate_lmn(
+                ra_dec_rad=(ra_rad, dec_rad),
+                phase_centre_rad=observation.phase_centre_rad,
+            )
+            l_arr[i] = l_dir
+            m_arr[i] = m_dir
+            n_arr[i] = n_dir
+
+        # Direction vectors (l, m, n-1) for each source: shape (num_sources, 3)
+        dir_vecs = np.stack([l_arr, m_arr, n_arr - 1.0], axis=1)
+
+        # Project UVW coordinates onto all source direction vectors.
+        # uvw_m: (num_times, num_baselines, 3)
+        # dir_vecs: (num_sources, 3)
+        # Result proj: (num_times, num_baselines, num_sources)
+        proj = np.tensordot(uvw_m, dir_vecs, axes=([2], [1]))
+
+        # Convert path difference (meters) to phase cycles for all channels and sources:
+        # phase_cycles shape: (num_times, num_baselines, num_channels, num_sources)
+        phase_cycles = proj[:, :, np.newaxis, :] * inv_wavelength_m[
+            np.newaxis, np.newaxis, :, np.newaxis
+        ]
+
+        # Compute complex exponentials and sum over sources weighted by flux.
+        # exp_phase: (num_times, num_baselines, num_channels, num_sources)
+        exp_phase = np.exp(-2j * np.pi * phase_cycles)
+        # visibilities: (num_times, num_baselines, num_channels)
+        visibilities = np.tensordot(exp_phase, flux_arr, axes=([3], [0]))
 
     station1_index, station2_index = np.triu_indices(
         telescope.num_stations, k=1
