@@ -80,7 +80,7 @@ class Telescope:
         This method uses the telescope's station positions stored in
         ``self.station_positions`` (in local ENU coordinates) and applies the
         site-specific ENU→ECEF rotation matrix. The result is a set of station
-        displacement vectors expressed in the global Earth-Centered, Earth-Fixed
+        displacement vectors expressed in the global Earth-centred, Earth-Fixed
         (ECEF) coordinate basis, but **no origin translation to the site's
         absolute ECEF position is applied**.
 
@@ -100,7 +100,7 @@ class Telescope:
         """Calculate the ENU→ECEF rotation matrix at the telescope site.
 
         The returned matrix rotates local ENU vectors at the site's latitude and
-        longitude into the global Earth-Centered, Earth-Fixed (ECEF) frame.
+        longitude into the global Earth-centred, Earth-Fixed (ECEF) frame.
         """
         lat0_rad = np.radians(self.config.site.latitude_deg)
         lon0_rad = np.radians(self.config.site.longitude_deg)

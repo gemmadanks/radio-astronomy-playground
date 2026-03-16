@@ -64,7 +64,7 @@ def test_imager_grid_hermitian_symmetry_does_not_double_count(visibility_set):
     imager = Imager(grid_size=64, fov_deg=1.0)
     visibilities = VisibilitySet(
         vis=np.array([[[1.0 + 0.0j]]]),
-        uvw_m=np.array([[[0.0, 0.0, 0.0]]]),  # UVW coordinates at the center
+        uvw_m=np.array([[[0.0, 0.0, 0.0]]]),  # UVW coordinates at the centre
         station1=np.array([0]),
         station2=np.array([1]),
         times_mjd=np.array([59000.0]),

@@ -47,8 +47,8 @@ def test_predict_single_source_at_phase_centre_is_constant(
 ):
     """A point source at phase centre should produce constant real visibilities."""
     flux_jy = 3.5
-    phase_centre_ra_deg = observation.config.phase_center_ra
-    phase_centre_dec_deg = observation.config.phase_center_dec
+    phase_centre_ra_deg = observation.config.phase_centre_ra
+    phase_centre_dec_deg = observation.config.phase_centre_dec
 
     skymodel = SkyModel(
         SkyModelConfig(
@@ -75,8 +75,8 @@ def test_predict_single_offset_source_matches_geometric_phase(
 ):
     """An offset source should follow the geometric delay phase law."""
     flux_jy = 2.0
-    phase_centre_ra_deg = observation.config.phase_center_ra
-    phase_centre_dec_deg = observation.config.phase_center_dec
+    phase_centre_ra_deg = observation.config.phase_centre_ra
+    phase_centre_dec_deg = observation.config.phase_centre_dec
     source_ra_deg = phase_centre_ra_deg + 0.2
     source_dec_deg = phase_centre_dec_deg
 

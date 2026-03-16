@@ -36,13 +36,13 @@ def test_calculate_uvw_preserves_dot_products_between_baselines():
 
 
 def test_calculate_uvw_known_case_ra0_dec0_zero_gmst_zero():
-    """Test a known case where the phase center is at RA=0, Dec=0, and GMST=0."""
+    """Test a known case where the phase centre is at RA=0, Dec=0, and GMST=0."""
     gmst = np.array([0.0])
-    phase_center = (0.0, 0.0)
+    phase_centre = (0.0, 0.0)
 
     # Use a single baseline with known components
     baselines = np.array([[1.0, 2.0, 3.0]])  # X=1, Y=2, Z=3
-    uvw = calculate_uvw(gmst, phase_center, baselines)
+    uvw = calculate_uvw(gmst, phase_centre, baselines)
 
     # Expect u=2, v=3, w=1
     np.testing.assert_allclose(
@@ -51,12 +51,12 @@ def test_calculate_uvw_known_case_ra0_dec0_zero_gmst_zero():
 
 
 def test_calculate_uvw_known_case_gmst_half_turn():
-    """Test a known case where the phase center is at RA=0, Dec=0, and GMST=pi (half turn)."""
+    """Test a known case where the phase centre is at RA=0, Dec=0, and GMST=pi (half turn)."""
     gmst = np.array([np.pi])
-    phase_center = (0.0, 0.0)
+    phase_centre = (0.0, 0.0)
 
     baselines = np.array([[1.0, 2.0, 3.0]])
-    uvw = calculate_uvw(gmst, phase_center, baselines)
+    uvw = calculate_uvw(gmst, phase_centre, baselines)
 
     np.testing.assert_allclose(
         uvw[0, 0], np.array([-2.0, 3.0, -1.0]), atol=1e-12, rtol=0.0

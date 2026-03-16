@@ -61,21 +61,21 @@ def test_observation_single_timestep():
     np.testing.assert_array_equal(observation.times_mjd, expected_times)
 
 
-def test_observation_phase_center(observation: Observation):
-    """Test that the phase center is correctly converted to radians."""
+def test_observation_phase_centre(observation: Observation):
+    """Test that the phase centre is correctly converted to radians."""
     ra_rad, dec_rad = observation.phase_centre_rad
-    expected_ra_rad = observation.config.phase_center_ra * math.pi / 180
-    expected_dec_rad = observation.config.phase_center_dec * math.pi / 180
+    expected_ra_rad = observation.config.phase_centre_ra * math.pi / 180
+    expected_dec_rad = observation.config.phase_centre_dec * math.pi / 180
 
     assert np.isclose(ra_rad, expected_ra_rad)
     assert np.isclose(dec_rad, expected_dec_rad)
 
 
-def test_observation_pointing_center(observation: Observation):
-    """Test that the pointing center is correctly converted to radians."""
-    ra_rad, dec_rad = observation.pointing_center_rad
-    expected_ra_rad = observation.config.pointing_center_ra * math.pi / 180
-    expected_dec_rad = observation.config.pointing_center_dec * math.pi / 180
+def test_observation_pointing_centre(observation: Observation):
+    """Test that the pointing centre is correctly converted to radians."""
+    ra_rad, dec_rad = observation.pointing_centre_rad
+    expected_ra_rad = observation.config.pointing_centre_ra * math.pi / 180
+    expected_dec_rad = observation.config.pointing_centre_dec * math.pi / 180
 
     assert np.isclose(ra_rad, expected_ra_rad)
     assert np.isclose(dec_rad, expected_dec_rad)

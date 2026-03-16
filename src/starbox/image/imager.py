@@ -41,7 +41,7 @@ class Imager:
         num_channels = freqs.size
 
         half = self.grid_size // 2
-        center = (self.grid_size - 1) / 2.0
+        centre = (self.grid_size - 1) / 2.0
 
         # Set uv scaling from requested image field-of-view.
         # Approximate relation: uv_max ~ N / (2 * FoV_rad).
@@ -51,7 +51,7 @@ class Imager:
         # Map uv in [-uv_max, uv_max] linearly onto pixel indices [0, grid_size-1].
         # With this choice:
         #   u = -uv_max -> 0
-        #   u =  0      -> ~ (grid_size - 1) / 2 (center)
+        #   u =  0      -> ~ (grid_size - 1) / 2 (centre)
         #   u = +uv_max -> grid_size - 1
         scale = (self.grid_size - 1) / (2.0 * uv_max)
 
@@ -64,8 +64,8 @@ class Imager:
             v = uvw_m[:, :, 1] / lam
 
             # Pixel coordinates for all times and baselines at this channel
-            u_pix = np.rint(u * scale + center).astype(int)  # (T,B)
-            v_pix = np.rint(v * scale + center).astype(int)
+            u_pix = np.rint(u * scale + centre).astype(int)  # (T,B)
+            v_pix = np.rint(v * scale + centre).astype(int)
 
             # Flatten (T,B) -> (N,) where N = T * B
             u_flat = u.ravel()
@@ -95,7 +95,7 @@ class Imager:
             idx = vp_valid * self.grid_size + up_valid
             np.add.at(grid_flat, idx, vals_valid)
 
-            # Hermitian symmetric points about the DC center (half, half)
+            # Hermitian symmetric points about the DC centre (half, half)
             sym_u = (2 * half - up_valid) % self.grid_size
             sym_v = (2 * half - vp_valid) % self.grid_size
             sym_idx = sym_v * self.grid_size + sym_u
@@ -114,7 +114,7 @@ class Imager:
     def ifft(self, gridded_visibilities: np.ndarray) -> np.ndarray:
         """
         Inverse FFT uv-grid -> dirty image.
-        Because the grid is centered (DC at center), use ifftshift before ifft2.
+        Because the grid is centered (DC at centre), use ifftshift before ifft2.
         """
         img = np.fft.ifft2(np.fft.ifftshift(gridded_visibilities))
         img = np.fft.fftshift(img)

@@ -65,10 +65,10 @@ def observation_config():
         start_frequency=1e6,  # in Hz
         num_channels=2,
         total_bandwidth=1e6,  # in Hz
-        phase_center_ra=180.0,  # in degrees
-        phase_center_dec=-45.0,  # in degrees
-        pointing_center_ra=180.0,  # in degrees
-        pointing_center_dec=-45.0,  # in degrees
+        phase_centre_ra=180.0,  # in degrees
+        phase_centre_dec=-45.0,  # in degrees
+        pointing_centre_ra=180.0,  # in degrees
+        pointing_centre_dec=-45.0,  # in degrees
     )
 
 

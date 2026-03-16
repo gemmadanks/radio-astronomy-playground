@@ -7,7 +7,7 @@ from starbox.geometry.lmn import (
 
 
 def test_calculate_lmn_known_case():
-    """Test a known case where the source is at RA=0, Dec=0, and the phase center is also at RA=0, Dec=0."""
+    """Test a known case where the source is at RA=0, Dec=0, and the phase centre is also at RA=0, Dec=0."""
     ra_dec_rad = (0.0, 0.0)
     phase_centre_rad = (0.0, 0.0)
 
@@ -20,7 +20,7 @@ def test_calculate_lmn_known_case():
 
 
 def test_calculate_lmn_known_case_offset():
-    """Test a known case where the source is at RA=0, Dec=0, and the phase center is at RA=0, Dec=90 degrees."""
+    """Test a known case where the source is at RA=0, Dec=0, and the phase centre is at RA=0, Dec=90 degrees."""
     ra_dec_rad = (0.0, 0.0)
     phase_centre_rad = (0.0, np.pi / 2)
 
@@ -33,7 +33,7 @@ def test_calculate_lmn_known_case_offset():
 
 
 def test_calculate_lmn_known_case_ra_offset():
-    """Test a known case where the source is at RA=90 degrees, Dec=0, and the phase center is at RA=0, Dec=0."""
+    """Test a known case where the source is at RA=90 degrees, Dec=0, and the phase centre is at RA=0, Dec=0."""
     ra_dec_rad = (np.pi / 2, 0.0)
     phase_centre_rad = (0.0, 0.0)
 
@@ -46,7 +46,7 @@ def test_calculate_lmn_known_case_ra_offset():
 
 
 def test_calculate_lmn_known_case_dec_offset():
-    """Test a known case where the source is at RA=0, Dec=90 degrees, and the phase center is at RA=0, Dec=0."""
+    """Test a known case where the source is at RA=0, Dec=90 degrees, and the phase centre is at RA=0, Dec=0."""
     ra_dec_rad = (0.0, np.pi / 2)
     phase_centre_rad = (0.0, 0.0)
 

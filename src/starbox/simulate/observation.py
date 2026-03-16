@@ -23,16 +23,16 @@ class Observation:
 
     @property
     def phase_centre_rad(self) -> tuple[float, float]:
-        """Return the phase center in radians."""
-        ra_rad = math.radians(self.config.phase_center_ra)
-        dec_rad = math.radians(self.config.phase_center_dec)
+        """Return the phase centre in radians."""
+        ra_rad = math.radians(self.config.phase_centre_ra)
+        dec_rad = math.radians(self.config.phase_centre_dec)
         return ra_rad, dec_rad
 
     @property
-    def pointing_center_rad(self) -> tuple[float, float]:
-        """Return the pointing center in radians."""
-        ra_rad = math.radians(self.config.pointing_center_ra)
-        dec_rad = math.radians(self.config.pointing_center_dec)
+    def pointing_centre_rad(self) -> tuple[float, float]:
+        """Return the pointing centre in radians."""
+        ra_rad = math.radians(self.config.pointing_centre_ra)
+        dec_rad = math.radians(self.config.pointing_centre_dec)
         return ra_rad, dec_rad
 
     @property
