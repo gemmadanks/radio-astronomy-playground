@@ -22,7 +22,13 @@ def test_observation_from_config(observation_config):
 def test_observation_times(observation: Observation):
     """Test that the times property generates correct time steps."""
 
-    expected_times = np.array([0.0, 90.0 / 86_400.0, 180.0 / 86_400.0])
+    expected_times = np.array(
+        [
+            observation.config.start_time,
+            observation.config.start_time + 90.0 / 86_400.0,
+            observation.config.start_time + 180.0 / 86_400.0,
+        ]
+    )
     np.testing.assert_allclose(
         observation.times_mjd, expected_times, atol=1e-12, rtol=0.0
     )
@@ -42,7 +48,7 @@ def test_observation_frequencies(observation: Observation):
 def test_observation_single_timestep():
     """Test that the Observation handles single timestep correctly."""
     config = ObservationConfig(
-        start_time=0,
+        start_time=59000.0,
         observation_length=60.0,
         num_timesteps=1,
         start_frequency=1e6,
@@ -51,7 +57,7 @@ def test_observation_single_timestep():
     )
     observation = Observation(config)
 
-    expected_times = np.array([0])
+    expected_times = np.array([59000.0])
     np.testing.assert_array_equal(observation.times_mjd, expected_times)
 
 

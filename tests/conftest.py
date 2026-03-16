@@ -59,7 +59,7 @@ def skymodel(skymodel_config):
 def observation_config():
     """A simple observation configuration."""
     return ObservationConfig(
-        start_time=0,  # in seconds
+        start_time=59000.0,  # in MJD days
         observation_length=180,  # in seconds
         num_timesteps=3,
         start_frequency=1e6,  # in Hz
