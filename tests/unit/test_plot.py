@@ -60,6 +60,7 @@ def test_plot_image_without_fov():
     assert fig.layout.yaxis.range is None
     assert fig.layout.xaxis.range is None
 
+
 def test_plot_uv_coverage():
     """Test that the UV coverage plotting function works without errors."""
     # Create mock UVW coordinates

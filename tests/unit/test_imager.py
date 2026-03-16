@@ -72,3 +72,20 @@ def test_imager_grid_uses_all_channels():
 
     gridded_visibilities = imager.grid(visibilities=visibilities)
     assert np.max(np.abs(gridded_visibilities)) > 0.0
+
+
+def test_imager_outside_fov():
+    """Test that visibilities outside the FOV are not gridded."""
+    imager = Imager(grid_size=64, fov_deg=1.0)
+    visibilities = VisibilitySet(
+        vis=np.array([[[1.0 + 0.0j]]]),
+        uvw_m=np.array([[[1e6, 1e6, 0.0]]]),  # Very large UVW coordinates
+        station1=np.array([0]),
+        station2=np.array([1]),
+        times_mjd=np.array([59000.0]),
+        freqs_hz=np.array([1.0e8]),
+        weights=np.ones((1, 1, 1)),
+    )
+
+    gridded_visibilities = imager.grid(visibilities=visibilities)
+    assert np.allclose(gridded_visibilities, 0.0, atol=1e-12, rtol=0.0)
