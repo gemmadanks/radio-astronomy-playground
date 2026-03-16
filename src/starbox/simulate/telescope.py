@@ -75,15 +75,16 @@ class Telescope:
         return radius * np.sqrt(self.rng.uniform(0, 1, self.config.num_stations))
 
     def _enu_to_ecef(self) -> np.ndarray:
-        """Convert ENU coordinates to ECEF coordinates.
+        """Convert station ENU coordinates to ECEF coordinates.
 
-        Args:
-            east: Array of east coordinates.
-            north: Array of north coordinates.
-            up: Array of up coordinates.
+        This method uses the telescope's station positions stored in
+        ``self.station_positions`` (in local ENU coordinates) and applies the
+        site-specific rotation matrix to obtain Earth-Centered, Earth-Fixed (ECEF)
+        coordinates.
 
         Returns:
-            A numpy array of shape (num_stations, 3) containing ECEF coordinates for each station.
+            A numpy array of shape (num_stations, 3) containing ECEF coordinates
+            for each station.
         """
         rotation_matrix = self._rotation_matrix()
         ecef = self.station_positions @ rotation_matrix.T
