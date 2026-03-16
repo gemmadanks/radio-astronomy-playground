@@ -55,7 +55,7 @@ class Imager:
         #   u = +uv_max -> grid_size - 1
         scale = (self.grid_size - 1) / (2.0 * uv_max)
 
-        # Second pass: grid all samples
+        # Grid all samples
         # Vectorized over times and baselines for each channel.
         grid_flat = grid.ravel()
         for i in range(num_channels):
