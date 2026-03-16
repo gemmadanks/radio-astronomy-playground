@@ -57,18 +57,22 @@ def predict_visibilities(
         # Result proj: (num_times, num_baselines, num_sources)
         proj = np.tensordot(uvw_m, dir_vecs, axes=([2], [1]))
 
-        # Convert path difference (meters) to phase cycles for all channels and sources:
-        # phase_cycles shape: (num_times, num_baselines, num_channels, num_sources)
-        phase_cycles = (
-            proj[:, :, np.newaxis, :]
-            * inv_wavelength_m[np.newaxis, np.newaxis, :, np.newaxis]
+        # Allocate output visibilities: (num_times, num_baselines, num_channels)
+        visibilities = np.zeros(
+            (observation.num_times, telescope.num_baselines, observation.num_channels),
+            dtype=np.complex128,
         )
 
-        # Compute complex exponentials and sum over sources weighted by flux.
-        # exp_phase: (num_times, num_baselines, num_channels, num_sources)
-        exp_phase = np.exp(-2j * np.pi * phase_cycles)
-        # visibilities: (num_times, num_baselines, num_channels)
-        visibilities = np.tensordot(exp_phase, flux_arr, axes=([3], [0]))
+        # Accumulate contributions from each source without forming large 4D arrays.
+        for s in range(num_sources):
+            # Path difference (meters) projected for source s: (num_times, num_baselines)
+            proj_s = proj[:, :, s]
+            # Convert to phase cycles for all channels: (num_times, num_baselines, num_channels)
+            phase_cycles_s = proj_s[:, :, np.newaxis] * inv_wavelength_m[
+                np.newaxis, np.newaxis, :
+            ]
+            # Add this source's contribution, weighted by its flux.
+            visibilities += np.exp(-2j * np.pi * phase_cycles_s) * flux_arr[s]
 
     station1_index, station2_index = np.triu_indices(
         telescope.num_stations, k=1
