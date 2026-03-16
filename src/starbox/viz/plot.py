@@ -58,15 +58,19 @@ def plot_gains(solutions: Solutions) -> Figure:
     """Plot the calibration solutions."""
 
     fig = px.imshow(
-        np.real(solutions.station_phase_gains[:, :, 0].T),
+        # Swap x and y axes to have time on x-axis and frequency on y-axis
+        np.real(solutions.station_phase_gains.T),
         title="Gains",
         labels={
             "x": "time",
             "y": "frequency",
         },
         origin="lower",
+        aspect="auto",
+        animation_frame=0,  # Animate over stations
+
+
     )
-    fig.update_yaxes(scaleanchor="x", scaleratio=1)
     return fig
 
 
