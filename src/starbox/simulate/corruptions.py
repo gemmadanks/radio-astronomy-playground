@@ -24,8 +24,6 @@ class Corruptions:
         """Add Gaussian noise corruption."""
         self.sigma = (
             self.config.rms_noise / np.sqrt(2)
-            if self.config.rms_noise is not None
-            else None
         )
 
     def _add_station_phase_gain(self):

@@ -25,7 +25,7 @@ def test_corruptions_initialisation(seed, rms_noise, rms_phase_gain):
     )
     corruptions = Corruptions(corruptions_config)
     assert corruptions.config.rms_noise == rms_noise
-    assert corruptions.sigma == ((rms_noise / np.sqrt(2)) if rms_noise else None)
+    assert corruptions.sigma == rms_noise / np.sqrt(2)
     assert corruptions.config.rms_phase_gain == rms_phase_gain
 
 
