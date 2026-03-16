@@ -58,6 +58,23 @@ def test_imager_grid_hermitian_symmetry(visibility_set):
     flipped_conj = np.conj(gridded_visibilities[sym_ii, sym_jj])
     assert np.allclose(gridded_visibilities, flipped_conj, atol=1e-12, rtol=0.0)
 
+def test_imager_grid_hermitian_symmetry_does_not_double_count(visibility_set):
+    """Test that the grid method does not double-count samples whose symmetric pixel is the same."""
+    imager = Imager(grid_size=64, fov_deg=1.0)
+    visibilities = VisibilitySet(
+        vis=np.array([[[1.0 + 0.0j]]]),
+        uvw_m=np.array([[[0.0, 0.0, 0.0]]]),  # UVW coordinates at the center
+        station1=np.array([0]),
+        station2=np.array([1]),
+        times_mjd=np.array([59000.0]),
+        freqs_hz=np.array([1.0e8]),
+        weights=np.ones((1, 1, 1)),
+    )
+    gridded_visibilities = imager.grid(visibilities=visibilities)
+    # The central pixel should have the value of the visibility, and there should be no other contributions
+    assert np.isclose(gridded_visibilities[32, 32], 1.0 + 0.0j)
+    assert np.isclose(gridded_visibilities.sum(), 1.0 + 0.0j)
+
 
 def test_imager_grid_accumulates_visibilities(visibility_set):
     """Test that the grid method accumulates visibilities at the correct locations."""
