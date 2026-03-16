@@ -10,7 +10,7 @@ from starbox.geometry.uvw import (
 
 def test_calculate_uvw_dimensions():
     """Test the calculate_uvw function returns correct dimensions."""
-    times_gmst_rad = np.array([0.0, 1.0, 2.0])  # in seconds
+    times_gmst_rad = np.array([0.0, 1.0, 2.0])  # in radians
     baselines_ecef = np.array([[0, 0, 0], [100, 0, 0], [0, 100, 0]])  # in meters
     phase_centre_rad = (0.0, 0.0)  # in radians
 
