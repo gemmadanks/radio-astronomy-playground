@@ -68,8 +68,6 @@ def plot_gains(solutions: Solutions) -> Figure:
         origin="lower",
         aspect="auto",
         animation_frame=0,  # Animate over stations
-
-
     )
     return fig
 
