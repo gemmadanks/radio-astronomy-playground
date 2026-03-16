@@ -41,14 +41,19 @@ class Imager:
         num_channels = freqs.size
 
         half = self.grid_size // 2
+        center = (self.grid_size - 1) / 2.0
 
         # Set uv scaling from requested image field-of-view.
         # Approximate relation: uv_max ~ N / (2 * FoV_rad).
         fov_rad = np.deg2rad(self.fov_deg)
         uv_max = self.grid_size / (2.0 * max(fov_rad, 1e-12))
 
-        # Map uv in [-uv_max, uv_max] -> pixel in [0, grid_size-1]
-        scale = (half - 1) / uv_max
+        # Map uv in [-uv_max, uv_max] linearly onto pixel indices [0, grid_size-1].
+        # With this choice:
+        #   u = -uv_max -> 0
+        #   u =  0      -> ~ (grid_size - 1) / 2 (center)
+        #   u = +uv_max -> grid_size - 1
+        scale = (self.grid_size - 1) / (2.0 * uv_max)
 
         # Second pass: grid all samples
         # Vectorized over times and baselines for each channel.
@@ -59,8 +64,8 @@ class Imager:
             v = uvw_m[:, :, 1] / lam
 
             # Pixel coordinates for all times and baselines at this channel
-            u_pix = np.rint(u * scale + half).astype(int)  # (T,B)
-            v_pix = np.rint(v * scale + half).astype(int)
+            u_pix = np.rint(u * scale + center).astype(int)  # (T,B)
+            v_pix = np.rint(v * scale + center).astype(int)
 
             # Flatten (T,B) -> (N,) where N = T * B
             u_flat = u.ravel()
