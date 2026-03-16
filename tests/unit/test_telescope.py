@@ -80,8 +80,8 @@ def test_telescope_get_radii(small_telescope):
     assert (radii >= 0).all() and (radii <= small_telescope.config.diameter / 2).all()
 
 
-def test_telescope_compute_coordinates():
-    """Test that _compute_coordinates returns arrays of the correct length."""
+def test_telescope_compute_enu_coordinates():
+    """Test that _compute_enu_coordinates returns arrays of the correct length."""
     angles = np.array([0.1] * 10)
     radii = np.array([5.0] * 10)
     east, north, up = _compute_enu_coordinates(angles, radii)
