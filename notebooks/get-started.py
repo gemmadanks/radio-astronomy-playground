@@ -128,7 +128,7 @@ def _(mo):
         1, 24, value=6, label="Observation length (hrs): "
     )
     num_timesteps_slider = mo.ui.slider(
-        1, 24 * 3600, value=6 * 60, label="Number of timesteps: "
+        1, 24 * 60, value=6 * 60, label="Number of timesteps: "
     )
     start_freq_slider = mo.ui.slider(
         100, 1000, label="Mid-point frequency of first channel (MHz): "
