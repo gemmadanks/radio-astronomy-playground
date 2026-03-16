@@ -36,5 +36,10 @@
       "longitude_deg": 0.0,
       "altitude_m": 0.0
     }
+    "site": {
+      "latitude_deg": 0.0,
+      "longitude_deg": 0.0,
+      "altitude_m": 0.0
+    }
   }
 }
