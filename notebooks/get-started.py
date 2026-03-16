@@ -29,7 +29,6 @@ def _():
     from starbox.viz import plot
     from starbox.predict.predict import predict_visibilities
     from starbox.io.save import save
-
     return (
         CorruptionsConfig,
         ExperimentConfig,
@@ -415,8 +414,9 @@ def _(corrected_image, dirty_image, fov_slider, gains, mo, model_image, plot):
                     ),
                     plot.plot_image(
                         corrected_image, title="Calibrated", fov_deg=fov_slider.value
-                    ),
-                ]
+                    )
+                ],
+                wrap=True
             ),
             plot.plot_gains(gains),
         ]
