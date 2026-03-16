@@ -94,7 +94,15 @@ class Imager:
             sym_u = (2 * half - up_valid) % self.grid_size
             sym_v = (2 * half - vp_valid) % self.grid_size
             sym_idx = sym_v * self.grid_size + sym_u
-            np.add.at(grid_flat, sym_idx, np.conj(vals_valid))
+
+            # Avoid double-counting samples whose symmetric pixel is the same as the original
+            self_sym_mask = sym_idx != idx
+            if np.any(self_sym_mask):
+                np.add.at(
+                    grid_flat,
+                    sym_idx[self_sym_mask],
+                    np.conj(vals_valid[self_sym_mask]),
+                )
 
         return grid
 
