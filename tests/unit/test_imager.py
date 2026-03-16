@@ -42,7 +42,14 @@ def test_imager_grid_hermitian_symmetry(visibility_set):
     """Test that the grid method produces Hermitian symmetric output."""
     imager = Imager()
     gridded_visibilities = imager.grid(visibilities=visibility_set)
-    flipped_conj = np.conj(np.flip(np.flip(gridded_visibilities, axis=0), axis=1))
+    grid_size = imager.grid_size
+    half = grid_size // 2
+    # For a grid with DC located at (half, half), Hermitian symmetry implies
+    # V[i, j] = conj(V[(2*half - i) % N, (2*half - j) % N]).
+    ii, jj = np.indices(gridded_visibilities.shape)
+    sym_ii = (2 * half - ii) % grid_size
+    sym_jj = (2 * half - jj) % grid_size
+    flipped_conj = np.conj(gridded_visibilities[sym_ii, sym_jj])
     assert np.allclose(gridded_visibilities, flipped_conj, atol=1e-12, rtol=0.0)
 
 
