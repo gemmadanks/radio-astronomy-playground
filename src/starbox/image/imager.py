@@ -46,7 +46,7 @@ class Imager:
         # Set uv scaling from requested image field-of-view.
         # Approximate relation: uv_max ~ N / (2 * FoV_rad).
         fov_rad = np.deg2rad(self.fov_deg)
-        uv_max = self.grid_size / (2.0 * max(fov_rad, 1e-12))
+        uv_max = self.grid_size / (2.0 * fov_rad)
 
         # Map uv in [-uv_max, uv_max] linearly onto pixel indices [0, grid_size-1].
         # With this choice:
