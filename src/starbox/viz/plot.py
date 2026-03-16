@@ -60,7 +60,7 @@ def plot_gains(solutions: Solutions) -> Figure:
     fig = px.imshow(
         # Transpose from (time, freq, station) to (station, freq, time) so each frame has
         # time on the x-axis, frequency on the y-axis, and animation_frame=0 animates stations.
-        np.real(solutions.station_phase_gains.T),
+        np.real(np.transpose(solutions.station_phase_gains, (2, 1, 0))),
         title="Gains",
         labels={
             "x": "time",
