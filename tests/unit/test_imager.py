@@ -22,6 +22,12 @@ def test_imager_image_shape(grid_size, visibility_set):
     assert image.shape == (grid_size, grid_size)
 
 
+def test_imager_with_negative_fov_raises_value_error():
+    """Test that initializing Imager with negative fov_deg raises ValueError."""
+    with pytest.raises(ValueError, match="fov_deg must be positive"):
+        Imager(fov_deg=-1.0)
+
+
 def test_imager_fft_output_is_real_and_finite():
     """Test that the ifft method returns finite real-valued image data."""
     imager = Imager()
