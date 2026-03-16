@@ -31,9 +31,8 @@ def telescope_config(telescope_site_config):
 
 
 @pytest.fixture
-def small_telescope(telescope_config, telescope_site_config):
+def small_telescope(telescope_config):
     """A simple telescope model for a small array."""
-    telescope_config.site = telescope_site_config
     return Telescope(telescope_config, name="SmallArray")
 
 
