@@ -51,8 +51,7 @@ class Corruptions:
                 corrupted_visibility_set, station_phase_gains
             )
 
-        if self.sigma is not None:
-            corrupted_visibility_set = self._apply_noise(corrupted_visibility_set)
+        corrupted_visibility_set = self._apply_noise(corrupted_visibility_set)
 
         return corrupted_visibility_set
 
@@ -84,8 +83,6 @@ class Corruptions:
 
     def _apply_noise(self, visibility_set: VisibilitySet) -> VisibilitySet:
         """Apply only the noise corruption to the given visibilities."""
-        if self.sigma is None:
-            raise ValueError("Sigma for noise is not set.")
         noise_real = self.rng.normal(scale=self.sigma, size=visibility_set.vis.shape)
         noise_imag = self.rng.normal(scale=self.sigma, size=visibility_set.vis.shape)
         noise = noise_real + 1j * noise_imag
