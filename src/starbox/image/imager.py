@@ -74,10 +74,10 @@ class Imager:
                     if 0 <= ui < self.grid_size and 0 <= vi < self.grid_size:
                         val = vis_tb[b_idx]
                         grid[vi, ui] += val
-                        # Hermitian symmetric point
-                        grid[self.grid_size - vi - 1, self.grid_size - ui - 1] += (
-                            np.conj(val)
-                        )
+                        # Hermitian symmetric point about the DC center (half, half)
+                        sym_u = (2 * half - ui) % self.grid_size
+                        sym_v = (2 * half - vi) % self.grid_size
+                        grid[sym_v, sym_u] += np.conj(val)
 
         return grid
 
