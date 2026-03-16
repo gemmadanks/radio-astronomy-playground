@@ -59,9 +59,10 @@ def predict_visibilities(
 
         # Convert path difference (meters) to phase cycles for all channels and sources:
         # phase_cycles shape: (num_times, num_baselines, num_channels, num_sources)
-        phase_cycles = proj[:, :, np.newaxis, :] * inv_wavelength_m[
-            np.newaxis, np.newaxis, :, np.newaxis
-        ]
+        phase_cycles = (
+            proj[:, :, np.newaxis, :]
+            * inv_wavelength_m[np.newaxis, np.newaxis, :, np.newaxis]
+        )
 
         # Compute complex exponentials and sum over sources weighted by flux.
         # exp_phase: (num_times, num_baselines, num_channels, num_sources)
