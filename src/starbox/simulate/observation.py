@@ -38,12 +38,14 @@ class Observation:
     @property
     def gmst_rad(self) -> npt.NDArray[np.float64]:
         """Return the times converted to Greenwich mean sidereal time."""
-        iers.conf.auto_download = False  # avoid network calls
-        times = Time(self.times_mjd, format="mjd", scale="utc")
-        return np.asarray(
-            times.sidereal_time("mean", "greenwich").rad,
-            dtype=np.float64,
-        )
+        # Avoid mutating global Astropy IERS configuration permanently by
+        # using a temporary config context while computing sidereal times.
+        with iers.conf.set_temp("auto_download", False):
+            times = Time(self.times_mjd, format="mjd", scale="utc")
+            return np.asarray(
+                times.sidereal_time("mean", "greenwich").rad,
+                dtype=np.float64,
+            )
 
     def _get_times(self) -> None:
         """Return time samples for the observation."""
