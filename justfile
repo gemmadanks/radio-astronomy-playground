@@ -83,3 +83,7 @@ build:
 # Start Jupyter Lab from inside the devcontainer
 jupyter-container:
     uv run jupyter lab --allow-root --ip 0.0.0.0 --no-browser
+
+# Launch quick start notebooks
+quickstart:
+    uv run marimo run notebooks/get-started.py

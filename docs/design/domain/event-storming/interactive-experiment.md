@@ -47,7 +47,7 @@ These map to notebook widgets.
 * Set integration time
 * Set total observation duration
 * Set frequency setup
-* Set phase center
+* Set phase centre
 
 ### Sky & instrument
 
@@ -150,7 +150,7 @@ Invariants:
 
 * Integration time divides observation duration
 * Frequency grid is consistent with channelization
-* Phase center is well-defined
+* Phase centre is well-defined
 
 ---
 

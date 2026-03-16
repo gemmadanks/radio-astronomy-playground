@@ -44,8 +44,8 @@ def plot_telescope(telescope: Telescope) -> Figure:
         title=f"{telescope.name}",
     )
     fig.update_layout(
-        xaxis_title="X (North) [m]",
-        yaxis_title="Y (East) [m]",
+        xaxis_title="East [m]",
+        yaxis_title="North [m]",
         yaxis_scaleanchor="x",
         yaxis_scaleratio=1,
     )
@@ -58,21 +58,43 @@ def plot_gains(solutions: Solutions) -> Figure:
     """Plot the calibration solutions."""
 
     fig = px.imshow(
-        np.real(solutions.station_phase_gains[:, :, 0].T),
+        # Transpose from (time, freq, station) to (station, freq, time) so each frame has
+        # time on the x-axis, frequency on the y-axis, and animation_frame=0 animates stations.
+        np.real(np.transpose(solutions.station_phase_gains, (2, 1, 0))),
         title="Gains",
         labels={
             "x": "time",
             "y": "frequency",
         },
         origin="lower",
+        aspect="auto",
+        animation_frame=0,  # Animate over stations
     )
-    fig.update_yaxes(scaleanchor="x", scaleratio=1)
     return fig
 
 
-def plot_image(image: np.ndarray, title="Imaged Sky") -> Figure:
+def plot_image(
+    image: np.ndarray, title: str = "Imaged Sky", fov_deg: float | None = None
+) -> Figure:
     """Plot the image."""
 
-    fig = px.imshow(image, title=title, labels={"x": "RA", "y": "Dec"})
+    if fov_deg is None:
+        fig = px.imshow(
+            image,
+            origin="lower",
+            title=title,
+            labels={"x": "RA", "y": "Dec"},
+        )
+    else:
+        x_deg = np.linspace(-fov_deg / 2.0, fov_deg / 2.0, image.shape[1])
+        y_deg = np.linspace(-fov_deg / 2.0, fov_deg / 2.0, image.shape[0])
+        fig = px.imshow(
+            image,
+            x=x_deg,
+            y=y_deg,
+            origin="lower",
+            title=title,
+            labels={"x": "ΔRA (deg)", "y": "ΔDec (deg)"},
+        )
     fig.update_yaxes(scaleanchor="x", scaleratio=1)
     return fig

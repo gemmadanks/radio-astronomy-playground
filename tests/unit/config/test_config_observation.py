@@ -5,12 +5,14 @@ from starbox.config.observation import ObservationConfig
 
 def test_observation_config_from_dict():
     parameter_dict = {
-        "start_time": 59000.0,
+        "start_time_mjd": 59000.0,
         "observation_length": 3600,
         "num_timesteps": 10,
         "start_frequency": 100.0,
         "total_bandwidth": 10.0,
         "num_channels": 5,
+        "phase_centre_ra": 180.0,
+        "phase_centre_dec": -45.0,
     }
     observation_config = ObservationConfig(**parameter_dict)
     for key, value in parameter_dict.items():
