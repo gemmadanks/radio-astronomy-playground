@@ -28,13 +28,16 @@ def predict_visibilities(
     inv_wavelength_m = observation.frequencies_hz / SPEED_OF_LIGHT
     u_m = uvw_m[:, :, 0]
     v_m = uvw_m[:, :, 1]
+    w_m = uvw_m[:, :, 2]
 
     for ra_rad, dec_rad, flux in zip(*skymodel.as_arrays_rad()):
-        l_dir, m_dir, _ = calculate_lmn(
+        l_dir, m_dir, n_dir = calculate_lmn(
             ra_dec_rad=(ra_rad, dec_rad), phase_centre_rad=observation.phase_centre_rad
         )
         phase_cycles = (
-            u_m[:, :, np.newaxis] * l_dir + v_m[:, :, np.newaxis] * m_dir
+            u_m[:, :, np.newaxis] * l_dir
+            + v_m[:, :, np.newaxis] * m_dir
+            + w_m[:, :, np.newaxis] * (n_dir - 1.0)
         ) * inv_wavelength_m[np.newaxis, np.newaxis, :]
         visibilities += flux * np.exp(-2j * np.pi * phase_cycles)
 
