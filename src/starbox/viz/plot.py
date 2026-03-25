@@ -34,6 +34,7 @@ def plot_uv_coverage(uvw_coordinates: np.ndarray, title: str = "UV Coverage") ->
 def plot_sky_model(sky_model: SkyModel) -> Figure:
     """Plot the sky model sources."""
     ras, decs, fluxes = sky_model.as_arrays()
+    plot_range = max(np.max(np.abs(ras)), np.max(np.abs(decs))) * 1.2
     fig = px.scatter(
         x=ras,
         y=decs,
@@ -42,7 +43,8 @@ def plot_sky_model(sky_model: SkyModel) -> Figure:
         labels={"x": "Right Ascension (deg)", "y": "Declination (deg)"},
     )
     fig.update_layout(width=500, height=500)
-    fig.update_yaxes(scaleanchor="x", scaleratio=1)
+    fig.update_yaxes(scaleanchor="x", scaleratio=1, range=[-plot_range, plot_range])
+    fig.update_xaxes(range=[-plot_range, plot_range])
     return fig
 
 

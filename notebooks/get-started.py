@@ -148,7 +148,7 @@ def _(mo):
         0, 30, value=1, label="Per-station phase gain RMS (degrees): "
     )
     noise_rms_slider = mo.ui.slider(
-        0.0, 100.0, step=0.1, value=0.1, label="Noise RMS: "
+        0.0, 100.0, step=0.01, value=0.0, label="Noise RMS: "
     )
 
     # Calibration
