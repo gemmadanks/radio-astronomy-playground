@@ -6,8 +6,9 @@ from starbox.constants import SPEED_OF_LIGHT
 from starbox.geometry.lmn import calculate_lmn
 from starbox.geometry.uvw import calculate_uvw
 from starbox.config.skymodel import SkyModelConfig
-from starbox.predict.predict import predict_visibilities
+from starbox.predict.predict import predict_visibilities, generate_psf_visibilities
 from starbox.simulate.skymodel import SkyModel
+from starbox.visibility import VisibilitySet
 
 
 def test_predict_visibilities_returns_correct_shape(
@@ -109,3 +110,25 @@ def test_predict_single_offset_source_matches_geometric_phase(
 
     np.testing.assert_allclose(visibilities.vis, expected_vis, atol=1e-12, rtol=0.0)
     assert np.std(np.angle(visibilities.vis)) > 0.0
+
+
+def test_generate_psf_visibilities():
+    """Test that the PSF visibilities are generated correctly."""
+    visibility_set = VisibilitySet(
+        vis=np.random.rand(3, 45, 2) + 1j * np.random.rand(3, 45, 2),
+        uvw_m=np.random.rand(3, 45, 3),
+        station1=np.random.randint(0, 10, size=45),
+        station2=np.random.randint(0, 10, size=45),
+        times_mjd=np.random.rand(3),
+        freqs_hz=np.random.rand(2) * 1e6 + 1e6,
+        weights=np.random.rand(3, 45, 2),
+    )
+    psf_visibilities = generate_psf_visibilities(visibility_set)
+    assert psf_visibilities.vis.shape == visibility_set.vis.shape
+    assert np.allclose(psf_visibilities.vis, 1.0 + 0j, atol=1e-12, rtol=0.0)
+    assert np.array_equal(psf_visibilities.station1, visibility_set.station1)
+    assert np.array_equal(psf_visibilities.station2, visibility_set.station2)
+    assert np.array_equal(psf_visibilities.times_mjd, visibility_set.times_mjd)
+    assert np.array_equal(psf_visibilities.freqs_hz, visibility_set.freqs_hz)
+    # Check input visibilities are not modified
+    assert not np.array_equal(visibility_set.vis, psf_visibilities.vis)

@@ -1,6 +1,6 @@
 import marimo
 
-__generated_with = "0.19.4"
+__generated_with = "0.20.4"
 app = marimo.App(width="medium")
 
 
@@ -27,7 +27,7 @@ def _():
         build_solver,
     )
     from starbox.viz import plot
-    from starbox.predict.predict import predict_visibilities
+    from starbox.predict.predict import predict_visibilities, generate_psf_visibilities
     from starbox.io.save import save
 
     return (
@@ -44,6 +44,7 @@ def _():
         build_skymodel,
         build_solver,
         build_telescope,
+        generate_psf_visibilities,
         logging,
         mo,
         plot,
@@ -112,39 +113,47 @@ def _(mo):
 @app.cell
 def _(mo):
     # Sky model
-    num_sources_slider = mo.ui.slider(1, 10, label="Number of point sources: ")
-    max_flux_slider = mo.ui.slider(1, 10, label="Maximum source brightness (Jy): ")
-    fov_slider = mo.ui.slider(1, 10, label="Field of view (degrees): ")
+    num_sources_slider = mo.ui.slider(1, 10, value=4, label="Number of point sources: ")
+    max_flux_slider = mo.ui.slider(
+        1, 10, value=5, label="Maximum source brightness (Jy): "
+    )
+    fov_slider = mo.ui.slider(
+        1.0, 10.0, step=0.1, value=1.5, label="Field of view (degrees): "
+    )
 
     # Telescope
-    num_stations_slider = mo.ui.slider(2, 100, value=20, label="Number of stations: ")
+    num_stations_slider = mo.ui.slider(2, 100, value=28, label="Number of stations: ")
     telescope_diameter_slider = mo.ui.slider(
-        1, 100, label="Maximum diameter of telescope (km): "
+        1, 100, value=30, label="Maximum diameter of telescope (km): "
     )
 
     # Observation
     start_time_mjd_slider = mo.ui.slider(59000, 69000, label="Start time (MJD): ")
     observation_length_slider = mo.ui.slider(
-        1, 24, value=6, label="Observation length (hrs): "
+        1, 24, value=8, label="Observation length (hrs): "
     )
     num_timesteps_slider = mo.ui.slider(
-        1, 24 * 60, value=6 * 60, label="Number of timesteps: "
+        1, 24 * 60, value=600, label="Number of timesteps: "
     )
     start_freq_slider = mo.ui.slider(
-        100, 1000, label="Mid-point frequency of first channel (MHz): "
+        100, 1000, value=300, label="Mid-point frequency of first channel (MHz): "
     )
-    num_channels_slider = mo.ui.slider(1, 100, label="Number of channels: ")
-    bandwidth_slider = mo.ui.slider(1, 100, label="Total frequency bandwidth (MHz): ")
+    num_channels_slider = mo.ui.slider(1, 100, value=16, label="Number of channels: ")
+    bandwidth_slider = mo.ui.slider(
+        1, 100, value=20, label="Total frequency bandwidth (MHz): "
+    )
 
     # Corruptions
     phase_rms_slider = mo.ui.slider(
-        0, 30, label="Per-station phase gain RMS (degrees): "
+        0, 30, value=1, label="Per-station phase gain RMS (degrees): "
     )
-    noise_rms_slider = mo.ui.slider(0, 100, label="Noise RMS: ")
+    noise_rms_slider = mo.ui.slider(
+        0.0, 100.0, step=0.1, value=0.1, label="Noise RMS: "
+    )
 
     # Calibration
     solution_interval_seconds_slider = mo.ui.slider(
-        1, 600, label="Solution interval (s): "
+        1, 600, value=30, label="Solution interval (s): "
     )
     return (
         bandwidth_slider,
@@ -384,6 +393,7 @@ def _(sky_model):
 @app.cell
 def _(
     corruptions,
+    generate_psf_visibilities,
     imager,
     num_stations_slider,
     observation,
@@ -393,16 +403,38 @@ def _(
     telescope,
 ):
     model_visibilities = predict_visibilities(telescope, sky_model, observation)
+    psf_visibilities = generate_psf_visibilities(model_visibilities)
     observed_visibilities = corruptions.apply(model_visibilities)
     gains = solver.solve(
         observed_visibilities, model_visibilities, num_stations_slider.value
     )
     corrected_visibilities = gains.apply(observed_visibilities)
 
+    psf_image = imager.image(psf_visibilities)
     dirty_image = imager.image(observed_visibilities)
     corrected_image = imager.image(corrected_visibilities)
     model_image = imager.image(model_visibilities)
-    return corrected_image, dirty_image, gains, model_image
+    return (
+        corrected_image,
+        dirty_image,
+        gains,
+        model_image,
+        model_visibilities,
+        psf_image,
+    )
+
+
+@app.cell
+def _(fov_slider, mo, model_visibilities, plot, psf_image):
+    mo.hstack(
+        [
+            plot.plot_uv_coverage(model_visibilities.uvw_m),
+            plot.plot_image(psf_image, title="PSF", fov_deg=fov_slider.value),
+        ],
+        gap="1rem",  # Reduce spacing between plots
+        widths=["50%", "50%"],  # Equal width columns
+    )
+    return
 
 
 @app.cell

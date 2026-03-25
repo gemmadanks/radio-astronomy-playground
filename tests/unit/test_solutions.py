@@ -131,4 +131,3 @@ def test_solutions_apply_method_maps_time_and_frequency_bins(visibility_set):
     calibrated = solutions.apply(corrupted)
 
     assert np.allclose(calibrated.vis, model_vis, atol=1e-6)
-

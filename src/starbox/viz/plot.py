@@ -9,7 +9,16 @@ import numpy as np
 
 
 def plot_uv_coverage(uvw_coordinates: np.ndarray, title: str = "UV Coverage") -> Figure:
-    """Plot the UV coverage given UVW coordinates."""
+    """Plot the UV coverage given UVW coordinates.
+
+    Args:
+        uvw_coordinates:
+            - (T, B, 3): T timesteps, B baselines, 3 coordinates
+        title: Plot title.
+
+    Averages UV coordinates across time to show unique baseline coverage.
+    """
+    uvw_coordinates = np.mean(uvw_coordinates, axis=0)  # (B, 3)
 
     u = uvw_coordinates[:, 0]
     v = uvw_coordinates[:, 1]
@@ -17,8 +26,8 @@ def plot_uv_coverage(uvw_coordinates: np.ndarray, title: str = "UV Coverage") ->
     fig = px.scatter(
         x=u, y=v, title=title, labels={"x": "U (wavelengths)", "y": "V (wavelengths)"}
     )
+    fig.update_layout(width=500, height=500)
     fig.update_yaxes(scaleanchor="x", scaleratio=1)
-
     return fig
 
 
@@ -32,6 +41,7 @@ def plot_sky_model(sky_model: SkyModel) -> Figure:
         title="Sky Model",
         labels={"x": "Right Ascension (deg)", "y": "Declination (deg)"},
     )
+    fig.update_layout(width=500, height=500)
     fig.update_yaxes(scaleanchor="x", scaleratio=1)
     return fig
 

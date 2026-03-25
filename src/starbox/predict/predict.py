@@ -82,3 +82,19 @@ def predict_visibilities(
         ),
     )
     return visibilities_set
+
+
+def generate_psf_visibilities(visibility_set: VisibilitySet) -> VisibilitySet:
+    """Generate PSF visibilities (all ones) with the same metadata as the input set."""
+    # Copy metadata from input visibility set, but set visibilities to 1 + 0j
+    # Do not modify the input visibility set in-place
+    psf_vis = np.ones_like(visibility_set.vis, dtype=np.complex128)
+    return VisibilitySet(
+        vis=psf_vis,
+        uvw_m=visibility_set.uvw_m,
+        station1=visibility_set.station1,
+        station2=visibility_set.station2,
+        times_mjd=visibility_set.times_mjd,
+        freqs_hz=visibility_set.freqs_hz,
+        weights=np.array(visibility_set.weights, copy=True),
+    )

@@ -69,8 +69,16 @@ def test_plot_uv_coverage():
     u = np.random.rand(100) * 1000
     v = np.random.rand(100) * 1000
     w = np.random.rand(100) * 1000
-    uvw = np.column_stack((u, v, w))
+    # Shape (T, B, 3): T timesteps, B baselines, 3 coordinates
+    uvw = np.column_stack((u, v, w)).reshape(10, 10, 3)
     plot.plot_uv_coverage(uvw, title="UV Coverage Test")
+
+
+def test_plot_uv_coverage_visibility_set(visibility_set):
+    """Test that the UV coverage plotting function works with a VisibilitySet."""
+    plot.plot_uv_coverage(
+        visibility_set.uvw_m, title="UV Coverage Test with VisibilitySet"
+    )
 
 
 def test_plot_gains(solutions):
