@@ -359,7 +359,7 @@ def _(SolverConfig, build_solver, solution_interval_seconds_slider):
 
 @app.cell
 def _(Imager, fov_slider):
-    imager = Imager(fov_deg=fov_slider.value)
+    imager = Imager(fov_deg=fov_slider.value, grid_size=256)
     return (imager,)
 
 
