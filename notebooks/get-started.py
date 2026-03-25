@@ -113,9 +113,7 @@ def _(mo):
 @app.cell
 def _(mo):
     # Sky model
-    num_sources_slider = mo.ui.slider(
-        1, 10, value=1, label="Number of point sources: "
-    )
+    num_sources_slider = mo.ui.slider(1, 10, value=1, label="Number of point sources: ")
     max_flux_slider = mo.ui.slider(
         1, 10, value=10, label="Maximum source brightness (Jy): "
     )
@@ -124,9 +122,7 @@ def _(mo):
     )
 
     # Telescope
-    num_stations_slider = mo.ui.slider(
-        2, 100, value=68, label="Number of stations: "
-    )
+    num_stations_slider = mo.ui.slider(2, 100, value=68, label="Number of stations: ")
     telescope_diameter_slider = mo.ui.slider(
         1, 100, value=20, label="Maximum diameter of telescope (km): "
     )
@@ -137,21 +133,19 @@ def _(mo):
         1, 24, value=4, label="Observation length (hrs): "
     )
     num_timesteps_slider = mo.ui.slider(
-        1, 24 * 60, value=4*60, label="Number of timesteps: "
+        1, 24 * 60, value=4 * 60, label="Number of timesteps: "
     )
     start_freq_slider = mo.ui.slider(
         100, 1000, value=100, label="Mid-point frequency of first channel (MHz): "
     )
-    num_channels_slider = mo.ui.slider(
-        1, 100, value=32, label="Number of channels: "
-    )
+    num_channels_slider = mo.ui.slider(1, 100, value=32, label="Number of channels: ")
     bandwidth_slider = mo.ui.slider(
         1, 100, value=32, label="Total frequency bandwidth (MHz): "
     )
 
     # Corruptions
     phase_rms_slider = mo.ui.slider(
-        0, 30, value=1, label="Per-station phase gain RMS (degrees): "
+        0, 30, value=10, label="Per-station phase gain RMS (degrees): "
     )
     noise_rms_slider = mo.ui.slider(0.0, 100.0, step=1, value=0.0, label="Noise RMS: ")
 
@@ -433,10 +427,10 @@ def _(fov_slider, mo, model_visibilities, plot, psf_image):
     mo.hstack(
         [
             plot.plot_uv_coverage(model_visibilities.uvw_m),
-            plot.plot_image(psf_image, title="PSF", fov_deg=fov_slider.value)
+            plot.plot_image(psf_image, title="PSF", fov_deg=fov_slider.value),
         ],
         gap="1rem",  # Reduce spacing between plots
-        widths=["50%", "50%"]  # Equal width columns
+        widths=["50%", "50%"],  # Equal width columns
     )
     return
 
@@ -460,7 +454,7 @@ def _(corrected_image, dirty_image, fov_slider, gains, mo, model_image, plot):
                 wrap=True,
                 gap="0.1rem",
                 align="start",
-                widths=[1,1,1]
+                widths=[1, 1, 1],
             ),
             plot.plot_gains(gains),
         ]

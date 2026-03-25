@@ -1,5 +1,7 @@
 """Class for handling calibration solving tasks."""
 
+from typing import Optional
+
 import numpy as np
 from starbox.calibrate.solutions import Solutions
 from starbox.config.solver import SolverConfig
@@ -131,7 +133,7 @@ class Solver:
         gains,
         observed_visibilities: VisibilitySet,
         model_visibilities: VisibilitySet,
-        n_stations: int = None,
+        n_stations: Optional[int] = None,
     ) -> np.ndarray:
         """Calculate residuals between observed and model visibilities given station gains.
 
@@ -147,6 +149,7 @@ class Solver:
         if gains_arr.ndim == 3:
             gains_3d = gains_arr
         else:
+            assert n_stations is not None, "n_stations is required for 1D phase vector"
             n_time_bins = int(np.ceil(n_timesteps / tbin))
             gains_3d = self._phases_to_gains(
                 gains_arr, n_time_bins, n_channels, n_stations
@@ -174,4 +177,5 @@ class Solver:
         weighted = sqrt_weights * residual
 
         # Interleave real and imaginary parts into a flat real 1D array
-        return np.stack([weighted.real, weighted.imag], axis=-1).ravel()
+        weighted_arr = np.asarray(weighted, dtype=np.complex128)
+        return np.stack([weighted_arr.real, weighted_arr.imag], axis=-1).ravel()
