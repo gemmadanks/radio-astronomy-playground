@@ -98,7 +98,6 @@ def test_solutions_apply_method_maps_time_and_frequency_bins(visibility_set):
     """Apply should correctly map visibility axes onto coarser solution bins."""
 
     # Visibility fixture is (3 times, 2 channels); use (2 time bins, 1 freq bin)
-    n_stations = 4
     station_gains = np.array(
         [
             [[1.0 + 0j, np.exp(1j * 0.2), np.exp(1j * 0.4), 1.0 + 0j]],
