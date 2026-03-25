@@ -102,8 +102,8 @@ def _(mo):
 def _(mo):
     file_browser = mo.ui.file_browser(
         multiple=False,
-        initial_path="notebooks/config",
-        filetypes=["yaml"],
+        initial_path="config/",
+        filetypes=["json"],
         restrict_navigation=False,
     )
     file_browser  # pyright: ignore[reportUnusedExpression]
@@ -113,43 +113,47 @@ def _(mo):
 @app.cell
 def _(mo):
     # Sky model
-    num_sources_slider = mo.ui.slider(1, 10, value=4, label="Number of point sources: ")
+    num_sources_slider = mo.ui.slider(
+        1, 10, value=1, label="Number of point sources: "
+    )
     max_flux_slider = mo.ui.slider(
-        1, 10, value=5, label="Maximum source brightness (Jy): "
+        1, 10, value=10, label="Maximum source brightness (Jy): "
     )
     fov_slider = mo.ui.slider(
-        1.0, 10.0, step=0.1, value=1.5, label="Field of view (degrees): "
+        1.0, 10.0, step=0.1, value=1.0, label="Field of view (degrees): "
     )
 
     # Telescope
-    num_stations_slider = mo.ui.slider(2, 100, value=28, label="Number of stations: ")
+    num_stations_slider = mo.ui.slider(
+        2, 100, value=68, label="Number of stations: "
+    )
     telescope_diameter_slider = mo.ui.slider(
-        1, 100, value=30, label="Maximum diameter of telescope (km): "
+        1, 100, value=20, label="Maximum diameter of telescope (km): "
     )
 
     # Observation
     start_time_mjd_slider = mo.ui.slider(59000, 69000, label="Start time (MJD): ")
     observation_length_slider = mo.ui.slider(
-        1, 24, value=8, label="Observation length (hrs): "
+        1, 24, value=4, label="Observation length (hrs): "
     )
     num_timesteps_slider = mo.ui.slider(
-        1, 24 * 60, value=600, label="Number of timesteps: "
+        1, 24 * 60, value=4*60, label="Number of timesteps: "
     )
     start_freq_slider = mo.ui.slider(
-        100, 1000, value=300, label="Mid-point frequency of first channel (MHz): "
+        100, 1000, value=100, label="Mid-point frequency of first channel (MHz): "
     )
-    num_channels_slider = mo.ui.slider(1, 100, value=16, label="Number of channels: ")
+    num_channels_slider = mo.ui.slider(
+        1, 100, value=32, label="Number of channels: "
+    )
     bandwidth_slider = mo.ui.slider(
-        1, 100, value=20, label="Total frequency bandwidth (MHz): "
+        1, 100, value=32, label="Total frequency bandwidth (MHz): "
     )
 
     # Corruptions
     phase_rms_slider = mo.ui.slider(
         0, 30, value=1, label="Per-station phase gain RMS (degrees): "
     )
-    noise_rms_slider = mo.ui.slider(
-        0.0, 100.0, step=0.01, value=0.0, label="Noise RMS: "
-    )
+    noise_rms_slider = mo.ui.slider(0.0, 100.0, step=1, value=0.0, label="Noise RMS: ")
 
     # Calibration
     solution_interval_seconds_slider = mo.ui.slider(
@@ -429,10 +433,10 @@ def _(fov_slider, mo, model_visibilities, plot, psf_image):
     mo.hstack(
         [
             plot.plot_uv_coverage(model_visibilities.uvw_m),
-            plot.plot_image(psf_image, title="PSF", fov_deg=fov_slider.value),
+            plot.plot_image(psf_image, title="PSF", fov_deg=fov_slider.value)
         ],
         gap="1rem",  # Reduce spacing between plots
-        widths=["50%", "50%"],  # Equal width columns
+        widths=["50%", "50%"]  # Equal width columns
     )
     return
 
@@ -454,6 +458,9 @@ def _(corrected_image, dirty_image, fov_slider, gains, mo, model_image, plot):
                     ),
                 ],
                 wrap=True,
+                gap="0.1rem",
+                align="start",
+                widths=[1,1,1]
             ),
             plot.plot_gains(gains),
         ]

@@ -86,7 +86,10 @@ def plot_gains(solutions: Solutions) -> Figure:
 
 
 def plot_image(
-    image: np.ndarray, title: str = "Imaged Sky", fov_deg: float | None = None
+    image: np.ndarray,
+    title: str = "Imaged Sky",
+    fov_deg: float | None = None,
+    height: int = 350,
 ) -> Figure:
     """Plot the image."""
 
@@ -108,5 +111,6 @@ def plot_image(
             title=title,
             labels={"x": "ΔRA (deg)", "y": "ΔDec (deg)"},
         )
-    fig.update_yaxes(scaleanchor="x", scaleratio=1)
+    fig.update_layout(height=height, margin=dict(l=10, r=10, t=40, b=10))
+    fig.update_yaxes(scaleanchor=None)
     return fig
