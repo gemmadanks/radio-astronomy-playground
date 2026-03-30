@@ -166,6 +166,7 @@ def _(mo):
     solution_interval_hz_slider = mo.ui.slider(
         1, 100, value=4, label="Solution interval (MHz): "
     )
+
     return (
         bandwidth_slider,
         fov_slider,
@@ -185,6 +186,17 @@ def _(mo):
         start_time_mjd_slider,
         telescope_diameter_slider,
     )
+
+
+@app.cell
+def _(mo, num_stations_slider):
+    # Plotting
+    gain_station_dropdown = mo.ui.dropdown(
+        options=list(range(num_stations_slider.value)),
+        value=1,
+        label="Station number: ",
+    )
+    return (gain_station_dropdown,)
 
 
 @app.cell
@@ -357,7 +369,12 @@ def _(
 
 
 @app.cell
-def _(SolverConfig, build_solver, solution_interval_hz_slider, solution_interval_seconds_slider):
+def _(
+    SolverConfig,
+    build_solver,
+    solution_interval_hz_slider,
+    solution_interval_seconds_slider,
+):
     solver_config = SolverConfig(
         solution_interval_seconds=solution_interval_seconds_slider.value,
         solution_interval_hz=solution_interval_hz_slider.value * 1e6,
@@ -463,17 +480,6 @@ def _(
 
 
 @app.cell
-def _(gains, mo):
-    gain_station_slider = mo.ui.slider(
-        0,
-        gains.station_phase_gains.shape[2] - 1,
-        value=1,
-        label="Gain plot station: ",
-    )
-    return (gain_station_slider,)
-
-
-@app.cell
 def _(
     mo,
     noise_rms_slider,
@@ -506,7 +512,7 @@ def _(
     dirty_image,
     dirty_residual_image,
     fov_slider,
-    gain_station_slider,
+    gain_station_dropdown,
     gains,
     mo,
     model_image,
@@ -583,10 +589,10 @@ def _(
                 align="start",
                 widths=[1, 1],
             ),
-            gain_station_slider,
             mo.ui.plotly(
-                plot.plot_gains(gains, station_index=gain_station_slider.value)
+                plot.plot_gains(gains, station_index=gain_station_dropdown.value)
             ),
+            gain_station_dropdown,
         ]
     )
     return
