@@ -27,6 +27,8 @@ class Corruptions:
     def _add_station_phase_gain(self):
         """Add station phase gain corruption."""
         self.rms_phase_gain = self.config.rms_phase_gain
+        self.phase_time_correlation = self.config.phase_time_correlation
+        self.phase_frequency_correlation = self.config.phase_frequency_correlation
 
     def apply(self, visibility_set: VisibilitySet) -> VisibilitySet:
         """Apply the corruptions to the given visibilities."""
@@ -80,18 +82,73 @@ class Corruptions:
     def _sample_station_phase_gains(
         self, num_times: int, num_channels: int, num_stations: int
     ) -> np.ndarray:
-        """Sample random phase gains for each time, channel, and station."""
-        phi = self.rng.normal(
+        """Sample station phase gains in degrees with AR(1) correlations.
+
+        A separable AR(1) process is applied along time and frequency.
+        For each axis, the recursion is:
+            x_t = rho * x_{t-1} + sqrt(1 - rho^2) * eps_t,
+        where eps_t ~ N(0, 1). Larger ``rho`` gives smoother drifts, while
+        smaller ``rho`` gives faster variation.
+
+        Use ``phase_time_correlation=0.0`` and
+        ``phase_frequency_correlation=0.0`` to force white phase noise
+        (independent samples across time and channel).
+
+        The sampled non-reference stations are rescaled so their RMS phase
+        matches ``rms_phase_gain`` (in degrees). The reference station is
+        pinned to zero phase.
+        """
+        white = self.rng.normal(
             loc=0.0,
-            scale=self.rms_phase_gain,
+            scale=1.0,
             size=(num_times, num_channels, num_stations),
         )
+
+        # Create realistic smooth phase evolution by applying AR(1) correlation
+        # first along time and then along frequency for each station.
+        phi = np.empty_like(white)
+        for station in range(num_stations):
+            station_phi = self._apply_ar1(
+                white[:, :, station],
+                rho=self.phase_time_correlation,
+                axis=0,
+            )
+            station_phi = self._apply_ar1(
+                station_phi,
+                rho=self.phase_frequency_correlation,
+                axis=1,
+            )
+            phi[:, :, station] = station_phi
+
+        # Scale to requested per-station RMS in degrees for non-reference stations.
+        # (Reference station is pinned to zero below.)
+        if num_stations > 1:
+            current_rms = float(np.sqrt(np.mean(phi[:, :, 1:] ** 2)))
+            if current_rms > 0.0:
+                phi[:, :, 1:] *= self.rms_phase_gain / current_rms
+
         # Reference station to have zero phase gain at all times/frequencies
         ref_station = 0
         phi[..., ref_station] = 0.0
         station_phase_gains = np.exp(1j * np.deg2rad(phi))
 
         return station_phase_gains
+
+    @staticmethod
+    def _apply_ar1(samples: np.ndarray, rho: float, axis: int) -> np.ndarray:
+        """Apply an AR(1) filter along a given axis while preserving shape."""
+        if samples.shape[axis] <= 1:
+            return np.array(samples, copy=True)
+
+        moved = np.moveaxis(samples, axis, 0)
+        out = np.empty_like(moved)
+
+        out[0] = moved[0]
+        innovation_scale = np.sqrt(max(1.0 - rho * rho, 0.0))
+        for idx in range(1, moved.shape[0]):
+            out[idx] = rho * out[idx - 1] + innovation_scale * moved[idx]
+
+        return np.moveaxis(out, 0, axis)
 
     def _apply_noise(self, visibility_set: VisibilitySet) -> VisibilitySet:
         """Apply only the noise corruption to the given visibilities."""

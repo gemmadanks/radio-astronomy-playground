@@ -193,3 +193,49 @@ def test_corruptions_apply_phase_gain_varies_across_time_and_frequency(
     ratios = corrupted_vis.vis / visibility_set.vis
     assert not np.allclose(ratios[0, :, :], ratios[1, :, :])
     assert not np.allclose(ratios[:, :, 0], ratios[:, :, 1])
+
+
+def test_corruptions_sample_station_phase_gains_are_time_correlated():
+    """Sampled phases should be correlated along time for realistic drifts."""
+
+    config = CorruptionsConfig(
+        seed=7,
+        rms_noise=0.0,
+        rms_phase_gain=3.0,
+        phase_time_correlation=0.98,
+        phase_frequency_correlation=0.0,
+    )
+    corruptions = Corruptions(config)
+
+    phase_gains = corruptions._sample_station_phase_gains(
+        num_times=200,
+        num_channels=8,
+        num_stations=5,
+    )
+    phases_deg = np.angle(phase_gains[..., 1], deg=True)
+    corr_t = np.corrcoef(phases_deg[1:, :].ravel(), phases_deg[:-1, :].ravel())[0, 1]
+
+    assert corr_t > 0.6
+
+
+def test_corruptions_sample_station_phase_gains_are_frequency_correlated():
+    """Sampled phases should be correlated across neighboring channels."""
+
+    config = CorruptionsConfig(
+        seed=11,
+        rms_noise=0.0,
+        rms_phase_gain=3.0,
+        phase_time_correlation=0.0,
+        phase_frequency_correlation=0.98,
+    )
+    corruptions = Corruptions(config)
+
+    phase_gains = corruptions._sample_station_phase_gains(
+        num_times=80,
+        num_channels=64,
+        num_stations=5,
+    )
+    phases_deg = np.angle(phase_gains[..., 1], deg=True)
+    corr_f = np.corrcoef(phases_deg[:, 1:].ravel(), phases_deg[:, :-1].ravel())[0, 1]
+
+    assert corr_f > 0.6
