@@ -322,12 +322,6 @@ def _(mo):
 
 
 @app.cell
-def _(mo, noise_rms_slider, phase_rms_slider):
-    mo.hstack([noise_rms_slider, phase_rms_slider], justify="start")
-    return
-
-
-@app.cell
 def _(
     CorruptionsConfig,
     build_corruptions,
@@ -461,6 +455,12 @@ def _(gains, mo):
 
 
 @app.cell
+def _(mo, noise_rms_slider, phase_rms_slider):
+    mo.hstack([noise_rms_slider, phase_rms_slider], justify="start")
+    return
+
+
+@app.cell
 def _(
     calibrated_residual_image,
     corrected_image,
@@ -475,12 +475,8 @@ def _(
     plot,
 ):
     # Lock color scale across model/dirty/calibrated so small differences are visible.
-    image_min = float(
-        np.min([model_image.min(), dirty_image.min(), corrected_image.min()])
-    )
-    image_max = float(
-        np.max([model_image.max(), dirty_image.max(), corrected_image.max()])
-    )
+    image_min = float(np.min([model_image.min(), dirty_image.min(), corrected_image.min()]))
+    image_max = float(np.max([model_image.max(), dirty_image.max(), corrected_image.max()]))
 
     # Use a robust symmetric range to emphasize low-level residual structure.
     dirty_residual_sigma = float(np.std(dirty_residual_image))
@@ -513,16 +509,15 @@ def _(
                         fov_deg=fov_slider.value,
                         zmin=image_min,
                         zmax=image_max,
-                    ),
+                    )
                 ],
                 wrap=True,
                 gap="0.1rem",
                 align="start",
                 widths=[1, 1, 1],
             ),
-            mo.hstack(
-                [
-                    plot.plot_image(
+            mo.hstack([
+                plot.plot_image(
                         dirty_residual_image,
                         title="Dirty - Model",
                         fov_deg=fov_slider.value,
@@ -530,24 +525,22 @@ def _(
                         zmax=residual_clip,
                         color_continuous_scale="RdBu_r",
                     ),
-                    plot.plot_image(
-                        calibrated_residual_image,
-                        title="Calibrated - Model",
-                        fov_deg=fov_slider.value,
-                        zmin=-residual_clip,
-                        zmax=residual_clip,
-                        color_continuous_scale="RdBu_r",
-                    ),
-                ],
-                wrap=True,
+                plot.plot_image(
+                    calibrated_residual_image,
+                    title="Calibrated - Model",
+                    fov_deg=fov_slider.value,
+                    zmin=-residual_clip,
+                    zmax=residual_clip,
+                    color_continuous_scale="RdBu_r",
+                )
+            ],
+            wrap=True,
                 gap="0.1rem",
                 align="start",
-                widths=[1, 1],
+                widths=[1, 1]
             ),
             gain_station_slider,
-            mo.ui.plotly(
-                plot.plot_gains(gains, station_index=gain_station_slider.value)
-            ),
+            mo.ui.plotly(plot.plot_gains(gains, station_index=gain_station_slider.value)),
         ]
     )
     return
