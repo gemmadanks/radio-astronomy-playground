@@ -72,7 +72,7 @@ def _(mo):
     mo.md(r"""
     /// attention | Warning!
 
-    This is a prototype that uses mock functions and data.
+    This is a work in progress.
     ///
     """)
     return
