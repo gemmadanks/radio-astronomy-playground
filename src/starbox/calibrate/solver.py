@@ -22,11 +22,12 @@ class Solver:
     ) -> Solutions:
         """Estimate calibration solutions from observed and model visibilities."""
 
-        _, _, n_channels = observed_visibilities.vis.shape
         time_bins = self._time_bin_indices(observed_visibilities.times_mjd)
         n_time_bins = int(time_bins.max()) + 1 if time_bins.size else 0
+        freq_bins = self._frequency_bin_indices(observed_visibilities.freqs_hz)
+        n_freq_bins = int(freq_bins.max()) + 1 if freq_bins.size else 0
 
-        gains = np.ones((n_time_bins, n_channels, n_stations), dtype=np.complex128)
+        gains = np.ones((n_time_bins, n_freq_bins, n_stations), dtype=np.complex128)
 
         for time_bin in range(n_time_bins):
             mask = time_bins == time_bin
@@ -37,11 +38,25 @@ class Solver:
             if obs_bin.shape[0] == 0:
                 continue
 
-            for chan in range(n_channels):
-                gains[time_bin, chan] = self._solve_bin_channel(
-                    observed_bin=obs_bin[:, :, chan],
-                    model_bin=mod_bin[:, :, chan],
-                    weights_bin=w_bin[:, :, chan],
+            for freq_bin in range(n_freq_bins):
+                chan_mask = freq_bins == freq_bin
+                if not np.any(chan_mask):
+                    continue
+
+                obs_group = np.transpose(obs_bin[:, :, chan_mask], (0, 2, 1)).reshape(
+                    -1, obs_bin.shape[1]
+                )
+                mod_group = np.transpose(mod_bin[:, :, chan_mask], (0, 2, 1)).reshape(
+                    -1, mod_bin.shape[1]
+                )
+                w_group = np.transpose(w_bin[:, :, chan_mask], (0, 2, 1)).reshape(
+                    -1, w_bin.shape[1]
+                )
+
+                gains[time_bin, freq_bin] = self._solve_bin_channel(
+                    observed_bin=obs_group,
+                    model_bin=mod_group,
+                    weights_bin=w_group,
                     station1=observed_visibilities.station1,
                     station2=observed_visibilities.station2,
                     n_stations=n_stations,
@@ -62,6 +77,34 @@ class Solver:
         near_boundary = np.isclose(bin_coords, nearest_int, atol=1e-5, rtol=0.0)
         snapped = np.where(near_boundary, nearest_int, np.floor(bin_coords))
         return snapped.astype(np.int64)
+
+    def _frequency_bin_indices(self, freqs_hz: np.ndarray) -> np.ndarray:
+        """Map channel frequencies onto solution bins in Hz.
+
+        If ``solution_interval_hz`` is not configured, each channel forms its own
+        solution bin.
+        """
+
+        freqs = np.asarray(freqs_hz, dtype=np.float64)
+        if freqs.size == 0:
+            return np.array([], dtype=np.int64)
+
+        interval_hz = self.config.solution_interval_hz
+        if interval_hz is None:
+            return np.arange(freqs.size, dtype=np.int64)
+
+        offsets = freqs - float(freqs[0])
+        bin_coords = offsets / float(interval_hz)
+        nearest_int = np.rint(bin_coords)
+        near_boundary = np.isclose(bin_coords, nearest_int, atol=1e-5, rtol=0.0)
+        raw_bins = np.where(near_boundary, nearest_int, np.floor(bin_coords)).astype(
+            np.int64
+        )
+
+        # Reindex bins to contiguous [0, ..., n_bins-1] to avoid empty bins when
+        # frequency spacing and interval are incommensurate.
+        _, contiguous_bins = np.unique(raw_bins, return_inverse=True)
+        return contiguous_bins.astype(np.int64)
 
     def _solve_bin_channel(
         self,
@@ -159,8 +202,10 @@ class Solver:
         Returns a real 1D vector of interleaved real/imag residuals per visibility sample.
         """
         gains_arr = np.asarray(gains)
-        _, _, n_channels = observed_visibilities.vis.shape
+        _, _, _ = observed_visibilities.vis.shape
         time_bins = self._time_bin_indices(observed_visibilities.times_mjd)
+        freq_bins = self._frequency_bin_indices(observed_visibilities.freqs_hz)
+        n_freq_bins = int(freq_bins.max()) + 1 if freq_bins.size else 0
 
         if gains_arr.ndim == 3:
             gains_3d = gains_arr
@@ -168,7 +213,7 @@ class Solver:
             assert n_stations is not None, "n_stations is required for 1D phase vector"
             n_time_bins = int(time_bins.max()) + 1 if time_bins.size else 0
             gains_3d = self._phases_to_gains(
-                gains_arr, n_time_bins, n_channels, n_stations
+                gains_arr, n_time_bins, n_freq_bins, n_stations
             )
 
         n_time_bins = gains_3d.shape[0]
@@ -182,8 +227,16 @@ class Solver:
         # (n_timesteps, n_baselines, n_freq_bins)
         station1 = observed_visibilities.station1
         station2 = observed_visibilities.station2
-        gain_1 = gains_3d[time_bins[:, None], :, station1[None, :]]
-        gain_2 = gains_3d[time_bins[:, None], :, station2[None, :]]
+        gain_1 = gains_3d[
+            time_bins[:, None, None],
+            freq_bins[None, None, :],
+            station1[None, :, None],
+        ]
+        gain_2 = gains_3d[
+            time_bins[:, None, None],
+            freq_bins[None, None, :],
+            station2[None, :, None],
+        ]
 
         predicted = gain_1 * np.conj(gain_2) * model_visibilities.vis
         residual = observed_visibilities.vis - predicted

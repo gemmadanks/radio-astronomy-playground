@@ -9,3 +9,8 @@ class SolverConfig(BaseModel):
     solution_interval_seconds: float = Field(
         gt=0, description="Solution interval in seconds."
     )
+    solution_interval_hz: float | None = Field(
+        default=None,
+        gt=0,
+        description="Optional solution interval in Hz. If omitted, solve per channel.",
+    )

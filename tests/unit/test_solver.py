@@ -294,6 +294,33 @@ def test_solver_residuals_method_accepts_1d_real_phase_vector(visibility_set):
     assert np.allclose(residuals, 0.0, atol=1e-6)
 
 
+def test_solver_residuals_method_accepts_1d_real_phase_vector_with_frequency_binning(
+    visibility_set,
+):
+    """Test 1D phase-vector residual path when channels are frequency-binned."""
+
+    solver = Solver(
+        SolverConfig(solution_interval_seconds=60, solution_interval_hz=1_000_000.0)
+    )
+    n_stations = 4
+    n_time_bins = visibility_set.vis.shape[0]  # 3
+    n_freq_bins = 1  # frequencies [1.0, 1.5] MHz collapse to one 1 MHz bin
+
+    observed_visibilities = _copy_visibility_set(visibility_set)
+    model_visibilities = _copy_visibility_set(visibility_set)
+
+    phases = np.zeros(n_time_bins * n_freq_bins * (n_stations - 1))
+
+    residuals = solver._residuals(
+        phases, observed_visibilities, model_visibilities, n_stations=n_stations
+    )
+
+    assert residuals.ndim == 1
+    assert np.isrealobj(residuals)
+    assert np.all(np.isfinite(residuals))
+    assert np.allclose(residuals, 0.0, atol=1e-6)
+
+
 def test_solver_residuals_method_scales_by_weights(visibility_set):
     """Test that residuals are scaled by sqrt(weights)."""
 
@@ -349,6 +376,56 @@ def test_solver_uses_timestamps_to_define_solution_bins(visibility_set):
     )
 
     assert solutions.station_phase_gains.shape == (2, 2, 4)
+
+
+def test_solver_uses_frequency_interval_to_define_solution_bins(visibility_set):
+    """Test solver bins channels by elapsed frequency in Hz."""
+
+    # With frequencies [1.0, 1.5] MHz and 1.0 MHz interval, both channels map
+    # to one frequency solution bin.
+    solver = Solver(
+        SolverConfig(solution_interval_seconds=60, solution_interval_hz=1_000_000.0)
+    )
+
+    solutions = solver.solve(
+        observed_visibilities=_copy_visibility_set(visibility_set),
+        model_visibilities=_copy_visibility_set(visibility_set),
+        n_stations=4,
+    )
+
+    assert solutions.station_phase_gains.shape == (3, 1, 4)
+
+    # With a small interval, channels should be solved independently.
+    solver = Solver(
+        SolverConfig(solution_interval_seconds=60, solution_interval_hz=100_000.0)
+    )
+
+    solutions = solver.solve(
+        observed_visibilities=_copy_visibility_set(visibility_set),
+        model_visibilities=_copy_visibility_set(visibility_set),
+        n_stations=4,
+    )
+
+    assert solutions.station_phase_gains.shape == (3, 2, 4)
+
+
+def test_solver_frequency_binning_keeps_identity_solution(visibility_set):
+    """Test that coarse frequency binning still returns unity for identical data."""
+
+    solver = Solver(
+        SolverConfig(solution_interval_seconds=60, solution_interval_hz=1_000_000.0)
+    )
+
+    observed_visibilities = _copy_visibility_set(visibility_set)
+    model_visibilities = _copy_visibility_set(visibility_set)
+
+    solutions = solver.solve(
+        observed_visibilities=observed_visibilities,
+        model_visibilities=model_visibilities,
+        n_stations=4,
+    )
+
+    assert np.allclose(solutions.station_phase_gains, 1.0 + 0j, atol=1e-6)
 
 
 # ---------------------------------------------------------------------------

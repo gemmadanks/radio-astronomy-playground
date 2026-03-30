@@ -130,7 +130,9 @@ def _(mo):
     )
 
     # Observation
-    start_time_mjd_slider = mo.ui.slider(59000, 69000, value=68356, label="Start time (MJD): ")
+    start_time_mjd_slider = mo.ui.slider(
+        59000, 69000, value=68356, label="Start time (MJD): "
+    )
     observation_length_slider = mo.ui.slider(
         1, 24, value=4, label="Observation length (hrs): "
     )
@@ -161,6 +163,9 @@ def _(mo):
     solution_interval_seconds_slider = mo.ui.slider(
         1, 600, value=300, label="Solution interval (s): "
     )
+    solution_interval_hz_slider = mo.ui.slider(
+        1, 100, value=4, label="Solution interval (MHz): "
+    )
     return (
         bandwidth_slider,
         fov_slider,
@@ -174,6 +179,7 @@ def _(mo):
         phase_freq_corr_slider,
         phase_rms_slider,
         phase_time_corr_slider,
+        solution_interval_hz_slider,
         solution_interval_seconds_slider,
         start_freq_slider,
         start_time_mjd_slider,
@@ -351,9 +357,10 @@ def _(
 
 
 @app.cell
-def _(SolverConfig, build_solver, solution_interval_seconds_slider):
+def _(SolverConfig, build_solver, solution_interval_hz_slider, solution_interval_seconds_slider):
     solver_config = SolverConfig(
-        solution_interval_seconds=solution_interval_seconds_slider.value
+        solution_interval_seconds=solution_interval_seconds_slider.value,
+        solution_interval_hz=solution_interval_hz_slider.value * 1e6,
     )
     solver = build_solver(solver_config)
     return solver, solver_config
@@ -473,6 +480,7 @@ def _(
     phase_freq_corr_slider,
     phase_rms_slider,
     phase_time_corr_slider,
+    solution_interval_hz_slider,
     solution_interval_seconds_slider,
 ):
     mo.vstack(
@@ -481,7 +489,10 @@ def _(
             mo.hstack(
                 [phase_time_corr_slider, phase_freq_corr_slider], justify="start"
             ),
-            mo.hstack([solution_interval_seconds_slider], justify="start"),
+            mo.hstack(
+                [solution_interval_seconds_slider, solution_interval_hz_slider],
+                justify="start",
+            ),
         ],
         justify="start",
     )
