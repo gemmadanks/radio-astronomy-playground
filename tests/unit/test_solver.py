@@ -5,6 +5,7 @@ import numpy as np
 
 from starbox.calibrate.solver import Solver
 from starbox.config.solver import SolverConfig
+from starbox.visibility import VisibilitySet
 from tests.helpers import _apply_station_phase_gains, _copy_visibility_set
 
 
@@ -490,3 +491,132 @@ def test_phases_to_gains_maps_known_phase_correctly(phase_rad):
 
     assert np.isclose(gains[0, 0, 0], 1.0 + 0j)
     assert np.isclose(gains[0, 0, 1], np.exp(1j * phase_rad))
+
+
+# ---------------------------------------------------------------------------
+# Edge cases: empty bins, zero ratios, small reference gains
+# ---------------------------------------------------------------------------
+
+
+def test_solver_handles_empty_time_bin(visibility_set):
+    """Test that solver skips time bins with no observations."""
+
+    # Create a visibility set with a large gap between timesteps
+    sparse_times = np.array([59000.0, 59000.0 + 500 / 86400])
+    sparse_obs = VisibilitySet(
+        vis=visibility_set.vis[:2, :, :],
+        uvw_m=visibility_set.uvw_m[:2, :, :],
+        weights=visibility_set.weights[:2, :, :],
+        times_mjd=sparse_times,
+        freqs_hz=visibility_set.freqs_hz,
+        station1=visibility_set.station1,
+        station2=visibility_set.station2,
+    )
+    sparse_model = VisibilitySet(
+        vis=visibility_set.vis[:2, :, :],
+        uvw_m=visibility_set.uvw_m[:2, :, :],
+        weights=visibility_set.weights[:2, :, :],
+        times_mjd=sparse_times,
+        freqs_hz=visibility_set.freqs_hz,
+        station1=visibility_set.station1,
+        station2=visibility_set.station2,
+    )
+
+    solver = Solver(SolverConfig(solution_interval_seconds=60))
+    solutions = solver.solve(
+        observed_visibilities=sparse_obs,
+        model_visibilities=sparse_model,
+        n_stations=4,
+    )
+
+    # Should return valid solutions despite empty intermediate bins
+    assert solutions.station_phase_gains.dtype == np.complex64
+    assert solutions.station_phase_gains.shape[2] == 4
+
+
+def test_solver_handles_all_zero_model_visibilities(visibility_set):
+    """Test that solver recovers gracefully when model visibilities are all zero."""
+
+    observed = _copy_visibility_set(visibility_set)
+    model = _copy_visibility_set(visibility_set)
+    model.vis[:] = 0.0
+
+    solver = Solver(SolverConfig(solution_interval_seconds=60))
+    solutions = solver.solve(
+        observed_visibilities=observed,
+        model_visibilities=model,
+        n_stations=3,
+    )
+
+    assert np.allclose(np.abs(solutions.station_phase_gains), 1.0, atol=1e-6)
+
+
+def test_solver_handles_zero_phase_ratios(visibility_set):
+    """Test that solver handles zero phase ratios (all visibilities zero for a baseline)."""
+
+    observed = _copy_visibility_set(visibility_set)
+    observed.vis[:] = 0.0
+    model = _copy_visibility_set(visibility_set)
+
+    solver = Solver(SolverConfig(solution_interval_seconds=60))
+    solutions = solver.solve(
+        observed_visibilities=observed,
+        model_visibilities=model,
+        n_stations=3,
+    )
+
+    assert solutions.station_phase_gains.dtype == np.complex64 and solutions.station_phase_gains.shape == (3, 2, 3)
+
+
+def test_solver_time_bin_indices_with_empty_array():
+    """Test _time_bin_indices returns empty array for empty input."""
+
+    solver = Solver(SolverConfig(solution_interval_seconds=60))
+    empty_times = np.array([], dtype=np.float64)
+
+    indices = solver._time_bin_indices(empty_times)
+
+    assert indices.shape == (0,)
+    assert indices.dtype == np.int64
+
+
+def test_solver_frequency_bin_indices_with_empty_array():
+    """Test _frequency_bin_indices returns empty array for empty input."""
+
+    solver = Solver(SolverConfig(solution_interval_seconds=60, solution_interval_hz=1e6))
+    empty_freqs = np.array([], dtype=np.float64)
+
+    indices = solver._frequency_bin_indices(empty_freqs)
+
+    assert indices.shape == (0,)
+    assert indices.dtype == np.int64
+
+
+def test_solver_frequency_bin_indices_with_single_frequency():
+    """Test _frequency_bin_indices returns correct bin for single channel."""
+
+    solver = Solver(SolverConfig(solution_interval_seconds=60, solution_interval_hz=1e6))
+    single_freq = np.array([100.0e6], dtype=np.float64)
+
+    indices = solver._frequency_bin_indices(single_freq)
+
+    assert indices.shape == (1,)
+    assert indices[0] == 0
+
+
+def test_solver_handles_all_zero_weights(visibility_set):
+    """Test solver recovers gracefully when all weights are zero."""
+
+    observed = _copy_visibility_set(visibility_set)
+    observed.weights[:] = 0.0
+    model = _copy_visibility_set(visibility_set)
+    model.weights[:] = 0.0
+
+    solver = Solver(SolverConfig(solution_interval_seconds=60))
+    solutions = solver.solve(
+        observed_visibilities=observed,
+        model_visibilities=model,
+        n_stations=3,
+    )
+
+    assert np.allclose(np.abs(solutions.station_phase_gains), 1.0, atol=1e-6)

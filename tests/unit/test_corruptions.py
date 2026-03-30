@@ -239,3 +239,94 @@ def test_corruptions_sample_station_phase_gains_are_frequency_correlated():
     corr_f = np.corrcoef(phases_deg[:, 1:].ravel(), phases_deg[:, :-1].ravel())[0, 1]
 
     assert corr_f > 0.6
+
+
+# ---------------------------------------------------------------------------
+# AR(1) filter edge cases
+# ---------------------------------------------------------------------------
+
+
+def test_corruptions_apply_ar1_with_single_sample():
+    """Test AR(1) filter returns unchanged array when axis dimension is 1."""
+
+    samples = np.array([[[1.0, 2.0, 3.0]]])  # Shape (1, 1, 3)
+    rho = 0.95
+    axis = 0
+
+    result = Corruptions._apply_ar1(samples, rho, axis)
+
+    assert result.shape == samples.shape
+    assert np.allclose(result, samples)
+
+
+def test_corruptions_apply_ar1_with_zero_correlation():
+    """Test AR(1) filter with rho=0 returns independent samples (white noise path)."""
+
+    samples = np.array(
+        [[1.0, 2.0], [3.0, 4.0], [5.0, 6.0]]
+    )  # Shape (3, 2)
+    rho = 0.0
+    axis = 0
+
+    result = Corruptions._apply_ar1(samples, rho, axis)
+
+    # With rho=0, samples should be unchanged
+    assert np.allclose(result, samples)
+
+
+def test_corruptions_apply_ar1_preserves_shape():
+    """Test that AR(1) filter preserves input array shape."""
+
+    samples = np.random.randn(10, 5, 3).astype(np.float32)
+    rho = 0.8
+
+    for axis in [0, 1, 2]:
+        result = Corruptions._apply_ar1(samples, rho, axis)
+        assert result.shape == samples.shape
+        assert result.dtype == samples.dtype
+
+
+def test_corruptions_apply_ar1_high_correlation():
+    """Test AR(1) filter produces correlated output when rho is high."""
+
+    np.random.seed(42)
+    samples = np.random.randn(100)
+    rho = 0.95
+
+    result = Corruptions._apply_ar1(samples, rho, axis=0)
+
+    # With high rho, output should be highly correlated with itself shifted
+    lag1_corr = np.corrcoef(result[1:], result[:-1])[0, 1]
+    assert lag1_corr > 0.8
+
+
+def test_corruptions_sample_phase_gains_with_single_time(corruptions_config):
+    """Test phase gain sampling with num_times=1."""
+
+    corruptions = Corruptions(corruptions_config)
+
+    phase_gains = corruptions._sample_station_phase_gains(
+        num_times=1,
+        num_channels=4,
+        num_stations=3,
+    )
+
+    assert phase_gains.shape == (1, 4, 3)
+    assert np.isclose(np.abs(phase_gains[0, :, 0]), 1.0).all()  # Reference station
+    assert np.allclose(np.abs(phase_gains[..., 1:]), 1.0, atol=1e-6)  # Unit modulus
+
+
+def test_corruptions_sample_phase_gains_with_single_channel(corruptions_config):
+    """Test phase gain sampling with num_channels=1."""
+
+    corruptions = Corruptions(corruptions_config)
+
+    phase_gains = corruptions._sample_station_phase_gains(
+        num_times=10,
+        num_channels=1,
+        num_stations=3,
+    )
+
+    assert phase_gains.shape == (10, 1, 3)
+    assert np.isclose(np.abs(phase_gains[:, 0, 0]), 1.0).all()  # Reference station
+    assert np.allclose(np.abs(phase_gains[..., 1:]), 1.0, atol=1e-6)  # Unit modulus

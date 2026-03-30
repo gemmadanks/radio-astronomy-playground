@@ -40,8 +40,6 @@ class Solver:
 
             for freq_bin in range(n_freq_bins):
                 chan_mask = freq_bins == freq_bin
-                if not np.any(chan_mask):
-                    continue
 
                 obs_group = np.transpose(obs_bin[:, :, chan_mask], (0, 2, 1)).reshape(
                     -1, obs_bin.shape[1]
