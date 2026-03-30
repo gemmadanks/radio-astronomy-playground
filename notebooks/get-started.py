@@ -159,7 +159,7 @@ def _(mo):
 
     # Calibration
     solution_interval_seconds_slider = mo.ui.slider(
-        1, 600, value=30, label="Solution interval (s): "
+        1, 600, value=300, label="Solution interval (s): "
     )
     return (
         bandwidth_slider,
