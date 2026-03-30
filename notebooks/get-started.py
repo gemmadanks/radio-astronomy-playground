@@ -130,7 +130,7 @@ def _(mo):
     )
 
     # Observation
-    start_time_mjd_slider = mo.ui.slider(59000, 69000, label="Start time (MJD): ")
+    start_time_mjd_slider = mo.ui.slider(59000, 69000, value=68356, label="Start time (MJD): ")
     observation_length_slider = mo.ui.slider(
         1, 24, value=4, label="Observation length (hrs): "
     )
