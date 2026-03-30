@@ -66,21 +66,26 @@ def plot_telescope(telescope: Telescope) -> Figure:
     return fig
 
 
-def plot_gains(solutions: Solutions) -> Figure:
-    """Plot the calibration solutions."""
+def plot_gains(solutions: Solutions, station_index: int = 0) -> Figure:
+    """Plot the gain phase for a single station.
 
+    Rendering one station at a time keeps the figure payload small enough for
+    notebook frontends such as marimo.
+    """
+
+    n_stations = solutions.station_phase_gains.shape[2]
+    station_index = int(np.clip(station_index, 0, n_stations - 1))
+    phase_deg = np.angle(solutions.station_phase_gains[:, :, station_index], deg=True)
     fig = px.imshow(
-        # Transpose from (time, freq, station) to (station, freq, time) so each frame has
-        # time on the x-axis, frequency on the y-axis, and animation_frame=0 animates stations.
-        np.real(np.transpose(solutions.station_phase_gains, (2, 1, 0))),
-        title="Gains",
+        phase_deg.T,
+        title=f"Gain Phase: Station {station_index}",
         labels={
             "x": "time",
             "y": "frequency",
+            "color": "phase (deg)",
         },
         origin="lower",
         aspect="auto",
-        animation_frame=0,  # Animate over stations
     )
     return fig
 
@@ -90,6 +95,9 @@ def plot_image(
     title: str = "Imaged Sky",
     fov_deg: float | None = None,
     height: int = 350,
+    zmin: float | None = None,
+    zmax: float | None = None,
+    color_continuous_scale: str | list[str] | None = None,
 ) -> Figure:
     """Plot the image."""
 
@@ -99,6 +107,9 @@ def plot_image(
             origin="lower",
             title=title,
             labels={"x": "RA", "y": "Dec"},
+            zmin=zmin,
+            zmax=zmax,
+            color_continuous_scale=color_continuous_scale,
         )
     else:
         x_deg = np.linspace(-fov_deg / 2.0, fov_deg / 2.0, image.shape[1])
@@ -110,6 +121,9 @@ def plot_image(
             origin="lower",
             title=title,
             labels={"x": "ΔRA (deg)", "y": "ΔDec (deg)"},
+            zmin=zmin,
+            zmax=zmax,
+            color_continuous_scale=color_continuous_scale,
         )
     fig.update_layout(height=height, margin=dict(l=10, r=10, t=40, b=10))
     fig.update_yaxes(scaleanchor=None)

@@ -84,3 +84,19 @@ def test_plot_uv_coverage_visibility_set(visibility_set):
 def test_plot_gains(solutions):
     """Test that the gain plotting function works without errors."""
     plot.plot_gains(solutions)
+
+
+def test_plot_gains_shows_phase_in_degrees():
+    """Test that the gains plot displays phase rather than the real component."""
+
+    phase_deg = 90.0
+    gains = np.ones((1, 1, 2), dtype=np.complex64)
+    gains[0, 0, 1] = np.exp(1j * np.deg2rad(phase_deg))
+
+    from starbox.calibrate.solutions import Solutions
+
+    fig = plot.plot_gains(Solutions(station_phase_gains=gains), station_index=1)
+
+    z = np.array(cast(Any, fig.data[0]).z)
+    assert np.isclose(z[0, 0], phase_deg)
+    assert len(fig.frames) == 0

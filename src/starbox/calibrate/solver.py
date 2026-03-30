@@ -22,18 +22,20 @@ class Solver:
     ) -> Solutions:
         """Estimate calibration solutions from observed and model visibilities."""
 
-        n_timesteps, _, n_channels = observed_visibilities.vis.shape
-        tbin = float(self.config.solution_interval_seconds)
-        n_time_bins = int(np.ceil(n_timesteps / tbin))
+        _, _, n_channels = observed_visibilities.vis.shape
+        time_bins = self._time_bin_indices(observed_visibilities.times_mjd)
+        n_time_bins = int(time_bins.max()) + 1 if time_bins.size else 0
 
         gains = np.ones((n_time_bins, n_channels, n_stations), dtype=np.complex128)
 
         for time_bin in range(n_time_bins):
-            t_start = int(time_bin * tbin)
-            t_stop = min(int((time_bin + 1) * tbin), n_timesteps)
-            obs_bin = observed_visibilities.vis[t_start:t_stop]
-            mod_bin = model_visibilities.vis[t_start:t_stop]
-            w_bin = observed_visibilities.weights[t_start:t_stop]
+            mask = time_bins == time_bin
+            obs_bin = observed_visibilities.vis[mask]
+            mod_bin = model_visibilities.vis[mask]
+            w_bin = observed_visibilities.weights[mask]
+
+            if obs_bin.shape[0] == 0:
+                continue
 
             for chan in range(n_channels):
                 gains[time_bin, chan] = self._solve_bin_channel(
@@ -46,6 +48,20 @@ class Solver:
                 )
 
         return Solutions(station_phase_gains=gains.astype(np.complex64))
+
+    def _time_bin_indices(self, times_mjd: np.ndarray) -> np.ndarray:
+        """Map observation timestamps onto solution bins using elapsed seconds."""
+
+        if times_mjd.size == 0:
+            return np.array([], dtype=np.int64)
+
+        tbin_days = float(self.config.solution_interval_seconds) / 86_400.0
+        offsets = np.asarray(times_mjd, dtype=np.float64) - float(times_mjd[0])
+        bin_coords = offsets / tbin_days
+        nearest_int = np.rint(bin_coords)
+        near_boundary = np.isclose(bin_coords, nearest_int, atol=1e-5, rtol=0.0)
+        snapped = np.where(near_boundary, nearest_int, np.floor(bin_coords))
+        return snapped.astype(np.int64)
 
     def _solve_bin_channel(
         self,
@@ -143,14 +159,14 @@ class Solver:
         Returns a real 1D vector of interleaved real/imag residuals per visibility sample.
         """
         gains_arr = np.asarray(gains)
-        n_timesteps, _, n_channels = observed_visibilities.vis.shape
-        tbin = float(self.config.solution_interval_seconds or 1)
+        _, _, n_channels = observed_visibilities.vis.shape
+        time_bins = self._time_bin_indices(observed_visibilities.times_mjd)
 
         if gains_arr.ndim == 3:
             gains_3d = gains_arr
         else:
             assert n_stations is not None, "n_stations is required for 1D phase vector"
-            n_time_bins = int(np.ceil(n_timesteps / tbin))
+            n_time_bins = int(time_bins.max()) + 1 if time_bins.size else 0
             gains_3d = self._phases_to_gains(
                 gains_arr, n_time_bins, n_channels, n_stations
             )
@@ -158,9 +174,7 @@ class Solver:
         n_time_bins = gains_3d.shape[0]
 
         # Map each timestep to its solution bin — shape (n_timesteps,)
-        time_bins = np.minimum(
-            (np.arange(n_timesteps) / tbin).astype(int), n_time_bins - 1
-        )
+        time_bins = np.minimum(time_bins, n_time_bins - 1)
 
         # Gather per-(timestep, baseline) gains in a single vectorised index.
         # time_bins[:, None] -> (n_timesteps, 1), station[None, :] -> (1, n_baselines)

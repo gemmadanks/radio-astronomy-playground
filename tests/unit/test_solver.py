@@ -42,7 +42,7 @@ def test_solver_from_config(solver_config):
 
 
 @pytest.mark.parametrize(
-    "solution_interval_seconds, expected_shape", [(1, (3, 2)), (2, (2, 2))]
+    "solution_interval_seconds, expected_shape", [(60, (3, 2)), (120, (2, 2))]
 )
 def test_solver_solve_method_when_model_observed_are_identical(
     visibility_set, solution_interval_seconds, expected_shape
@@ -75,13 +75,13 @@ def test_solver_solve_method_when_model_observed_are_identical(
     assert solutions.station_phase_gains.shape[1] == expected_shape[1]
     assert solutions.station_phase_gains.shape[2] == n_stations
     assert solutions.station_phase_gains.dtype == "complex64"
-    assert np.allclose(solutions.station_phase_gains, expected_solutions)
+    assert np.allclose(solutions.station_phase_gains, expected_solutions, atol=1e-6)
 
 
 def test_solver_solve_method_keeps_reference_station_fixed(visibility_set):
     """Test that the solver fixes the reference station to remove phase ambiguity."""
 
-    solver_config = SolverConfig(solution_interval_seconds=1)
+    solver_config = SolverConfig(solution_interval_seconds=60)
     solver = Solver(solver_config)
     n_stations = 4
 
@@ -106,7 +106,7 @@ def test_solver_solve_method_keeps_reference_station_fixed(visibility_set):
 def test_solver_solve_method_leaves_unobserved_stations_at_unity(visibility_set):
     """Test that stations absent from all baselines remain unconstrained at unity."""
 
-    solver_config = SolverConfig(solution_interval_seconds=1)
+    solver_config = SolverConfig(solution_interval_seconds=60)
     solver = Solver(solver_config)
     n_stations = 4
 
@@ -137,7 +137,7 @@ def test_solver_solve_method_when_model_observed_different(
     A phase-only calibration should leave the gains at unity when the only
     difference between observed and model visibilities is a real amplitude scale.
     """
-    solver_config = SolverConfig(solution_interval_seconds=1)
+    solver_config = SolverConfig(solution_interval_seconds=60)
     solver = Solver(solver_config)
     n_stations = 4
 
@@ -160,7 +160,15 @@ def test_solver_solve_method_when_model_observed_different(
         n_stations=n_stations,
     )
 
-    assert np.allclose(solutions.station_phase_gains, expected_solutions)
+    assert np.allclose(np.abs(solutions.station_phase_gains), 1.0, atol=1e-6)
+    phase_error_1 = np.angle(
+        solutions.station_phase_gains[..., 1] * np.conj(expected_solutions[..., 1])
+    )
+    phase_error_2 = np.angle(
+        solutions.station_phase_gains[..., 2] * np.conj(expected_solutions[..., 2])
+    )
+    assert np.max(np.abs(phase_error_1)) < 1e-6
+    assert np.max(np.abs(phase_error_2)) < 1e-6
 
 
 def test_solver_solve_method_finds_correct_phase_shift(visibility_set):
@@ -169,7 +177,7 @@ def test_solver_solve_method_finds_correct_phase_shift(visibility_set):
     The visibility fixture contains baselines 0-1 and 1-2, so with station 0 as the
     reference the recovered gains should form a phase ramp across stations 0, 1, and 2.
     """
-    solver_config = SolverConfig(solution_interval_seconds=1)
+    solver_config = SolverConfig(solution_interval_seconds=60)
     solver = Solver(solver_config)
     n_stations = 4
 
@@ -199,14 +207,22 @@ def test_solver_solve_method_finds_correct_phase_shift(visibility_set):
         n_stations=n_stations,
     )
 
-    assert np.allclose(solutions.station_phase_gains, expected_solutions)
+    assert np.allclose(np.abs(solutions.station_phase_gains), 1.0, atol=1e-6)
+    phase_error_1 = np.angle(
+        solutions.station_phase_gains[..., 1] * np.conj(expected_solutions[..., 1])
+    )
+    phase_error_2 = np.angle(
+        solutions.station_phase_gains[..., 2] * np.conj(expected_solutions[..., 2])
+    )
+    assert np.max(np.abs(phase_error_1)) < 1e-6
+    assert np.max(np.abs(phase_error_2)) < 1e-6
 
 
 @pytest.mark.parametrize("scaling_factor", [0.5, 2.0])
 def test_solver_solve_method_returns_unit_modulus_gains(visibility_set, scaling_factor):
     """Test that solved gains stay on the unit circle for phase-only calibration."""
 
-    solver_config = SolverConfig(solution_interval_seconds=1)
+    solver_config = SolverConfig(solution_interval_seconds=60)
     solver = Solver(solver_config)
 
     observed_visibilities = _copy_visibility_set(visibility_set)
@@ -229,7 +245,7 @@ def test_solver_residuals_method(visibility_set, phase_shift):
     Residuals should be zero when the supplied gains reproduce the observed data,
     and non-zero when they do not.
     """
-    solver_config = SolverConfig(solution_interval_seconds=1)
+    solver_config = SolverConfig(solution_interval_seconds=60)
     solver = Solver(solver_config)
 
     model_visibilities = _copy_visibility_set(visibility_set)
@@ -265,7 +281,7 @@ def test_solver_residuals_method(visibility_set, phase_shift):
 def test_solver_residuals_method_returns_real_finite_vector(visibility_set):
     """Test that residuals satisfy the SciPy least-squares interface contract."""
 
-    solver_config = SolverConfig(solution_interval_seconds=1)
+    solver_config = SolverConfig(solution_interval_seconds=60)
     solver = Solver(solver_config)
 
     observed_visibilities = _copy_visibility_set(visibility_set)
@@ -282,7 +298,7 @@ def test_solver_residuals_method_returns_real_finite_vector(visibility_set):
 def test_solver_residuals_method_accepts_1d_real_phase_vector(visibility_set):
     """Test the SciPy calling path: _residuals accepts a 1D real phase vector."""
 
-    solver_config = SolverConfig(solution_interval_seconds=1)
+    solver_config = SolverConfig(solution_interval_seconds=60)
     solver = Solver(solver_config)
     n_stations = 4
     n_time_bins = visibility_set.vis.shape[0]  # 3
@@ -307,7 +323,7 @@ def test_solver_residuals_method_accepts_1d_real_phase_vector(visibility_set):
 def test_solver_residuals_method_scales_by_weights(visibility_set):
     """Test that residuals are scaled by sqrt(weights)."""
 
-    solver_config = SolverConfig(solution_interval_seconds=1)
+    solver_config = SolverConfig(solution_interval_seconds=60)
     solver = Solver(solver_config)
 
     model_visibilities = _copy_visibility_set(visibility_set)
@@ -335,6 +351,30 @@ def test_solver_residuals_method_scales_by_weights(visibility_set):
     )
 
     assert np.allclose(residuals_double, residuals_unit * np.sqrt(2.0), atol=1e-6)
+
+
+def test_solver_uses_timestamps_to_define_solution_bins(visibility_set):
+    """Test solver bins by elapsed seconds, not by sample index."""
+
+    solver = Solver(SolverConfig(solution_interval_seconds=60))
+
+    solutions = solver.solve(
+        observed_visibilities=_copy_visibility_set(visibility_set),
+        model_visibilities=_copy_visibility_set(visibility_set),
+        n_stations=4,
+    )
+
+    assert solutions.station_phase_gains.shape == (3, 2, 4)
+
+    solver = Solver(SolverConfig(solution_interval_seconds=120))
+
+    solutions = solver.solve(
+        observed_visibilities=_copy_visibility_set(visibility_set),
+        model_visibilities=_copy_visibility_set(visibility_set),
+        n_stations=4,
+    )
+
+    assert solutions.station_phase_gains.shape == (2, 2, 4)
 
 
 # ---------------------------------------------------------------------------

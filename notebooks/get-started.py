@@ -8,6 +8,7 @@ app = marimo.App(width="medium")
 def _():
     import marimo as mo
     import logging
+    import numpy as np
 
     from starbox import Imager
     from starbox.config import (
@@ -47,6 +48,7 @@ def _():
         generate_psf_visibilities,
         logging,
         mo,
+        np,
         plot,
         predict_visibilities,
         save,
@@ -390,36 +392,17 @@ def _(sky_model):
 
 @app.cell
 def _(
-    corruptions,
     generate_psf_visibilities,
     imager,
-    num_stations_slider,
     observation,
     predict_visibilities,
     sky_model,
-    solver,
     telescope,
 ):
     model_visibilities = predict_visibilities(telescope, sky_model, observation)
     psf_visibilities = generate_psf_visibilities(model_visibilities)
-    observed_visibilities = corruptions.apply(model_visibilities)
-    gains = solver.solve(
-        observed_visibilities, model_visibilities, num_stations_slider.value
-    )
-    corrected_visibilities = gains.apply(observed_visibilities)
-
     psf_image = imager.image(psf_visibilities)
-    dirty_image = imager.image(observed_visibilities)
-    corrected_image = imager.image(corrected_visibilities)
-    model_image = imager.image(model_visibilities)
-    return (
-        corrected_image,
-        dirty_image,
-        gains,
-        model_image,
-        model_visibilities,
-        psf_image,
-    )
+    return model_visibilities, psf_image
 
 
 @app.cell
@@ -436,19 +419,100 @@ def _(fov_slider, mo, model_visibilities, plot, psf_image):
 
 
 @app.cell
-def _(corrected_image, dirty_image, fov_slider, gains, mo, model_image, plot):
+def _(corruptions, model_visibilities, num_stations_slider, solver):
+    observed_visibilities = corruptions.apply(model_visibilities)
+    gains = solver.solve(
+        observed_visibilities, model_visibilities, num_stations_slider.value
+    )
+    corrected_visibilities = gains.apply(observed_visibilities)
+    return corrected_visibilities, gains, observed_visibilities
+
+
+@app.cell
+def _(
+    corrected_visibilities,
+    imager,
+    model_visibilities,
+    observed_visibilities,
+):
+    dirty_image = imager.image(observed_visibilities)
+    corrected_image = imager.image(corrected_visibilities)
+    model_image = imager.image(model_visibilities)
+    dirty_residual_image = dirty_image - model_image
+    calibrated_residual_image = corrected_image - model_image
+    return (
+        calibrated_residual_image,
+        corrected_image,
+        dirty_image,
+        dirty_residual_image,
+        model_image,
+    )
+
+
+@app.cell
+def _(gains, mo):
+    gain_station_slider = mo.ui.slider(
+        0,
+        gains.station_phase_gains.shape[2] - 1,
+        value=1,
+        label="Gain plot station: ",
+    )
+    return (gain_station_slider,)
+
+
+@app.cell
+def _(
+    calibrated_residual_image,
+    corrected_image,
+    dirty_image,
+    dirty_residual_image,
+    fov_slider,
+    gain_station_slider,
+    gains,
+    mo,
+    model_image,
+    np,
+    plot,
+):
+    # Lock color scale across model/dirty/calibrated so small differences are visible.
+    image_min = float(
+        np.min([model_image.min(), dirty_image.min(), corrected_image.min()])
+    )
+    image_max = float(
+        np.max([model_image.max(), dirty_image.max(), corrected_image.max()])
+    )
+
+    # Use a robust symmetric range to emphasize low-level residual structure.
+    dirty_residual_sigma = float(np.std(dirty_residual_image))
+    calibrated_residual_sigma = float(np.std(calibrated_residual_image))
+    residual_clip = 5.0 * max(dirty_residual_sigma, calibrated_residual_sigma)
+    if residual_clip <= 0.0:
+        residual_clip = 1.0
+
     mo.vstack(
         [
             mo.hstack(
                 [
                     plot.plot_image(
-                        model_image, title="Model", fov_deg=fov_slider.value
+                        model_image,
+                        title="Model",
+                        fov_deg=fov_slider.value,
+                        zmin=image_min,
+                        zmax=image_max,
                     ),
                     plot.plot_image(
-                        dirty_image, title="Dirty", fov_deg=fov_slider.value
+                        dirty_image,
+                        title="Dirty",
+                        fov_deg=fov_slider.value,
+                        zmin=image_min,
+                        zmax=image_max,
                     ),
                     plot.plot_image(
-                        corrected_image, title="Calibrated", fov_deg=fov_slider.value
+                        corrected_image,
+                        title="Calibrated",
+                        fov_deg=fov_slider.value,
+                        zmin=image_min,
+                        zmax=image_max,
                     ),
                 ],
                 wrap=True,
@@ -456,7 +520,34 @@ def _(corrected_image, dirty_image, fov_slider, gains, mo, model_image, plot):
                 align="start",
                 widths=[1, 1, 1],
             ),
-            plot.plot_gains(gains),
+            mo.hstack(
+                [
+                    plot.plot_image(
+                        dirty_residual_image,
+                        title="Dirty - Model",
+                        fov_deg=fov_slider.value,
+                        zmin=-residual_clip,
+                        zmax=residual_clip,
+                        color_continuous_scale="RdBu_r",
+                    ),
+                    plot.plot_image(
+                        calibrated_residual_image,
+                        title="Calibrated - Model",
+                        fov_deg=fov_slider.value,
+                        zmin=-residual_clip,
+                        zmax=residual_clip,
+                        color_continuous_scale="RdBu_r",
+                    ),
+                ],
+                wrap=True,
+                gap="0.1rem",
+                align="start",
+                widths=[1, 1],
+            ),
+            gain_station_slider,
+            mo.ui.plotly(
+                plot.plot_gains(gains, station_index=gain_station_slider.value)
+            ),
         ]
     )
     return

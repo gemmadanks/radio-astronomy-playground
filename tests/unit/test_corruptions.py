@@ -113,12 +113,60 @@ def test_corruptions_sample_station_phase_gains(corruptions: Corruptions):
     )
     corruptions = Corruptions(config)
     corruptions._add_station_phase_gain()
+    num_times = 3
+    num_channels = 2
     num_stations = 5
-    phase_gains = corruptions._sample_station_phase_gains(num_stations)
+    phase_gains = corruptions._sample_station_phase_gains(
+        num_times=num_times,
+        num_channels=num_channels,
+        num_stations=num_stations,
+    )
 
-    assert phase_gains.shape == (num_stations,)
+    assert phase_gains.shape == (num_times, num_channels, num_stations)
     # Check that the reference station has zero phase gain
-    assert np.isclose(phase_gains[0], 1.0 + 0j)
+    assert np.allclose(phase_gains[..., 0], 1.0 + 0j)
+
+
+def test_corruptions_sample_station_phase_gains_rms_is_in_degrees():
+    """Test that rms_phase_gain is interpreted as degrees, not radians.
+
+    With rms_phase_gain=2 degrees, the standard deviation of extracted phase
+    angles must be close to 2 degrees, not 2 radians (~115 degrees).
+    """
+    config = CorruptionsConfig(seed=42, rms_noise=0.0, rms_phase_gain=2.0)
+    corruptions = Corruptions(config)
+    phase_gains = corruptions._sample_station_phase_gains(
+        num_times=500, num_channels=10, num_stations=10
+    )
+    # Exclude reference station (index 0 is always 1+0j)
+    angles_deg = np.angle(phase_gains[..., 1:], deg=True)
+    measured_rms = np.sqrt(np.mean(angles_deg**2))
+    assert (
+        measured_rms < 10.0
+    ), f"Phase RMS is {measured_rms:.1f} deg — rms_phase_gain may be in radians"
+    assert np.isclose(
+        measured_rms, 2.0, atol=0.5
+    ), f"Expected phase RMS ~2 deg, got {measured_rms:.2f} deg"
+
+
+def test_corruptions_sample_station_phase_gains_vary_over_time_and_frequency():
+    """Test sampled station gains are not constant over time/frequency."""
+
+    config = CorruptionsConfig(
+        seed=42,
+        rms_noise=0.0,
+        rms_phase_gain=0.5,
+    )
+    corruptions = Corruptions(config)
+
+    phase_gains = corruptions._sample_station_phase_gains(
+        num_times=3,
+        num_channels=2,
+        num_stations=5,
+    )
+
+    assert not np.allclose(phase_gains[0, :, 1:], phase_gains[1, :, 1:])
+    assert not np.allclose(phase_gains[:, 0, 1:], phase_gains[:, 1, 1:])
 
 
 def test_corruptions_apply_with_station_phase_gain(
@@ -129,3 +177,19 @@ def test_corruptions_apply_with_station_phase_gain(
     corrupted_vis = corruptions.apply(visibility_set)
 
     assert not np.array_equal(corrupted_vis.vis, visibility_set.vis)
+
+
+def test_corruptions_apply_phase_gain_varies_across_time_and_frequency(
+    visibility_set: VisibilitySet,
+):
+    """Test applied phase gains affect different time/frequency samples differently."""
+
+    corruptions = Corruptions(
+        CorruptionsConfig(seed=42, rms_noise=0.0, rms_phase_gain=0.5)
+    )
+
+    corrupted_vis = corruptions.apply(visibility_set)
+
+    ratios = corrupted_vis.vis / visibility_set.vis
+    assert not np.allclose(ratios[0, :, :], ratios[1, :, :])
+    assert not np.allclose(ratios[:, :, 0], ratios[:, :, 1])

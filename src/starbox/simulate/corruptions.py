@@ -41,7 +41,9 @@ class Corruptions:
         )
         if abs(self.rms_phase_gain) != 0.0:
             station_phase_gains = self._sample_station_phase_gains(
-                num_stations=visibility_set.num_stations
+                num_times=visibility_set.vis.shape[0],
+                num_channels=visibility_set.vis.shape[2],
+                num_stations=visibility_set.num_stations,
             )
             corrupted_visibility_set = self._apply_station_phase_gain(
                 corrupted_visibility_set, station_phase_gains
@@ -55,22 +57,39 @@ class Corruptions:
         self, visibility_set: VisibilitySet, station_phase_gains: np.ndarray
     ) -> VisibilitySet:
         """Apply only the station phase gain corruption to the given visibilities."""
-        phase_gains_1 = station_phase_gains[visibility_set.station1]
-        phase_gains_2 = station_phase_gains[visibility_set.station2]
-        # Broadcast station gains to all times and channels
-        phase_gains_1 = phase_gains_1[np.newaxis, :, np.newaxis]
-        phase_gains_2 = phase_gains_2[np.newaxis, :, np.newaxis]
+        if station_phase_gains.ndim == 1:
+            phase_gains_1 = station_phase_gains[visibility_set.station1][
+                np.newaxis, :, np.newaxis
+            ]
+            phase_gains_2 = station_phase_gains[visibility_set.station2][
+                np.newaxis, :, np.newaxis
+            ]
+            visibility_set.vis *= phase_gains_1 * np.conj(phase_gains_2)
+            return visibility_set
+
+        phase_gains_1 = np.transpose(
+            station_phase_gains[:, :, visibility_set.station1], (0, 2, 1)
+        )
+        phase_gains_2 = np.transpose(
+            station_phase_gains[:, :, visibility_set.station2], (0, 2, 1)
+        )
         visibility_set.vis *= phase_gains_1 * np.conj(phase_gains_2)
 
         return visibility_set
 
-    def _sample_station_phase_gains(self, num_stations: int) -> np.ndarray:
-        """Sample random phase gains for each station."""
-        phi = self.rng.normal(loc=0.0, scale=self.rms_phase_gain, size=num_stations)
-        # Reference station to have zero phase gain
+    def _sample_station_phase_gains(
+        self, num_times: int, num_channels: int, num_stations: int
+    ) -> np.ndarray:
+        """Sample random phase gains for each time, channel, and station."""
+        phi = self.rng.normal(
+            loc=0.0,
+            scale=self.rms_phase_gain,
+            size=(num_times, num_channels, num_stations),
+        )
+        # Reference station to have zero phase gain at all times/frequencies
         ref_station = 0
-        phi[ref_station] = 0.0
-        station_phase_gains = np.exp(1j * phi)
+        phi[..., ref_station] = 0.0
+        station_phase_gains = np.exp(1j * np.deg2rad(phi))
 
         return station_phase_gains
 
