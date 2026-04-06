@@ -22,8 +22,16 @@ class Solver:
     ) -> Solutions:
         """Estimate calibration solutions from observed and model visibilities."""
 
-        time_bins = self._time_bin_indices(observed_visibilities.times_mjd)
-        n_time_bins = int(time_bins.max()) + 1 if time_bins.size else 0
+        raw_time_bins = self._time_bin_indices(observed_visibilities.times_mjd)
+        if raw_time_bins.size:
+            # Reindex to contiguous [0, ..., n_time_bins-1] so gaps in times_mjd
+            # (e.g. hours of missing data) do not cause huge allocations.
+            _, time_bins = np.unique(raw_time_bins, return_inverse=True)
+            n_time_bins = int(time_bins.max()) + 1
+        else:
+            time_bins = raw_time_bins
+            n_time_bins = 0
+
         freq_bins = self._frequency_bin_indices(observed_visibilities.freqs_hz)
         n_freq_bins = int(freq_bins.max()) + 1 if freq_bins.size else 0
 
@@ -93,6 +101,13 @@ class Solver:
         freqs = np.asarray(freqs_hz, dtype=np.float64)
         if freqs.size == 0:
             return np.array([], dtype=np.int64)
+
+        if not np.all(np.isfinite(freqs)):
+            raise ValueError("freqs_hz must contain only finite values")
+        if np.any(freqs <= 0):
+            raise ValueError("freqs_hz must contain only positive values")
+        if np.any(np.diff(freqs) < 0):
+            raise ValueError("freqs_hz must be non-decreasing (monotonic)")
 
         interval_hz = self.config.solution_interval_hz
         if interval_hz is None:

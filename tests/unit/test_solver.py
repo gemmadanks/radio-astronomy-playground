@@ -648,6 +648,92 @@ def test_solver_frequency_bin_indices_with_single_frequency():
     assert indices[0] == 0
 
 
+@pytest.mark.parametrize("bad_value", [np.nan, np.inf, -np.inf])
+def test_solver_frequency_bin_indices_raises_on_non_finite(bad_value):
+    """_frequency_bin_indices must raise ValueError for non-finite freqs_hz."""
+
+    solver = Solver(
+        SolverConfig(solution_interval_seconds=60, solution_interval_hz=1e6)
+    )
+    freqs = np.array([100.0e6, bad_value, 102.0e6])
+
+    with pytest.raises(ValueError, match="finite"):
+        solver._frequency_bin_indices(freqs)
+
+
+def test_solver_frequency_bin_indices_raises_on_non_positive():
+    """_frequency_bin_indices must raise ValueError when freqs_hz contains non-positive values."""
+
+    solver = Solver(
+        SolverConfig(solution_interval_seconds=60, solution_interval_hz=1e6)
+    )
+    freqs = np.array([100.0e6, 0.0, 102.0e6])
+
+    with pytest.raises(ValueError, match="positive"):
+        solver._frequency_bin_indices(freqs)
+
+
+def test_solver_frequency_bin_indices_raises_on_non_monotonic():
+    """_frequency_bin_indices must raise ValueError when freqs_hz is not non-decreasing."""
+
+    solver = Solver(
+        SolverConfig(solution_interval_seconds=60, solution_interval_hz=1e6)
+    )
+    freqs = np.array([100.0e6, 102.0e6, 101.0e6])
+
+    with pytest.raises(ValueError, match="non-decreasing"):
+        solver._frequency_bin_indices(freqs)
+
+
+def test_solver_solve_uses_contiguous_time_bins_for_gapped_data(visibility_set):
+    """solve() must produce compact gains even when times_mjd has large gaps.
+
+    If time_bins were not reindexed, a 1-hour gap with a 60 s solution interval
+    would create 60 empty solution bins, inflating the gains array.
+    """
+    solver = Solver(SolverConfig(solution_interval_seconds=60))
+    n_stations = 4
+
+    # Build a two-timestep observation with a 1-hour gap (7200 s → 120 raw bins)
+    gap_days = 7200.0 / 86_400.0
+    gapped_times = np.array([59000.0, 59000.0 + gap_days])
+
+    n_baselines = 6
+    n_channels = 2
+    vis = np.ones((2, n_baselines, n_channels), dtype=np.complex128)
+    weights = np.ones_like(vis, dtype=np.float64)
+    station1 = np.array([0, 0, 0, 1, 1, 2])
+    station2 = np.array([1, 2, 3, 2, 3, 3])
+    freqs = np.array([100.0e6, 101.0e6])
+
+    obs = VisibilitySet(
+        vis=vis,
+        weights=weights,
+        uvw_m=np.zeros((2, n_baselines, 3)),
+        station1=station1,
+        station2=station2,
+        times_mjd=gapped_times,
+        freqs_hz=freqs,
+    )
+    mod = VisibilitySet(
+        vis=vis.copy(),
+        weights=weights.copy(),
+        uvw_m=np.zeros((2, n_baselines, 3)),
+        station1=station1.copy(),
+        station2=station2.copy(),
+        times_mjd=gapped_times.copy(),
+        freqs_hz=freqs.copy(),
+    )
+
+    solutions = solver.solve(
+        observed_visibilities=obs, model_visibilities=mod, n_stations=n_stations
+    )
+
+    # Without contiguous reindexing this would be (121, 2, n_stations);
+    # with reindexing it must be exactly (2, 2, n_stations).
+    assert solutions.station_phase_gains.shape == (2, 2, n_stations)
+
+
 def test_solver_handles_all_zero_weights(visibility_set):
     """Test solver recovers gracefully when all weights are zero."""
 
