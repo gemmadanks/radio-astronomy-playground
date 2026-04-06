@@ -2,12 +2,12 @@
 
 import numpy as np
 import numpy.typing as npt
+import math
 
 from astropy.time import Time
 from astropy.utils import iers
 
 from starbox.config.observation import ObservationConfig
-import math
 
 
 class Observation:
@@ -40,12 +40,15 @@ class Observation:
         """Return the times converted to Greenwich mean sidereal time."""
         # Avoid mutating global Astropy IERS configuration permanently by
         # using a temporary config context while computing sidereal times.
+        # `auto_max_age=None` allows Astropy to use bundled or cached
+        # predictive IERS values when newer tables are unavailable.
         with iers.conf.set_temp("auto_download", False):
-            times = Time(self.times_mjd, format="mjd", scale="utc")
-            return np.asarray(
-                times.sidereal_time("mean", "greenwich").rad,
-                dtype=np.float64,
-            )
+            with iers.conf.set_temp("auto_max_age", None):
+                times = Time(self.times_mjd, format="mjd", scale="utc")
+                return np.asarray(
+                    times.sidereal_time("mean", "greenwich").rad,
+                    dtype=np.float64,
+                )
 
     def _get_times(self) -> None:
         """Return time samples for the observation."""

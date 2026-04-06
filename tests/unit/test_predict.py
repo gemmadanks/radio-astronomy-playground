@@ -6,15 +6,20 @@ from starbox.constants import SPEED_OF_LIGHT
 from starbox.geometry.lmn import calculate_lmn
 from starbox.geometry.uvw import calculate_uvw
 from starbox.config.skymodel import SkyModelConfig
-from starbox.predict.predict import predict_visibilities
+from starbox.predict.predict import predict_visibilities, generate_psf_visibilities
 from starbox.simulate.skymodel import SkyModel
+from starbox.visibility import VisibilitySet
 
 
 def test_predict_visibilities_returns_correct_shape(
     small_telescope, skymodel, observation
 ):
     """Test the predict_visibilities function returns correct shape."""
-    expected_shape = (3, 45, 2)  # (num_times, num_baselines, num_channels)
+    # Compute expected shape from fixtures
+    num_times = observation.num_times
+    num_baselines = small_telescope.num_baselines
+    num_channels = observation.num_channels
+    expected_shape = (num_times, num_baselines, num_channels)
     visibilities = predict_visibilities(small_telescope, skymodel, observation)
     assert visibilities.vis.shape == expected_shape
 
@@ -109,3 +114,67 @@ def test_predict_single_offset_source_matches_geometric_phase(
 
     np.testing.assert_allclose(visibilities.vis, expected_vis, atol=1e-12, rtol=0.0)
     assert np.std(np.angle(visibilities.vis)) > 0.0
+
+
+def test_generate_psf_visibilities():
+    """Test that the PSF visibilities are generated correctly."""
+    visibility_set = VisibilitySet(
+        vis=np.random.rand(3, 45, 2) + 1j * np.random.rand(3, 45, 2),
+        uvw_m=np.random.rand(3, 45, 3),
+        station1=np.random.randint(0, 10, size=45),
+        station2=np.random.randint(0, 10, size=45),
+        times_mjd=np.random.rand(3),
+        freqs_hz=np.random.rand(2) * 1e6 + 1e6,
+        weights=np.random.rand(3, 45, 2),
+    )
+    psf_visibilities = generate_psf_visibilities(visibility_set)
+    assert psf_visibilities.vis.shape == visibility_set.vis.shape
+    assert np.allclose(psf_visibilities.vis, 1.0 + 0j, atol=1e-12, rtol=0.0)
+    assert np.array_equal(psf_visibilities.station1, visibility_set.station1)
+    assert np.array_equal(psf_visibilities.station2, visibility_set.station2)
+    assert np.array_equal(psf_visibilities.times_mjd, visibility_set.times_mjd)
+    assert np.array_equal(psf_visibilities.freqs_hz, visibility_set.freqs_hz)
+    # Check input visibilities are not modified
+    assert not np.array_equal(visibility_set.vis, psf_visibilities.vis)
+
+
+def test_generate_psf_visibilities_preserves_dtype():
+    """PSF visibilities should preserve the input visibility dtype."""
+    vis_c64 = (np.random.rand(2, 6, 2) + 1j * np.random.rand(2, 6, 2)).astype(
+        np.complex64
+    )
+    visibility_set = VisibilitySet(
+        vis=vis_c64,
+        uvw_m=np.random.rand(2, 6, 3),
+        station1=np.arange(6, dtype=np.int32),
+        station2=np.arange(6, dtype=np.int32),
+        times_mjd=np.random.rand(2),
+        freqs_hz=np.array([1e8, 2e8]),
+        weights=np.ones((2, 6, 2)),
+    )
+    psf_visibilities = generate_psf_visibilities(visibility_set)
+    assert psf_visibilities.vis.dtype == vis_c64.dtype
+
+
+def test_generate_psf_visibilities_metadata_not_aliased():
+    """Metadata arrays in the PSF VisibilitySet must not alias the input arrays."""
+    uvw_m = np.random.rand(2, 6, 3)
+    station1 = np.arange(6, dtype=np.int32)
+    station2 = np.arange(6, dtype=np.int32)
+    times_mjd = np.random.rand(2)
+    freqs_hz = np.array([1e8, 2e8])
+    visibility_set = VisibilitySet(
+        vis=(np.random.rand(2, 6, 2) + 1j * np.random.rand(2, 6, 2)),
+        uvw_m=uvw_m,
+        station1=station1,
+        station2=station2,
+        times_mjd=times_mjd,
+        freqs_hz=freqs_hz,
+        weights=np.ones((2, 6, 2)),
+    )
+    psf_visibilities = generate_psf_visibilities(visibility_set)
+    assert psf_visibilities.uvw_m is not visibility_set.uvw_m
+    assert psf_visibilities.station1 is not visibility_set.station1
+    assert psf_visibilities.station2 is not visibility_set.station2
+    assert psf_visibilities.times_mjd is not visibility_set.times_mjd
+    assert psf_visibilities.freqs_hz is not visibility_set.freqs_hz
