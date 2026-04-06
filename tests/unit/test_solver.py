@@ -599,6 +599,27 @@ def test_solver_time_bin_indices_with_empty_array():
     assert indices.dtype == np.int64
 
 
+@pytest.mark.parametrize("bad_value", [np.nan, np.inf, -np.inf])
+def test_solver_time_bin_indices_raises_on_non_finite(bad_value):
+    """_time_bin_indices must raise ValueError when times_mjd contains non-finite values."""
+
+    solver = Solver(SolverConfig(solution_interval_seconds=60))
+    times = np.array([0.0, bad_value, 2.0 / 86400.0])
+
+    with pytest.raises(ValueError, match="finite"):
+        solver._time_bin_indices(times)
+
+
+def test_solver_time_bin_indices_raises_on_non_monotonic():
+    """_time_bin_indices must raise ValueError when times_mjd is not non-decreasing."""
+
+    solver = Solver(SolverConfig(solution_interval_seconds=60))
+    times = np.array([0.0, 2.0 / 86400.0, 1.0 / 86400.0])  # last step decreases
+
+    with pytest.raises(ValueError, match="non-decreasing"):
+        solver._time_bin_indices(times)
+
+
 def test_solver_frequency_bin_indices_with_empty_array():
     """Test _frequency_bin_indices returns empty array for empty input."""
 

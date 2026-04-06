@@ -65,11 +65,18 @@ class Solver:
     def _time_bin_indices(self, times_mjd: np.ndarray) -> np.ndarray:
         """Map observation timestamps onto solution bins using elapsed seconds."""
 
-        if times_mjd.size == 0:
+        times = np.asarray(times_mjd, dtype=np.float64)
+
+        if times.size == 0:
             return np.array([], dtype=np.int64)
 
+        if not np.all(np.isfinite(times)):
+            raise ValueError("times_mjd must contain only finite values")
+        if np.any(np.diff(times) < 0):
+            raise ValueError("times_mjd must be non-decreasing (monotonic)")
+
         tbin_days = float(self.config.solution_interval_seconds) / 86_400.0
-        offsets = np.asarray(times_mjd, dtype=np.float64) - float(times_mjd[0])
+        offsets = times - times[0]
         bin_coords = offsets / tbin_days
         nearest_int = np.rint(bin_coords)
         near_boundary = np.isclose(bin_coords, nearest_int, atol=1e-5, rtol=0.0)
