@@ -30,7 +30,7 @@ def plot_uv_coverage(
     Downsamples in time if necessary to keep the Plotly payload manageable.
     """
     uvw = np.asarray(uvw_coordinates, dtype=np.float64)
-    if uvw.ndim != 3 or uvw.shape[2] < 2:
+    if uvw.ndim != 3 or uvw.shape[2] != 3:
         msg = "uvw_coordinates must have shape (time, baseline, 3)"
         raise ValueError(msg)
 
