@@ -141,12 +141,12 @@ def test_corruptions_sample_station_phase_gains_rms_is_in_degrees():
     # Exclude reference station (index 0 is always 1+0j)
     angles_deg = np.angle(phase_gains[..., 1:], deg=True)
     measured_rms = np.sqrt(np.mean(angles_deg**2))
-    assert (
-        measured_rms < 10.0
-    ), f"Phase RMS is {measured_rms:.1f} deg — rms_phase_gain may be in radians"
-    assert np.isclose(
-        measured_rms, 2.0, atol=0.5
-    ), f"Expected phase RMS ~2 deg, got {measured_rms:.2f} deg"
+    assert measured_rms < 10.0, (
+        f"Phase RMS is {measured_rms:.1f} deg — rms_phase_gain may be in radians"
+    )
+    assert np.isclose(measured_rms, 2.0, atol=0.5), (
+        f"Expected phase RMS ~2 deg, got {measured_rms:.2f} deg"
+    )
 
 
 def test_corruptions_sample_station_phase_gains_vary_over_time_and_frequency():
