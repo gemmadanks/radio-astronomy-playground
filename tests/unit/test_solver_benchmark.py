@@ -1,7 +1,10 @@
 """Benchmarks for the Solver.solve method.
 
-Run with:
-    pytest tests/unit/test_solver_benchmark.py --benchmark-only -v
+Benchmarks are disabled in the default test run (via ``--benchmark-disable`` in
+``pyproject.toml``). To run them explicitly use:
+    pytest tests/unit/test_solver_benchmark.py --benchmark-enable -v
+or to enable alongside the normal suite:
+    pytest --benchmark-enable
 """
 
 import numpy as np

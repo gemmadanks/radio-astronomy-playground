@@ -52,6 +52,7 @@ omit = [
 
 [tool.pytest.ini_options]
 pythonpath = ["."]
+addopts = "--benchmark-disable"
 
 [build-system]
 requires = ["uv-build>=0.1,<1.0"]
