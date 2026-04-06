@@ -208,7 +208,10 @@ class Solver:
         if gains_arr.ndim == 3:
             gains_3d = gains_arr
         else:
-            assert n_stations is not None, "n_stations is required for 1D phase vector"
+            if n_stations is None:
+                raise ValueError(
+                    "n_stations is required when gains are provided as a 1D phase vector"
+                )
             n_time_bins = int(time_bins.max()) + 1 if time_bins.size else 0
             gains_3d = self._phases_to_gains(
                 gains_arr, n_time_bins, n_freq_bins, n_stations
