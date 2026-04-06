@@ -123,9 +123,14 @@ class Corruptions:
         # Scale to requested per-station RMS in degrees for non-reference stations.
         # (Reference station is pinned to zero below.)
         if num_stations > 1:
-            current_rms = float(np.sqrt(np.mean(phi[:, :, 1:] ** 2)))
-            if current_rms > 0.0:
-                phi[:, :, 1:] *= self.rms_phase_gain / current_rms
+            current_rms = np.sqrt(np.mean(phi[:, :, 1:] ** 2, axis=(0, 1)))
+            nonzero_rms = current_rms > 0.0
+            if np.any(nonzero_rms):
+                phi_nonref = phi[:, :, 1:]
+                phi_nonref[:, :, nonzero_rms] *= (
+                    self.rms_phase_gain / current_rms[nonzero_rms]
+                )
+                phi[:, :, 1:] = phi_nonref
 
         # Reference station to have zero phase gain at all times/frequencies
         ref_station = 0
