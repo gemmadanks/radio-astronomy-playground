@@ -103,6 +103,72 @@ def test_solver_solve_method_leaves_unobserved_stations_at_unity(visibility_set)
     assert np.allclose(solutions.station_phase_gains[..., 3], 1.0 + 0j)
 
 
+def test_solver_solve_method_handles_empty_time_axis(visibility_set):
+    """Test solve handles empty times by returning zero time bins."""
+
+    solver = Solver(SolverConfig(solution_interval_seconds=60))
+
+    observed_visibilities = _copy_visibility_set(visibility_set)
+    model_visibilities = _copy_visibility_set(visibility_set)
+
+    n_baselines = observed_visibilities.vis.shape[1]
+    n_channels = observed_visibilities.vis.shape[2]
+    observed_visibilities.vis = np.zeros(
+        (0, n_baselines, n_channels), dtype=np.complex64
+    )
+    model_visibilities.vis = np.zeros((0, n_baselines, n_channels), dtype=np.complex64)
+    observed_visibilities.weights = np.zeros(
+        (0, n_baselines, n_channels), dtype=np.float32
+    )
+    observed_visibilities.times_mjd = np.array([], dtype=np.float64)
+    model_visibilities.times_mjd = np.array([], dtype=np.float64)
+
+    solutions = solver.solve(
+        observed_visibilities=observed_visibilities,
+        model_visibilities=model_visibilities,
+        n_stations=4,
+    )
+
+    assert solutions.station_phase_gains.shape == (0, n_channels, 4)
+
+
+def test_solver_solve_method_skips_empty_reindexed_time_bin(
+    visibility_set, monkeypatch
+):
+    """Test defensive branch that skips empty bins after time reindexing."""
+
+    solver = Solver(SolverConfig(solution_interval_seconds=60))
+
+    observed_visibilities = _copy_visibility_set(visibility_set)
+    model_visibilities = _copy_visibility_set(visibility_set)
+
+    # Keep two timesteps so patched inverse mapping can create a sparse bin index.
+    observed_visibilities.vis = observed_visibilities.vis[:2]
+    model_visibilities.vis = model_visibilities.vis[:2]
+    observed_visibilities.weights = observed_visibilities.weights[:2]
+    observed_visibilities.times_mjd = observed_visibilities.times_mjd[:2]
+    model_visibilities.times_mjd = model_visibilities.times_mjd[:2]
+
+    original_unique = np.unique
+
+    def sparse_inverse_unique(values, return_inverse=False):
+        if return_inverse:
+            # Force inverse indices [0, 2], leaving bin 1 empty.
+            return np.array([0, 1, 2], dtype=np.int64), np.array([0, 2], dtype=np.int64)
+        return original_unique(values)
+
+    monkeypatch.setattr("starbox.calibrate.solver.np.unique", sparse_inverse_unique)
+
+    solutions = solver.solve(
+        observed_visibilities=observed_visibilities,
+        model_visibilities=model_visibilities,
+        n_stations=4,
+    )
+
+    # Patched inverse mapping produces bins 0..2 (with 1 empty).
+    assert solutions.station_phase_gains.shape[0] == 3
+
+
 @pytest.mark.parametrize("scaling_factor", [0.5, 2])
 def test_solver_solve_method_when_model_observed_different(
     visibility_set, scaling_factor
