@@ -24,6 +24,7 @@ dev = [
     "pytest-cov (>=7.0.0,<8.0.0)",
     "nbmake>=1.5.5",
     "pytest-mock>=3.15.1",
+    "pytest-benchmark>=5.2.3",
 ]
 
 docs = [
@@ -49,6 +50,10 @@ omit = [
     "conftest.py"
 ]
 
+[tool.pytest.ini_options]
+pythonpath = ["."]
+addopts = "--benchmark-disable"
+
 [build-system]
 requires = ["uv-build>=0.1,<1.0"]
 build-backend = "uv_build"
@@ -56,3 +61,6 @@ build-backend = "uv_build"
 [tool.uv.build-backend]
 module-name = "starbox"
 module-root = "src"
+
+[tool.marimo.runtime]
+output_max_bytes = 10_000_000

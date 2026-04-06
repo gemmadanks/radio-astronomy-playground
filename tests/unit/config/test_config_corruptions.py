@@ -38,3 +38,26 @@ def test_corruptions_config_to_dict(corruptions_config):
     assert cfg_dict["seed"] == corruptions_config.seed
     assert cfg_dict["rms_noise"] == corruptions_config.rms_noise
     assert cfg_dict["rms_phase_gain"] == corruptions_config.rms_phase_gain
+
+
+def test_corruptions_config_correlation_defaults():
+    cfg = CorruptionsConfig(seed=42, rms_noise=0.0, rms_phase_gain=1.0)
+    assert cfg.phase_time_correlation == 0.95
+    assert cfg.phase_frequency_correlation == 0.85
+
+
+def test_corruptions_config_rejects_invalid_correlation_values():
+    with pytest.raises(ValidationError):
+        CorruptionsConfig(
+            seed=42,
+            rms_noise=0.0,
+            rms_phase_gain=1.0,
+            phase_time_correlation=1.0,
+        )
+    with pytest.raises(ValidationError):
+        CorruptionsConfig(
+            seed=42,
+            rms_noise=0.0,
+            rms_phase_gain=1.0,
+            phase_frequency_correlation=-0.1,
+        )

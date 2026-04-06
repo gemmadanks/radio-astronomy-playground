@@ -17,6 +17,12 @@ def test_solver_config_from_dict():
 def test_solver_config_valid():
     cfg = SolverConfig(solution_interval_seconds=10)
     assert cfg.solution_interval_seconds == 10
+    assert cfg.solution_interval_hz is None
+
+
+def test_solver_config_accepts_frequency_interval_hz():
+    cfg = SolverConfig(solution_interval_seconds=10, solution_interval_hz=1e6)
+    assert cfg.solution_interval_hz == 1e6
 
 
 def test_solver_config_rejects_bad_solution_interval_seconds():
@@ -24,6 +30,13 @@ def test_solver_config_rejects_bad_solution_interval_seconds():
         SolverConfig(solution_interval_seconds=0)
     with pytest.raises(ValidationError):
         SolverConfig(solution_interval_seconds=-5)
+
+
+def test_solver_config_rejects_bad_solution_interval_hz():
+    with pytest.raises(ValidationError):
+        SolverConfig(solution_interval_seconds=10, solution_interval_hz=0)
+    with pytest.raises(ValidationError):
+        SolverConfig(solution_interval_seconds=10, solution_interval_hz=-1)
 
 
 def test_solver_config_roundtrip_json():

@@ -16,6 +16,10 @@ default:
 install:
     uv sync
 
+# Install with development and viz dependencies (create/update virtualenv)
+install-all:
+    uv sync --all-groups --all-extras
+
 # Update dependencies to latest allowed versions
 update:
     uv lock --upgrade
@@ -84,6 +88,10 @@ build:
 jupyter-container:
     uv run jupyter lab --allow-root --ip 0.0.0.0 --no-browser
 
-# Launch quick start notebooks
+# Launch quickstart notebooks
 quickstart:
     uv run marimo run notebooks/get-started.py
+
+# Launch quickstart notebook in edit mode
+quickstart-edit:
+    uv run marimo edit notebooks/get-started.py

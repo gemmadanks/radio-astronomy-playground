@@ -1,6 +1,6 @@
 import marimo
 
-__generated_with = "0.19.4"
+__generated_with = "0.20.4"
 app = marimo.App(width="medium")
 
 
@@ -8,6 +8,7 @@ app = marimo.App(width="medium")
 def _():
     import marimo as mo
     import logging
+    import numpy as np
 
     from starbox import Imager
     from starbox.config import (
@@ -27,7 +28,7 @@ def _():
         build_solver,
     )
     from starbox.viz import plot
-    from starbox.predict.predict import predict_visibilities
+    from starbox.predict.predict import predict_visibilities, generate_psf_visibilities
     from starbox.io.save import save
 
     return (
@@ -44,8 +45,10 @@ def _():
         build_skymodel,
         build_solver,
         build_telescope,
+        generate_psf_visibilities,
         logging,
         mo,
+        np,
         plot,
         predict_visibilities,
         save,
@@ -69,7 +72,7 @@ def _(mo):
     mo.md(r"""
     /// attention | Warning!
 
-    This is a prototype that uses mock functions and data.
+    This is a work in progress.
     ///
     """)
     return
@@ -101,8 +104,8 @@ def _(mo):
 def _(mo):
     file_browser = mo.ui.file_browser(
         multiple=False,
-        initial_path="notebooks/config",
-        filetypes=["yaml"],
+        initial_path="config/",
+        filetypes=["json"],
         restrict_navigation=False,
     )
     file_browser  # pyright: ignore[reportUnusedExpression]
@@ -112,39 +115,59 @@ def _(mo):
 @app.cell
 def _(mo):
     # Sky model
-    num_sources_slider = mo.ui.slider(1, 10, label="Number of point sources: ")
-    max_flux_slider = mo.ui.slider(1, 10, label="Maximum source brightness (Jy): ")
-    fov_slider = mo.ui.slider(1, 10, label="Field of view (degrees): ")
+    num_sources_slider = mo.ui.slider(1, 10, value=1, label="Number of point sources: ")
+    max_flux_slider = mo.ui.slider(
+        1, 10, value=10, label="Maximum source brightness (Jy): "
+    )
+    fov_slider = mo.ui.slider(
+        1.0, 10.0, step=0.1, value=1.0, label="Field of view (degrees): "
+    )
 
     # Telescope
-    num_stations_slider = mo.ui.slider(2, 100, value=20, label="Number of stations: ")
+    num_stations_slider = mo.ui.slider(2, 100, value=68, label="Number of stations: ")
     telescope_diameter_slider = mo.ui.slider(
-        1, 100, label="Maximum diameter of telescope (km): "
+        1, 100, value=20, label="Maximum diameter of telescope (km): "
     )
 
     # Observation
-    start_time_mjd_slider = mo.ui.slider(59000, 69000, label="Start time (MJD): ")
+    start_time_mjd_slider = mo.ui.slider(
+        59000, 69000, value=68356, label="Start time (MJD): "
+    )
     observation_length_slider = mo.ui.slider(
-        1, 24, value=6, label="Observation length (hrs): "
+        1, 24, value=4, label="Observation length (hrs): "
     )
     num_timesteps_slider = mo.ui.slider(
-        1, 24 * 60, value=6 * 60, label="Number of timesteps: "
+        1, 24 * 60, value=4 * 60, label="Number of timesteps: "
     )
     start_freq_slider = mo.ui.slider(
-        100, 1000, label="Mid-point frequency of first channel (MHz): "
+        100, 1000, value=100, label="Mid-point frequency of first channel (MHz): "
     )
-    num_channels_slider = mo.ui.slider(1, 100, label="Number of channels: ")
-    bandwidth_slider = mo.ui.slider(1, 100, label="Total frequency bandwidth (MHz): ")
+    num_channels_slider = mo.ui.slider(1, 100, value=32, label="Number of channels: ")
+    bandwidth_slider = mo.ui.slider(
+        1, 100, value=32, label="Total frequency bandwidth (MHz): "
+    )
+    phase_centre_dec_slider = mo.ui.slider(
+        -90, 90, value=0, label="Phase center declination (deg): "
+    )
 
     # Corruptions
     phase_rms_slider = mo.ui.slider(
-        0, 30, label="Per-station phase gain RMS (degrees): "
+        0, 30, value=10, label="Per-station phase gain RMS (degrees): "
     )
-    noise_rms_slider = mo.ui.slider(0, 100, label="Noise RMS: ")
+    phase_time_corr_slider = mo.ui.slider(
+        0.0, 0.999, step=0.01, value=0.95, label="Phase time correlation: "
+    )
+    phase_freq_corr_slider = mo.ui.slider(
+        0.0, 0.999, step=0.01, value=0.85, label="Phase frequency correlation: "
+    )
+    noise_rms_slider = mo.ui.slider(0.0, 100.0, step=1, value=0.0, label="Noise RMS: ")
 
     # Calibration
     solution_interval_seconds_slider = mo.ui.slider(
-        1, 600, label="Solution interval (s): "
+        1, 600, value=300, label="Solution interval (s): "
+    )
+    solution_interval_hz_slider = mo.ui.slider(
+        1, 100, value=4, label="Solution interval (MHz): "
     )
     return (
         bandwidth_slider,
@@ -156,12 +179,27 @@ def _(mo):
         num_stations_slider,
         num_timesteps_slider,
         observation_length_slider,
+        phase_centre_dec_slider,
+        phase_freq_corr_slider,
         phase_rms_slider,
+        phase_time_corr_slider,
+        solution_interval_hz_slider,
         solution_interval_seconds_slider,
         start_freq_slider,
         start_time_mjd_slider,
         telescope_diameter_slider,
     )
+
+
+@app.cell
+def _(mo, num_stations_slider):
+    # Plotting
+    gain_station_dropdown = mo.ui.dropdown(
+        options=list(range(num_stations_slider.value)),
+        value=1,
+        label="Station number: ",
+    )
+    return (gain_station_dropdown,)
 
 
 @app.cell
@@ -259,6 +297,7 @@ def _(
     num_channels_slider,
     num_timesteps_slider,
     observation_length_slider,
+    phase_centre_dec_slider,
     start_freq_slider,
     start_time_mjd_slider,
 ):
@@ -276,6 +315,10 @@ def _(
                 [start_freq_slider, num_channels_slider, bandwidth_slider],
                 justify="start",
             ),
+            mo.hstack(
+                [phase_centre_dec_slider],
+                justify="start",
+            ),
         ]
     )
     return
@@ -289,6 +332,7 @@ def _(
     num_channels_slider,
     num_timesteps_slider,
     observation_length_slider,
+    phase_centre_dec_slider,
     start_freq_slider,
     start_time_mjd_slider,
 ):
@@ -299,6 +343,7 @@ def _(
         start_frequency=start_freq_slider.value * 1e6,
         num_channels=num_channels_slider.value,
         total_bandwidth=bandwidth_slider.value * 1e6,
+        phase_centre_dec=phase_centre_dec_slider.value,
     )
     observation = build_observation(observation_config)
     return observation, observation_config
@@ -313,22 +358,20 @@ def _(mo):
 
 
 @app.cell
-def _(mo, noise_rms_slider, phase_rms_slider):
-    mo.hstack([noise_rms_slider, phase_rms_slider], justify="start")
-    return
-
-
-@app.cell
 def _(
     CorruptionsConfig,
     build_corruptions,
     noise_rms_slider,
+    phase_freq_corr_slider,
     phase_rms_slider,
+    phase_time_corr_slider,
     seed,
 ):
     corruptions_config = CorruptionsConfig(
         rms_noise=noise_rms_slider.value,
         rms_phase_gain=phase_rms_slider.value,
+        phase_time_correlation=phase_time_corr_slider.value,
+        phase_frequency_correlation=phase_freq_corr_slider.value,
         seed=seed,
     )
     corruptions = build_corruptions(corruptions_config)
@@ -336,9 +379,15 @@ def _(
 
 
 @app.cell
-def _(SolverConfig, build_solver, solution_interval_seconds_slider):
+def _(
+    SolverConfig,
+    build_solver,
+    solution_interval_hz_slider,
+    solution_interval_seconds_slider,
+):
     solver_config = SolverConfig(
-        solution_interval_seconds=solution_interval_seconds_slider.value
+        solution_interval_seconds=solution_interval_seconds_slider.value,
+        solution_interval_hz=solution_interval_hz_slider.value * 1e6,
     )
     solver = build_solver(solver_config)
     return solver, solver_config
@@ -346,7 +395,7 @@ def _(SolverConfig, build_solver, solution_interval_seconds_slider):
 
 @app.cell
 def _(Imager, fov_slider):
-    imager = Imager(fov_deg=fov_slider.value)
+    imager = Imager(fov_deg=fov_slider.value, grid_size=256)
     return (imager,)
 
 
@@ -383,47 +432,180 @@ def _(sky_model):
 
 @app.cell
 def _(
-    corruptions,
+    generate_psf_visibilities,
     imager,
-    num_stations_slider,
     observation,
     predict_visibilities,
     sky_model,
-    solver,
     telescope,
 ):
     model_visibilities = predict_visibilities(telescope, sky_model, observation)
+    psf_visibilities = generate_psf_visibilities(model_visibilities)
+    psf_image = imager.image(psf_visibilities)
+    return model_visibilities, psf_image
+
+
+@app.cell
+def _(fov_slider, mo, model_visibilities, plot, psf_image):
+    mo.hstack(
+        [
+            plot.plot_uv_coverage(
+                model_visibilities.uvw_m,
+                freqs_hz=model_visibilities.freqs_hz,
+            ),
+            plot.plot_image(psf_image, title="PSF", fov_deg=fov_slider.value),
+        ],
+        gap="1rem",  # Reduce spacing between plots
+        widths=["50%", "50%"],  # Equal width columns
+    )
+    return
+
+
+@app.cell
+def _(corruptions, model_visibilities, num_stations_slider, solver):
     observed_visibilities = corruptions.apply(model_visibilities)
     gains = solver.solve(
         observed_visibilities, model_visibilities, num_stations_slider.value
     )
     corrected_visibilities = gains.apply(observed_visibilities)
-
-    dirty_image = imager.image(observed_visibilities)
-    corrected_image = imager.image(corrected_visibilities)
-    model_image = imager.image(model_visibilities)
-    return corrected_image, dirty_image, gains, model_image
+    return corrected_visibilities, gains, observed_visibilities
 
 
 @app.cell
-def _(corrected_image, dirty_image, fov_slider, gains, mo, model_image, plot):
+def _(
+    corrected_visibilities,
+    imager,
+    model_visibilities,
+    observed_visibilities,
+):
+    dirty_image = imager.image(observed_visibilities)
+    corrected_image = imager.image(corrected_visibilities)
+    model_image = imager.image(model_visibilities)
+    dirty_residual_image = dirty_image - model_image
+    calibrated_residual_image = corrected_image - model_image
+    return (
+        calibrated_residual_image,
+        corrected_image,
+        dirty_image,
+        dirty_residual_image,
+        model_image,
+    )
+
+
+@app.cell
+def _(
+    mo,
+    noise_rms_slider,
+    phase_freq_corr_slider,
+    phase_rms_slider,
+    phase_time_corr_slider,
+    solution_interval_hz_slider,
+    solution_interval_seconds_slider,
+):
+    mo.vstack(
+        [
+            mo.hstack([noise_rms_slider, phase_rms_slider], justify="start"),
+            mo.hstack(
+                [phase_time_corr_slider, phase_freq_corr_slider], justify="start"
+            ),
+            mo.hstack(
+                [solution_interval_seconds_slider, solution_interval_hz_slider],
+                justify="start",
+            ),
+        ],
+        justify="start",
+    )
+    return
+
+
+@app.cell
+def _(
+    calibrated_residual_image,
+    corrected_image,
+    dirty_image,
+    dirty_residual_image,
+    fov_slider,
+    gain_station_dropdown,
+    gains,
+    mo,
+    model_image,
+    np,
+    plot,
+):
+    # Lock color scale across model/dirty/calibrated so small differences are visible.
+    image_min = float(
+        np.min([model_image.min(), dirty_image.min(), corrected_image.min()])
+    )
+    image_max = float(
+        np.max([model_image.max(), dirty_image.max(), corrected_image.max()])
+    )
+
+    # Use a robust symmetric range to emphasize low-level residual structure.
+    dirty_residual_sigma = float(np.std(dirty_residual_image))
+    calibrated_residual_sigma = float(np.std(calibrated_residual_image))
+    residual_clip = 5.0 * max(dirty_residual_sigma, calibrated_residual_sigma)
+    if residual_clip <= 0.0:
+        residual_clip = 1.0
+
     mo.vstack(
         [
             mo.hstack(
                 [
                     plot.plot_image(
-                        model_image, title="Model", fov_deg=fov_slider.value
+                        model_image,
+                        title="Model",
+                        fov_deg=fov_slider.value,
+                        zmin=image_min,
+                        zmax=image_max,
                     ),
                     plot.plot_image(
-                        dirty_image, title="Dirty", fov_deg=fov_slider.value
+                        dirty_image,
+                        title="Dirty",
+                        fov_deg=fov_slider.value,
+                        zmin=image_min,
+                        zmax=image_max,
                     ),
                     plot.plot_image(
-                        corrected_image, title="Calibrated", fov_deg=fov_slider.value
+                        corrected_image,
+                        title="Calibrated",
+                        fov_deg=fov_slider.value,
+                        zmin=image_min,
+                        zmax=image_max,
                     ),
                 ],
                 wrap=True,
+                gap="0.1rem",
+                align="start",
+                widths=[1, 1, 1],
             ),
-            plot.plot_gains(gains),
+            mo.hstack(
+                [
+                    plot.plot_image(
+                        dirty_residual_image,
+                        title="Dirty - Model",
+                        fov_deg=fov_slider.value,
+                        zmin=-residual_clip,
+                        zmax=residual_clip,
+                        color_continuous_scale="RdBu_r",
+                    ),
+                    plot.plot_image(
+                        calibrated_residual_image,
+                        title="Calibrated - Model",
+                        fov_deg=fov_slider.value,
+                        zmin=-residual_clip,
+                        zmax=residual_clip,
+                        color_continuous_scale="RdBu_r",
+                    ),
+                ],
+                wrap=True,
+                gap="0.1rem",
+                align="start",
+                widths=[1, 1],
+            ),
+            mo.ui.plotly(
+                plot.plot_gains(gains, station_index=gain_station_dropdown.value)
+            ),
+            gain_station_dropdown,
         ]
     )
     return

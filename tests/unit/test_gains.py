@@ -1,5 +1,7 @@
 """Tests for Solutions class."""
 
+import numpy as np
+
 from starbox.calibrate.solutions import Solutions
 
 
@@ -17,5 +19,6 @@ def test_solutions_apply_method(gains, visibility_set):
 
     calibrated_visibilities = solutions.apply(visibility_set)
 
-    # Since the apply method is a placeholder, we expect the same object back
-    assert calibrated_visibilities is visibility_set
+    assert calibrated_visibilities is not visibility_set
+    assert calibrated_visibilities.vis.shape == visibility_set.vis.shape
+    assert np.array_equal(calibrated_visibilities.station1, visibility_set.station1)
