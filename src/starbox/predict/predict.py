@@ -91,10 +91,10 @@ def generate_psf_visibilities(visibility_set: VisibilitySet) -> VisibilitySet:
     psf_vis = np.ones_like(visibility_set.vis, dtype=np.complex128)
     return VisibilitySet(
         vis=psf_vis,
-        uvw_m=visibility_set.uvw_m,
-        station1=visibility_set.station1,
-        station2=visibility_set.station2,
-        times_mjd=visibility_set.times_mjd,
-        freqs_hz=visibility_set.freqs_hz,
+        uvw_m=np.array(visibility_set.uvw_m, copy=True),
+        station1=np.array(visibility_set.station1, copy=True),
+        station2=np.array(visibility_set.station2, copy=True),
+        times_mjd=np.array(visibility_set.times_mjd, copy=True),
+        freqs_hz=np.array(visibility_set.freqs_hz, copy=True),
         weights=np.array(visibility_set.weights, copy=True),
     )
