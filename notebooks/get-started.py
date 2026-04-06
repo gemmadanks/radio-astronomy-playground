@@ -147,7 +147,7 @@ def _(mo):
         1, 100, value=32, label="Total frequency bandwidth (MHz): "
     )
     phase_centre_dec_slider = mo.ui.slider(
-        -90, 90, value=45, label="Phase center declination (deg): "
+        -90, 90, value=0, label="Phase center declination (deg): "
     )
 
     # Corruptions
@@ -169,7 +169,6 @@ def _(mo):
     solution_interval_hz_slider = mo.ui.slider(
         1, 100, value=4, label="Solution interval (MHz): "
     )
-
     return (
         bandwidth_slider,
         fov_slider,
