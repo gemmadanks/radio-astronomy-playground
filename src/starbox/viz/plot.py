@@ -43,7 +43,18 @@ def plot_uv_coverage(
     else:
         n_timesteps = n_timesteps_orig
 
-    ref_freq_hz = float(np.mean(np.asarray(freqs_hz, dtype=np.float64)))
+    freqs = np.asarray(freqs_hz, dtype=np.float64)
+    if freqs.size == 0:
+        msg = "freqs_hz must be a non-empty array of finite positive frequencies in Hz"
+        raise ValueError(msg)
+    if not np.all(np.isfinite(freqs)):
+        msg = "freqs_hz must contain only finite frequencies in Hz"
+        raise ValueError(msg)
+    if np.any(freqs <= 0):
+        msg = "freqs_hz must contain only positive frequencies in Hz"
+        raise ValueError(msg)
+
+    ref_freq_hz = float(np.mean(freqs))
     wavelength_m = 299_792_458.0 / ref_freq_hz
     u = uvw[:, :, 0] / wavelength_m  # (T, B)
     v = uvw[:, :, 1] / wavelength_m  # (T, B)
