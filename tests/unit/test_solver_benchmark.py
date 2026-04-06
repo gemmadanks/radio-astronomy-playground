@@ -92,7 +92,7 @@ def solve_inputs(request):
 
 @pytest.mark.benchmark(min_rounds=3, max_time=30.0, warmup=False)
 def test_solver_solve_benchmark(benchmark, solve_inputs):
-    """Benchmark Solver.solve across small, medium, and large observation sizes."""
+    """Benchmark Solver.solve across small and medium observation sizes."""
     solver, observed, model, n_stations = solve_inputs
 
     result = benchmark(solver.solve, observed, model, n_stations)
