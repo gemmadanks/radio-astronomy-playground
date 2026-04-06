@@ -31,10 +31,12 @@ def test_observation_times(observation: Observation):
     n_steps = observation.config.num_timesteps
     if n_steps > 1:
         timestep_mjd = observation.config.observation_length / (n_steps - 1) / 86_400.0
-        expected_times = np.array([
-            observation.config.start_time_mjd + i * timestep_mjd
-            for i in range(n_steps)
-        ])
+        expected_times = np.array(
+            [
+                observation.config.start_time_mjd + i * timestep_mjd
+                for i in range(n_steps)
+            ]
+        )
     else:
         expected_times = np.array([observation.config.start_time_mjd])
 
