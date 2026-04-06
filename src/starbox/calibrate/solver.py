@@ -200,7 +200,6 @@ class Solver:
         Returns a real 1D vector of interleaved real/imag residuals per visibility sample.
         """
         gains_arr = np.asarray(gains)
-        _, _, _ = observed_visibilities.vis.shape
         time_bins = self._time_bin_indices(observed_visibilities.times_mjd)
         freq_bins = self._frequency_bin_indices(observed_visibilities.freqs_hz)
         n_freq_bins = int(freq_bins.max()) + 1 if freq_bins.size else 0
