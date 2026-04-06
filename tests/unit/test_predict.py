@@ -136,3 +136,45 @@ def test_generate_psf_visibilities():
     assert np.array_equal(psf_visibilities.freqs_hz, visibility_set.freqs_hz)
     # Check input visibilities are not modified
     assert not np.array_equal(visibility_set.vis, psf_visibilities.vis)
+
+
+def test_generate_psf_visibilities_preserves_dtype():
+    """PSF visibilities should preserve the input visibility dtype."""
+    vis_c64 = (np.random.rand(2, 6, 2) + 1j * np.random.rand(2, 6, 2)).astype(
+        np.complex64
+    )
+    visibility_set = VisibilitySet(
+        vis=vis_c64,
+        uvw_m=np.random.rand(2, 6, 3),
+        station1=np.arange(6, dtype=np.int32),
+        station2=np.arange(6, dtype=np.int32),
+        times_mjd=np.random.rand(2),
+        freqs_hz=np.array([1e8, 2e8]),
+        weights=np.ones((2, 6, 2)),
+    )
+    psf_visibilities = generate_psf_visibilities(visibility_set)
+    assert psf_visibilities.vis.dtype == vis_c64.dtype
+
+
+def test_generate_psf_visibilities_metadata_not_aliased():
+    """Metadata arrays in the PSF VisibilitySet must not alias the input arrays."""
+    uvw_m = np.random.rand(2, 6, 3)
+    station1 = np.arange(6, dtype=np.int32)
+    station2 = np.arange(6, dtype=np.int32)
+    times_mjd = np.random.rand(2)
+    freqs_hz = np.array([1e8, 2e8])
+    visibility_set = VisibilitySet(
+        vis=(np.random.rand(2, 6, 2) + 1j * np.random.rand(2, 6, 2)),
+        uvw_m=uvw_m,
+        station1=station1,
+        station2=station2,
+        times_mjd=times_mjd,
+        freqs_hz=freqs_hz,
+        weights=np.ones((2, 6, 2)),
+    )
+    psf_visibilities = generate_psf_visibilities(visibility_set)
+    assert psf_visibilities.uvw_m is not visibility_set.uvw_m
+    assert psf_visibilities.station1 is not visibility_set.station1
+    assert psf_visibilities.station2 is not visibility_set.station2
+    assert psf_visibilities.times_mjd is not visibility_set.times_mjd
+    assert psf_visibilities.freqs_hz is not visibility_set.freqs_hz
