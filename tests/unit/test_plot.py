@@ -157,6 +157,53 @@ def test_plot_uv_coverage_mirrors_samples_about_origin():
     np.testing.assert_allclose(y_all[2:], -y_all[:2])
 
 
+def test_plot_uv_coverage_downsamples_timesteps():
+    """UV coverage plot should downsample timesteps when requested."""
+
+    uvw = np.zeros((5, 1, 3), dtype=np.float64)
+    uvw[:, 0, 0] = np.arange(5, dtype=np.float64)
+    freqs_hz = np.array([150e6], dtype=np.float64)
+
+    fig = plot.plot_uv_coverage(uvw, freqs_hz=freqs_hz, max_timesteps=3)
+
+    x_all = np.array(cast(Any, fig.data[1]).x)
+    marker = cast(Any, fig.data[1]).marker
+    time_all = np.array(marker.color)
+
+    # 3 selected timesteps × 1 baseline × 2 (mirrored) = 6 marker points
+    assert x_all.size == 6
+    np.testing.assert_allclose(time_all, np.array([0.0, 1.0, 2.0, 0.0, 1.0, 2.0]))
+
+
+def test_plot_uv_coverage_rejects_invalid_uvw_shape():
+    """UV coverage plot should validate UVW array shape."""
+
+    uvw = np.zeros((4, 2), dtype=np.float64)
+    freqs_hz = np.array([150e6], dtype=np.float64)
+
+    with pytest.raises(ValueError, match="uvw_coordinates must have shape"):
+        plot.plot_uv_coverage(uvw, freqs_hz=freqs_hz)
+
+
+@pytest.mark.parametrize(
+    ("freqs_hz", "message"),
+    [
+        (np.array([], dtype=np.float64), "non-empty array"),
+        (np.array([150e6, np.nan], dtype=np.float64), "finite frequencies"),
+        (np.array([150e6, 0.0], dtype=np.float64), "positive frequencies"),
+    ],
+)
+def test_plot_uv_coverage_rejects_invalid_frequencies(
+    freqs_hz: np.ndarray, message: str
+):
+    """UV coverage plot should validate input frequencies."""
+
+    uvw = np.zeros((1, 1, 3), dtype=np.float64)
+
+    with pytest.raises(ValueError, match=message):
+        plot.plot_uv_coverage(uvw, freqs_hz=freqs_hz)
+
+
 def test_plot_gains(solutions):
     """Test that the gain plotting function works without errors."""
     plot.plot_gains(solutions)

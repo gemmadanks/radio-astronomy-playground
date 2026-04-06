@@ -295,6 +295,22 @@ def test_solver_residuals_method_accepts_1d_real_phase_vector(visibility_set):
     assert np.allclose(residuals, 0.0, atol=1e-6)
 
 
+def test_solver_residuals_method_requires_n_stations_for_1d_phase_vector(
+    visibility_set,
+):
+    """Test 1D phase-vector residual path rejects missing n_stations."""
+
+    solver_config = SolverConfig(solution_interval_seconds=60)
+    solver = Solver(solver_config)
+
+    observed_visibilities = _copy_visibility_set(visibility_set)
+    model_visibilities = _copy_visibility_set(visibility_set)
+    phases = np.zeros(1, dtype=np.float64)
+
+    with pytest.raises(ValueError, match="n_stations is required"):
+        solver._residuals(phases, observed_visibilities, model_visibilities)
+
+
 def test_solver_residuals_method_accepts_1d_real_phase_vector_with_frequency_binning(
     visibility_set,
 ):
