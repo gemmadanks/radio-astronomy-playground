@@ -77,7 +77,7 @@ def test_plot_uv_coverage():
     assert fig.layout.xaxis.title.text == "U (wavelengths)"
     assert fig.layout.yaxis.title.text == "V (wavelengths)"
     # 2 traces: grey lines + time-colored markers
-    assert len(fig.data) == 2
+    assert len(cast(tuple, fig.data)) == 2
     assert cast(Any, fig.data[0]).type == "scattergl"
     assert cast(Any, fig.data[0]).mode == "lines"
     assert cast(Any, fig.data[1]).mode == "markers"
@@ -94,7 +94,7 @@ def test_plot_uv_coverage_includes_all_samples():
     fig = plot.plot_uv_coverage(uvw, freqs_hz=freqs_hz)
 
     # 2 traces: lines + markers; 3 timesteps × 1 baseline × 2 = 6 marker points
-    assert len(fig.data) == 2
+    assert len(cast(tuple, fig.data)) == 2
     x_all = np.array(cast(Any, fig.data[1]).x)
     assert x_all.size == 6
     # mirrored half should negate positive half
