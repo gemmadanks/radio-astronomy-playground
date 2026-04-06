@@ -565,7 +565,10 @@ def test_solver_handles_zero_phase_ratios(visibility_set):
         n_stations=3,
     )
 
-    assert solutions.station_phase_gains.dtype == np.complex64 and solutions.station_phase_gains.shape == (3, 2, 3)
+    assert (
+        solutions.station_phase_gains.dtype == np.complex64
+        and solutions.station_phase_gains.shape == (3, 2, 3)
+    )
 
 
 def test_solver_time_bin_indices_with_empty_array():
@@ -583,7 +586,9 @@ def test_solver_time_bin_indices_with_empty_array():
 def test_solver_frequency_bin_indices_with_empty_array():
     """Test _frequency_bin_indices returns empty array for empty input."""
 
-    solver = Solver(SolverConfig(solution_interval_seconds=60, solution_interval_hz=1e6))
+    solver = Solver(
+        SolverConfig(solution_interval_seconds=60, solution_interval_hz=1e6)
+    )
     empty_freqs = np.array([], dtype=np.float64)
 
     indices = solver._frequency_bin_indices(empty_freqs)
@@ -595,7 +600,9 @@ def test_solver_frequency_bin_indices_with_empty_array():
 def test_solver_frequency_bin_indices_with_single_frequency():
     """Test _frequency_bin_indices returns correct bin for single channel."""
 
-    solver = Solver(SolverConfig(solution_interval_seconds=60, solution_interval_hz=1e6))
+    solver = Solver(
+        SolverConfig(solution_interval_seconds=60, solution_interval_hz=1e6)
+    )
     single_freq = np.array([100.0e6], dtype=np.float64)
 
     indices = solver._frequency_bin_indices(single_freq)

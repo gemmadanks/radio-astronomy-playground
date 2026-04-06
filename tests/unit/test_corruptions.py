@@ -141,12 +141,12 @@ def test_corruptions_sample_station_phase_gains_rms_is_in_degrees():
     # Exclude reference station (index 0 is always 1+0j)
     angles_deg = np.angle(phase_gains[..., 1:], deg=True)
     measured_rms = np.sqrt(np.mean(angles_deg**2))
-    assert (
-        measured_rms < 10.0
-    ), f"Phase RMS is {measured_rms:.1f} deg — rms_phase_gain may be in radians"
-    assert np.isclose(
-        measured_rms, 2.0, atol=0.5
-    ), f"Expected phase RMS ~2 deg, got {measured_rms:.2f} deg"
+    assert measured_rms < 10.0, (
+        f"Phase RMS is {measured_rms:.1f} deg — rms_phase_gain may be in radians"
+    )
+    assert np.isclose(measured_rms, 2.0, atol=0.5), (
+        f"Expected phase RMS ~2 deg, got {measured_rms:.2f} deg"
+    )
 
 
 def test_corruptions_sample_station_phase_gains_vary_over_time_and_frequency():
@@ -262,9 +262,7 @@ def test_corruptions_apply_ar1_with_single_sample():
 def test_corruptions_apply_ar1_with_zero_correlation():
     """Test AR(1) filter with rho=0 returns independent samples (white noise path)."""
 
-    samples = np.array(
-        [[1.0, 2.0], [3.0, 4.0], [5.0, 6.0]]
-    )  # Shape (3, 2)
+    samples = np.array([[1.0, 2.0], [3.0, 4.0], [5.0, 6.0]])  # Shape (3, 2)
     rho = 0.0
     axis = 0
 

@@ -439,7 +439,10 @@ def _(
 def _(fov_slider, mo, model_visibilities, plot, psf_image):
     mo.hstack(
         [
-            plot.plot_uv_coverage(model_visibilities.uvw_m),
+            plot.plot_uv_coverage(
+                model_visibilities.uvw_m,
+                freqs_hz=model_visibilities.freqs_hz,
+            ),
             plot.plot_image(psf_image, title="PSF", fov_deg=fov_slider.value),
         ],
         gap="1rem",  # Reduce spacing between plots

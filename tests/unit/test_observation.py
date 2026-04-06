@@ -1,5 +1,9 @@
 """Tests for Observation class."""
 
+from types import SimpleNamespace
+
+from astropy.time import Time
+from astropy.utils import iers
 from starbox.config.observation import ObservationConfig
 from starbox.simulate import Observation
 import numpy as np
@@ -79,3 +83,25 @@ def test_observation_pointing_centre(observation: Observation):
 
     assert np.isclose(ra_rad, expected_ra_rad)
     assert np.isclose(dec_rad, expected_dec_rad)
+
+
+def test_observation_gmst_uses_temporary_iers_settings(
+    observation: Observation, monkeypatch
+):
+    """GMST calculation should temporarily allow stale IERS data offline."""
+
+    original_auto_download = iers.conf.auto_download
+    original_auto_max_age = iers.conf.auto_max_age
+
+    def fake_sidereal_time(self, kind, longitude):
+        assert kind == "mean"
+        assert longitude == "greenwich"
+        assert iers.conf.auto_download is False
+        assert iers.conf.auto_max_age is None
+        return SimpleNamespace(rad=np.array([0.1, 0.2, 0.3]))
+
+    monkeypatch.setattr(Time, "sidereal_time", fake_sidereal_time)
+
+    np.testing.assert_allclose(observation.gmst_rad, np.array([0.1, 0.2, 0.3]))
+    assert iers.conf.auto_download is original_auto_download
+    assert iers.conf.auto_max_age == original_auto_max_age
