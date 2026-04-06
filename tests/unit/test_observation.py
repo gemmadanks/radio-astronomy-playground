@@ -6,6 +6,7 @@ from astropy.time import Time
 from astropy.utils import iers
 from starbox.config.observation import ObservationConfig
 from starbox.simulate import Observation
+from starbox.geometry.uvw import calculate_uvw
 import numpy as np
 import math
 
@@ -26,13 +27,17 @@ def test_observation_from_config(observation_config):
 def test_observation_times(observation: Observation):
     """Test that the times property generates correct time steps."""
 
-    expected_times = np.array(
-        [
-            observation.config.start_time_mjd,
-            observation.config.start_time_mjd + 90.0 / 86_400.0,
-            observation.config.start_time_mjd + 180.0 / 86_400.0,
-        ]
-    )
+    # Compute expected times based on the observation config
+    n_steps = observation.config.num_timesteps
+    if n_steps > 1:
+        timestep_mjd = observation.config.observation_length / (n_steps - 1) / 86_400.0
+        expected_times = np.array([
+            observation.config.start_time_mjd + i * timestep_mjd
+            for i in range(n_steps)
+        ])
+    else:
+        expected_times = np.array([observation.config.start_time_mjd])
+
     np.testing.assert_allclose(
         observation.times_mjd, expected_times, atol=1e-12, rtol=0.0
     )
@@ -105,3 +110,27 @@ def test_observation_gmst_uses_temporary_iers_settings(
     np.testing.assert_allclose(observation.gmst_rad, np.array([0.1, 0.2, 0.3]))
     assert iers.conf.auto_download is original_auto_download
     assert iers.conf.auto_max_age == original_auto_max_age
+
+
+def test_uv_coordinates_vary_with_time(observation: Observation):
+    """Test that Earth rotation causes U and V coordinates to vary significantly over a long observation."""
+    # Single baseline in ECEF coordinates
+    baselines_ecef = np.array([[1000.0, 2000.0, 3000.0]])
+
+    # Compute UVW coordinates for all timesteps
+    uvw_m = calculate_uvw(
+        gmst_rad=observation.gmst_rad,
+        phase_centre_rad=observation.phase_centre_rad,
+        baselines_ecef_m=baselines_ecef,
+    )
+
+    u = uvw_m[:, 0, 0]  # U for the single baseline across all times
+    v = uvw_m[:, 0, 1]  # V for the single baseline across all times
+
+    # For a 4-hour observation, U and V should vary significantly
+    u_variation = np.max(u) - np.min(u)
+    v_variation = np.max(v) - np.min(v)
+
+    # These should be non-zero and substantial (not just numerical noise)
+    assert u_variation > 10.0, f"U varied by only {u_variation}, expected > 10"
+    assert v_variation > 10.0, f"V varied by only {v_variation}, expected > 10"

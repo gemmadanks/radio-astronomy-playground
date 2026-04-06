@@ -146,6 +146,9 @@ def _(mo):
     bandwidth_slider = mo.ui.slider(
         1, 100, value=32, label="Total frequency bandwidth (MHz): "
     )
+    phase_centre_dec_slider = mo.ui.slider(
+        -90, 90, value=45, label="Phase center declination (deg): "
+    )
 
     # Corruptions
     phase_rms_slider = mo.ui.slider(
@@ -177,6 +180,7 @@ def _(mo):
         num_stations_slider,
         num_timesteps_slider,
         observation_length_slider,
+        phase_centre_dec_slider,
         phase_freq_corr_slider,
         phase_rms_slider,
         phase_time_corr_slider,
@@ -294,6 +298,7 @@ def _(
     num_channels_slider,
     num_timesteps_slider,
     observation_length_slider,
+    phase_centre_dec_slider,
     start_freq_slider,
     start_time_mjd_slider,
 ):
@@ -311,6 +316,10 @@ def _(
                 [start_freq_slider, num_channels_slider, bandwidth_slider],
                 justify="start",
             ),
+            mo.hstack(
+                [phase_centre_dec_slider],
+                justify="start",
+            ),
         ]
     )
     return
@@ -324,6 +333,7 @@ def _(
     num_channels_slider,
     num_timesteps_slider,
     observation_length_slider,
+    phase_centre_dec_slider,
     start_freq_slider,
     start_time_mjd_slider,
 ):
@@ -334,6 +344,7 @@ def _(
         start_frequency=start_freq_slider.value * 1e6,
         num_channels=num_channels_slider.value,
         total_bandwidth=bandwidth_slider.value * 1e6,
+        phase_centre_dec=phase_centre_dec_slider.value,
     )
     observation = build_observation(observation_config)
     return observation, observation_config

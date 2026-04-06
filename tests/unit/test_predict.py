@@ -15,7 +15,11 @@ def test_predict_visibilities_returns_correct_shape(
     small_telescope, skymodel, observation
 ):
     """Test the predict_visibilities function returns correct shape."""
-    expected_shape = (3, 45, 2)  # (num_times, num_baselines, num_channels)
+    # Compute expected shape from fixtures
+    num_times = observation.num_times
+    num_baselines = small_telescope.num_baselines
+    num_channels = observation.num_channels
+    expected_shape = (num_times, num_baselines, num_channels)
     visibilities = predict_visibilities(small_telescope, skymodel, observation)
     assert visibilities.vis.shape == expected_shape
 

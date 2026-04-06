@@ -59,8 +59,8 @@ def observation_config():
     """A simple observation configuration."""
     return ObservationConfig(
         start_time_mjd=59000.0,  # in MJD
-        observation_length=180,  # in seconds
-        num_timesteps=3,
+        observation_length=14400,  # in seconds (4 hours)
+        num_timesteps=50,  # sample every ~3 minutes
         start_frequency=1e6,  # in Hz
         num_channels=2,
         total_bandwidth=1e6,  # in Hz
