@@ -1,5 +1,26 @@
 # Changelog
 
+## [0.10.0](https://github.com/gemmadanks/radio-astronomy-playground/compare/v0.9.0...v0.10.0) (2026-04-06)
+
+
+### 🚀 Features
+
+* add benchmark test ([6ee55d1](https://github.com/gemmadanks/radio-astronomy-playground/commit/6ee55d126b1ec868808b0853d79308d05b866616))
+* add plot for psf ([6ee55d1](https://github.com/gemmadanks/radio-astronomy-playground/commit/6ee55d126b1ec868808b0853d79308d05b866616))
+* add solver for phase only gains ([#79](https://github.com/gemmadanks/radio-astronomy-playground/issues/79)) ([6ee55d1](https://github.com/gemmadanks/radio-astronomy-playground/commit/6ee55d126b1ec868808b0853d79308d05b866616))
+
+
+### 🐛 Bug Fixes
+
+* fix range in sky model plot ([6ee55d1](https://github.com/gemmadanks/radio-astronomy-playground/commit/6ee55d126b1ec868808b0853d79308d05b866616))
+* update default values ([6ee55d1](https://github.com/gemmadanks/radio-astronomy-playground/commit/6ee55d126b1ec868808b0853d79308d05b866616))
+
+
+### 🧩 CI
+
+* bump actions/upload-artifact from 6 to 7 in the actions group ([#68](https://github.com/gemmadanks/radio-astronomy-playground/issues/68)) ([bf3bb72](https://github.com/gemmadanks/radio-astronomy-playground/commit/bf3bb72458c7c2ba1157741684726624dd7e9915))
+* bump codecov/codecov-action from 5 to 6 in the actions group ([#77](https://github.com/gemmadanks/radio-astronomy-playground/issues/77)) ([5ab0244](https://github.com/gemmadanks/radio-astronomy-playground/commit/5ab024455c93c7a833bc1c8b94f0e4bac2887369))
+
 ## [0.9.0](https://github.com/gemmadanks/radio-astronomy-playground/compare/v0.8.0...v0.9.0) (2026-03-16)
 
 
