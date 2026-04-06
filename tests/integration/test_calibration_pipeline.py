@@ -63,6 +63,6 @@ def test_solver_end_to_end_corrected_visibilities_closer_to_model(
         np.abs(corrected_visibilities.vis - model_visibilities.vis) ** 2
     )
 
-    assert (
-        error_after < error_before
-    ), f"Calibration made things worse: MSE before={error_before:.6f}, after={error_after:.6f}"
+    assert error_after < error_before, (
+        f"Calibration made things worse: MSE before={error_before:.6f}, after={error_after:.6f}"
+    )
