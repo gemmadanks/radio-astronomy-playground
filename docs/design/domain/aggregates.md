@@ -49,14 +49,14 @@ classDiagram
     predict ..> Telescope
     predict ..> Observation
     predict ..> SkyModel
-    predict <|-- lmn
-    predict <|-- uvw
+    predict ..> lmn
+    predict ..> uvw
 
-    viz <|-- SkyModel
-    viz <|-- Telescope
-    viz <|-- uvw
-    viz <|-- Solutions
-    viz <|-- Imager
+    viz ..> SkyModel
+    viz ..> Telescope
+    viz ..> uvw
+    viz ..> Solutions
+    viz ..> Imager
 
     SkyModelConfig --> SkyModel
 
