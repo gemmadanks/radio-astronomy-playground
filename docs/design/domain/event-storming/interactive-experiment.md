@@ -40,13 +40,6 @@ These map to notebook widgets.
 * Set number of stations
 * Set telescope diameter
 
-### Observation setup
-
-* Set integration time
-* Set total observation duration
-* Set frequency setup
-* Set phase centre
-
 ### Sky
 
 * Set number of sources
