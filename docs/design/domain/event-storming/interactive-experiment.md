@@ -3,7 +3,7 @@
 
 ## Scenario
 
-A user interactively modifies station layout, observation parameters, and instrument models and immediately sees how the final image products change. The primary goal is **conceptual exploration and algorithm intuition**, not production-scale processing.
+A user interactively specifies telescope, observation, sky model and corruption parameters and immediately sees how the final image products change. The primary goal is **conceptual exploration and algorithm intuition**, not production-scale processing.
 
 ---
 
@@ -12,11 +12,11 @@ A user interactively modifies station layout, observation parameters, and instru
 * Simulation-based
 * Small datasets
 * Fast feedback (seconds, not minutes)
-* Panel app with sliders, toggles, and dropdown widgets
+* Marimo notebook with sliders, toggles, and dropdown widgets
 
 Out of scope:
 
-* Calibration (including self-calibration)
+* Iterative self-calibration
 * Large datasets
 
 ---
@@ -35,27 +35,37 @@ This workflow has **three layers**:
 
 These map to notebook widgets.
 
-### Array configuration
+### Telescope configuration
 
-* Select array layout (example or custom)
-* Add station
-* Remove station
-* Modify station positions
+* Set number of stations
+* Set telescope diameter
 
-### Observation setup
+### Sky
 
-* Set integration time
-* Set total observation duration
-* Set frequency setup
+* Set number of sources
+* Set maximum flux
+
+### Observation
+
+* Set start time
+* Set observation length
+* Set number of timesteps
+* Set start frequency
+* Set number of frequency channels
+* Set bandwidth
 * Set phase centre
 
-### Sky & instrument
+### Corruptions
 
-* Select sky model
-* Select primary beam model
-* Enable / disable corruption models
-* Set noise level
-* Set gain / phase error parameters
+* Set phase RMS
+* Set phase corruption time correlation
+* Set phase corruption frequency correlation
+* Set noise RMS
+
+### Calibration
+
+* Set solution time interval
+* Set solution frequency interval
 
 ### Imaging
 
@@ -63,35 +73,40 @@ These map to notebook widgets.
 * Set image size and cell size
 * Set deconvolution parameters
 
+### IO
+
+* Save experiment configuration
+* Load experiment configuration
+
 ---
 
 ## 2. Domain Events (What Happens)
 
 ### Configuration
 
-* Site location specified
-* Array configuration defined
-* Observation setup defined
-* Sky model selected
-* Instrument model defined
+* Telescope parameters specified
+* Observation parameters specified
+* Sky model parameters specified
+* Corruption parameters specified
 * Primary beam model selected
-* Visibility averaging policy defined
+* Calibration parameters specified
+* Imaging parameters specified
 
 ### Simulation
 
-* UVW sampling computed
 * Sky model visibilities predicted
 * Instrument corruptions applied
-* Visibilities averaged
+* Visibilities calibrated
+
 
 ### Imaging
 
 * Visibilities gridded
-* Dirty image generated
-* PSF generated
-* Deconvolution performed
-* Model image generated
-* Residual image generated
+* Observed (corrupted) visibilities imaged
+* Calibrated visibilities imaged
+* Model visibilities imaged
+* PSF visibilities generated and imaged
+* Residual visibilities imaged
 
 ### Iteration
 
@@ -165,7 +180,7 @@ Invariants:
 
 ---
 
-### MeasurementModel
+### Corruptions
 
 Defines corruptions and beam effects.
 
@@ -188,7 +203,7 @@ Invariants:
 
 ---
 
-### DataProducts
+### Data Products
 
 Contains image-plane products.
 
@@ -211,9 +226,7 @@ flowchart LR
   U --> Vp
   I[Corruptions] --> Vc[Corrupted visibilities]
   Vp --> Vc
-  O --> Va[Averaged visibilities]
-  Vc --> Va
-  Va --> G[Gridded visibilities]
+  Vc --> G[Gridded visibilities]
   O --> G
   G --> D[Dirty image]
   G --> P[PSF]
