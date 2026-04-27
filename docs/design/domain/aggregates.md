@@ -40,7 +40,7 @@ This shows the core domain-driven-design (DDD) aggregates (groups of domain conc
 
 ```mermaid
 classDiagram
-    TelescopeSiteConfig --> TelescopeConfig
+    TelescopeConfig --> TelescopeSiteConfig
     TelescopeConfig --> Telescope
     Telescope *-- Station
     Station *-- AntennaElement
