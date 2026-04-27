@@ -226,9 +226,7 @@ flowchart LR
   U --> Vp
   I[Corruptions] --> Vc[Corrupted visibilities]
   Vp --> Vc
-  O --> Va[Averaged visibilities]
-  Vc --> Va
-  Va --> G[Gridded visibilities]
+  Vc --> G[Gridded visibilities]
   O --> G
   G --> D[Dirty image]
   G --> P[PSF]
