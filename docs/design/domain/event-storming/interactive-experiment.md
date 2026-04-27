@@ -3,7 +3,7 @@
 
 ## Scenario
 
-A user interactively specifies telescope, observation, sky model and corruptions parameters and immediately sees how the final image products change. The primary goal is **conceptual exploration and algorithm intuition**, not production-scale processing.
+A user interactively specifies telescope, observation, sky model and corruption parameters and immediately sees how the final image products change. The primary goal is **conceptual exploration and algorithm intuition**, not production-scale processing.
 
 ---
 
