@@ -78,11 +78,11 @@ classDiagram
     factory ..> SolverConfig
     factory ..> SkyModelConfig
 
-    ExperimentConfig <|-- TelescopeConfig
-    ExperimentConfig <|-- SkyModelConfig
-    ExperimentConfig <|-- ObservationConfig
-    ExperimentConfig <|-- CorruptionsConfig
-    ExperimentConfig <|-- SolverConfig
+    ExperimentConfig *-- TelescopeConfig
+    ExperimentConfig *-- SkyModelConfig
+    ExperimentConfig *-- ObservationConfig
+    ExperimentConfig *-- CorruptionsConfig
+    ExperimentConfig *-- SolverConfig
 
     class ExperimentConfig {
         +str name
