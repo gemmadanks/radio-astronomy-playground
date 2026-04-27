@@ -13,6 +13,7 @@ This shows the core domain-driven-design (DDD) aggregates (groups of domain conc
 
 ## Value objects
 - ExperimentConfig
+- ObservationConfig
 - TelescopeConfig
 - TelescopeSiteConfig
 - SkyModelConfig
