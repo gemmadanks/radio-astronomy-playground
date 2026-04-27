@@ -190,7 +190,7 @@ classDiagram
 
     class SolverConfig {
         +float solution_interval_seconds
-        +float solution interval_hz
+        +float solution_interval_hz
     }
 
     class Solver{
