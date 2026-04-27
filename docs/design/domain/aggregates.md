@@ -91,7 +91,7 @@ classDiagram
         +SkyModelConfig skymodel
         +ObservationConfig observation
         +CorruptionsConfig corruptions
-        SolverConfig solver
+        +SolverConfig solver
     }
 
     class TelescopeSiteConfig {
