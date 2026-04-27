@@ -61,10 +61,10 @@ classDiagram
     SkyModelConfig --> SkyModel
 
     CorruptionsConfig --> Corruptions
-    Corruptions <|-- StationGains
-    Corruptions <|-- ThermalNoise
-    Corruptions <|-- Bandpass
-    Corruptions <|-- PhaseScreen
+    class Corruptions {
+        applies station phase gain
+        adds thermal noise
+    }
 
     Imager ..> VisibilitySet
     Solver ..> VisibilitySet
