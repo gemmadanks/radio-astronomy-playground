@@ -1174,7 +1174,7 @@ wheels = [
 
 [[package]]
 name = "marimo"
-version = "0.23.3"
+version = "0.23.6"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "click" },
@@ -1196,9 +1196,9 @@ dependencies = [
     { name = "uvicorn" },
     { name = "websockets" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/b6/3f/7fb38c6c2a1f8d6b3c3ffb8ca6db5ff0b9dacbb113b4d05aa7690b51a771/marimo-0.23.3.tar.gz", hash = "sha256:251a8724b58882d65956ff6a20552cb21e59a6fd4149ca437727894375ec31e9", size = 38406206, upload-time = "2026-04-24T17:56:21.016Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/db/96/7f03859bfc88b9ee25f1562ad1e7e0284c442f2956eaf0f9c849836d378f/marimo-0.23.6.tar.gz", hash = "sha256:d63aeeee1e9ea7cac79bf2530daba915199153dce4d156fade7546474679d3ca", size = 38426356, upload-time = "2026-05-11T21:39:57.588Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/46/e7/02d672006fb04cb8aef23aeaf0384482fe63a13f9db6125ad8e13146daee/marimo-0.23.3-py3-none-any.whl", hash = "sha256:329b35b9ca221db9c78780d1714b11f010a00e2a929942db8ae6187960d42496", size = 38828150, upload-time = "2026-04-24T17:56:16.204Z" },
+    { url = "https://files.pythonhosted.org/packages/44/a7/c19a6481dfe7762eb07a5bd0a7d7ae560a2ab5505a519bce159d0fd08beb/marimo-0.23.6-py3-none-any.whl", hash = "sha256:e8d19d875b0212600faa80eaaed0fd3f34dfb7b5241e630cf2b1cedd8dd14509", size = 38849553, upload-time = "2026-05-11T21:39:53.996Z" },
 ]
 
 [package.optional-dependencies]
@@ -2694,7 +2694,7 @@ requires-dist = [
     { name = "ipykernel", marker = "extra == 'viz'", specifier = "==7.1.0" },
     { name = "ipywidgets", marker = "extra == 'viz'", specifier = ">=8.1.7,<9.0.0" },
     { name = "jupyter", marker = "extra == 'viz'", specifier = ">=1.1.1,<2.0.0" },
-    { name = "marimo", extras = ["recommended"], marker = "extra == 'viz'", specifier = ">=0.19.4" },
+    { name = "marimo", extras = ["recommended"], marker = "extra == 'viz'", specifier = ">=0.23.6" },
     { name = "numpy", specifier = ">=2.3.3,<3.0.0" },
     { name = "pandas", specifier = ">=2.3.3" },
     { name = "plotly", marker = "extra == 'viz'", specifier = ">=6.3.0,<7.0.0" },
