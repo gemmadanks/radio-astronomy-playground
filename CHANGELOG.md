@@ -1,5 +1,23 @@
 # Changelog
 
+## [0.10.1](https://github.com/gemmadanks/radio-astronomy-playground/compare/v0.10.0...v0.10.1) (2026-06-15)
+
+
+### 📚 Documentation
+
+* update docs ([#89](https://github.com/gemmadanks/radio-astronomy-playground/issues/89)) ([048b43f](https://github.com/gemmadanks/radio-astronomy-playground/commit/048b43f653d34961e6270535c98692fe3a3b0906))
+
+
+### 🧩 CI
+
+* bump the actions group across 1 directory with 2 updates ([#104](https://github.com/gemmadanks/radio-astronomy-playground/issues/104)) ([c5e24a0](https://github.com/gemmadanks/radio-astronomy-playground/commit/c5e24a0bb7595a2465eb5a3215b21b5067a7e42a))
+
+
+### 📦 Build
+
+* **deps:** bump pandas from 3.0.2 to 3.0.3 ([#100](https://github.com/gemmadanks/radio-astronomy-playground/issues/100)) ([fb95c36](https://github.com/gemmadanks/radio-astronomy-playground/commit/fb95c36a948f76cc3a9c2c137d9eb75a07113388))
+* **deps:** bump pydantic from 2.13.3 to 2.13.4 ([#97](https://github.com/gemmadanks/radio-astronomy-playground/issues/97)) ([e66eedb](https://github.com/gemmadanks/radio-astronomy-playground/commit/e66eedb370b83c2d0795d8349d468f027a0fd397))
+
 ## [0.10.0](https://github.com/gemmadanks/radio-astronomy-playground/compare/v0.9.0...v0.10.0) (2026-04-06)
 
 
